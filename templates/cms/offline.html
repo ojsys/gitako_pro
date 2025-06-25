@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+
+{% block title %}You're Offline - Gitako Farm Management{% endblock %}
+
+{% block meta_description %}You're currently offline. Gitako works offline too! Continue managing your farm and sync when you're back online.{% endblock %}
+
+{% block content %}
+<!-- Offline Hero Section -->
+<section class="hero-section section-hero">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center justify-content-center text-center">
+            <div class="col-lg-8 text-white">
+                <div class="mb-4">
+                    <div class="floating-icon d-inline-block mb-3">
+                        <i class="material-icons text-warning" style="font-size: 5rem;">wifi_off</i>
+                    </div>
+                </div>
+                <h1 class="display-3 fw-bold mb-4" style="line-height: 1.1;">
+                    You're Currently <span class="text-warning">Offline</span>
+                </h1>
+                <p class="lead mb-5 opacity-90 col-lg-10 mx-auto" style="font-size: 1.3rem;">
+                    Don't worry! Gitako is designed to work offline. You can continue managing your farm, 
+                    and everything will sync automatically when you're back online.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                    <button onclick="checkConnection()" class="btn btn-gradient btn-lg px-4 py-3">
+                        <i class="material-icons me-2">refresh</i>
+                        Check Connection
+                    </button>
+                    <a href="{% url 'dashboard:dashboard' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="material-icons me-2">agriculture</i>
+                        Continue Offline
+                    </a>
+                </div>
+                <div class="d-flex align-items-center justify-content-center text-white-50">
+                    <small class="me-4">
+                        <i class="material-icons me-1" style="font-size: 1rem;">cloud_sync</i>
+                        Auto-sync when online
+                    </small>
+                    <small>
+                        <i class="material-icons me-1" style="font-size: 1rem;">storage</i>
+                        Data saved locally
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offline Features -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">offline_bolt</i>
+                    Offline Capabilities
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">
+                What You Can Do <span class="gradient-text">Offline</span>
+            </h2>
+            <p class="lead text-muted col-lg-6 mx-auto">
+                Gitako's offline functionality ensures you never miss a beat, even without internet connection
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="material-icons text-primary" style="font-size: 2.5rem;">event_available</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">View & Update Activities</h5>
+                        <p class="text-muted mb-4">Access your crop calendar, mark activities as complete, and add new farming tasks.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span class="text-success fw-semibold">Fully Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="material-icons text-success" style="font-size: 2.5rem;">account_balance</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Record Expenses</h5>
+                        <p class="text-muted mb-4">Log farm expenses, income, and track your budget even when you're in the field.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span class="text-success fw-semibold">Fully Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="material-icons text-warning" style="font-size: 2.5rem;">inventory_2</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Update Inventory</h5>
+                        <p class="text-muted mb-4">Track supplies, equipment usage, and stock levels without needing internet connection.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span class="text-success fw-semibold">Fully Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3">
+                                <i class="material-icons text-info" style="font-size: 2.5rem;">dashboard</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">View Dashboard</h5>
+                        <p class="text-muted mb-4">Access your farm overview, statistics, and recent activities from cached data.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span class="text-success fw-semibold">Fully Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-10 p-3">
+                                <i class="material-icons text-secondary" style="font-size: 2.5rem;">grid_view</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Manage Blocks</h5>
+                        <p class="text-muted mb-4">View and update information about your farm blocks and field activities.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span class="text-success fw-semibold">Fully Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 p-3">
+                                <i class="material-icons text-danger" style="font-size: 2.5rem;">store</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Marketplace</h5>
+                        <p class="text-muted mb-4">Browse marketplace requires internet. You can prepare listings offline for later upload.</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="material-icons text-warning me-2">schedule</i>
+                            <span class="text-warning fw-semibold">Limited Access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How Offline Works -->
+<section class="stats-section section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">settings</i>
+                    How It Works
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">Seamless Offline Experience</h2>
+            <p class="lead text-muted">
+                Our Progressive Web App technology ensures you have uninterrupted access to your farm data
+            </p>
+        </div>
+        
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <div class="timeline">
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white me-3" style="width: 50px; height: 50px;">
+                                <strong>1</strong>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="fw-bold mb-2">Data Caching</h6>
+                            <p class="text-muted mb-0">
+                                When you're online, Gitako automatically downloads and caches your farm data locally on your device.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success text-white me-3" style="width: 50px; height: 50px;">
+                                <strong>2</strong>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="fw-bold mb-2">Offline Storage</h6>
+                            <p class="text-muted mb-0">
+                                Any changes you make while offline are stored locally using advanced browser storage technology.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning text-white me-3" style="width: 50px; height: 50px;">
+                                <strong>3</strong>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="fw-bold mb-2">Auto-Sync</h6>
+                            <p class="text-muted mb-0">
+                                When your connection returns, all offline changes are automatically synchronized with our servers.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-info text-white me-3" style="width: 50px; height: 50px;">
+                                <strong>4</strong>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="fw-bold mb-2">Conflict Resolution</h6>
+                            <p class="text-muted mb-0">
+                                Our smart sync system handles any conflicts and ensures your data integrity is maintained.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                         alt="Offline technology illustration" 
+                         class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sync Status -->
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-4">
+                            <div id="sync-status-icon" class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="material-icons text-warning" style="font-size: 3rem;">sync_disabled</i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-3" id="sync-status-title">Currently Offline</h4>
+                        <p class="text-muted mb-4" id="sync-status-description">
+                            You're working offline. Any changes you make will be saved locally and synchronized when you're back online.
+                        </p>
+                        <div class="row g-3 text-center">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number text-warning" id="pending-changes">0</div>
+                                    <h6 class="fw-semibold text-dark mb-0">Pending Changes</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number text-info" id="cached-data">100%</div>
+                                    <h6 class="fw-semibold text-dark mb-0">Data Cached</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number text-success" id="last-sync">2 hrs ago</div>
+                                    <h6 class="fw-semibold text-dark mb-0">Last Sync</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="checkConnection()" class="btn btn-primary me-3">
+                                <i class="material-icons me-2">refresh</i>
+                                Check Connection
+                            </button>
+                            <a href="{% url 'dashboard:dashboard' %}" class="btn btn-outline-primary">
+                                <i class="material-icons me-2">agriculture</i>
+                                Go to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Installation Prompt -->
+<section class="cta-section section-cta text-white">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="mb-4">
+                    <div class="floating-icon d-inline-block mb-3">
+                        <i class="material-icons text-warning" style="font-size: 3.5rem;">get_app</i>
+                    </div>
+                </div>
+                <h2 class="display-4 fw-bold mb-4">Install Gitako for Better Offline Experience</h2>
+                <p class="lead mb-5 opacity-90">
+                    Install Gitako as a Progressive Web App for faster access, better offline performance, 
+                    and a native app-like experience.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                    <button onclick="installApp()" class="btn btn-warning btn-lg px-5 py-3 fw-semibold" id="install-btn">
+                        <i class="material-icons me-2">get_app</i>
+                        Install App
+                    </button>
+                    <a href="{% url 'cms:features' %}" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="material-icons me-2">info</i>
+                        Learn More
+                    </a>
+                </div>
+                <small class="text-white-50">
+                    <i class="material-icons me-1" style="font-size: 1rem;">check_circle</i>
+                    Works on all devices • No app store needed • Instant updates
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Connection status checking
+function checkConnection() {
+    if (navigator.onLine) {
+        // User is online, redirect to dashboard or reload
+        window.location.href = "{% url 'dashboard:dashboard' %}";
+    } else {
+        // Still offline, show message
+        showToast('Still offline. Please check your internet connection.', 'warning');
+    }
+}
+
+// PWA installation
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-btn').style.display = 'inline-flex';
+});
+
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                showToast('Gitako installed successfully!', 'success');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        showToast('App installation not available on this device.', 'info');
+    }
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+// Update connection status
+function updateConnectionStatus() {
+    const statusIcon = document.getElementById('sync-status-icon');
+    const statusTitle = document.getElementById('sync-status-title');
+    const statusDescription = document.getElementById('sync-status-description');
+    
+    if (navigator.onLine) {
+        statusIcon.innerHTML = '<i class="material-icons text-success" style="font-size: 3rem;">cloud_sync</i>';
+        statusIcon.className = 'd-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3';
+        statusTitle.textContent = 'Back Online - Syncing...';
+        statusDescription.textContent = 'Great! You\'re back online. We\'re syncing your offline changes now.';
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+            window.location.href = "{% url 'dashboard:dashboard' %}";
+        }, 2000);
+    }
+}
+
+// Listen for connection changes
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', () => {
+    // Reset to offline status if needed
+});
+
+// Update pending changes count (example)
+function updatePendingChanges() {
+    const pendingCount = localStorage.getItem('gitako_pending_changes') || '0';
+    document.getElementById('pending-changes').textContent = pendingCount;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updatePendingChanges();
+    
+    // Hide install button if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        document.getElementById('install-btn').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,454 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Edit Product - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">
+                    <i class="material-icons me-2">edit</i>Edit Product
+                </h1>
+                <p class="text-muted mb-0">Update your product listing details</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'marketplace:detail' object.pk %}" class="btn btn-outline-primary me-2">
+                    <i class="material-icons me-1">visibility</i>View Product
+                </a>
+                <a href="{% url 'marketplace:my_products' %}" class="btn btn-outline-secondary">
+                    <i class="material-icons me-1">arrow_back</i>Back to My Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <!-- Main Form -->
+            <div class="col-lg-8">
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">info</i>Basic Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Product Title *</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">Category *</label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.crop.id_for_label }}" class="form-label">Crop *</label>
+                                {{ form.crop }}
+                                {% if form.crop.errors %}
+                                    <div class="text-danger small">{{ form.crop.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.variety.id_for_label }}" class="form-label">Variety</label>
+                                {{ form.variety }}
+                                {% if form.variety.errors %}
+                                    <div class="text-danger small">{{ form.variety.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing & Quantity -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">shopping_cart</i>Pricing & Quantity
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.quantity_available.id_for_label }}" class="form-label">Quantity Available *</label>
+                                {{ form.quantity_available }}
+                                {% if form.quantity_available.errors %}
+                                    <div class="text-danger small">{{ form.quantity_available.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.unit.id_for_label }}" class="form-label">Unit *</label>
+                                {{ form.unit }}
+                                {% if form.unit.errors %}
+                                    <div class="text-danger small">{{ form.unit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.price_per_unit.id_for_label }}" class="form-label">Price per Unit (₦) *</label>
+                                {{ form.price_per_unit }}
+                                {% if form.price_per_unit.errors %}
+                                    <div class="text-danger small">{{ form.price_per_unit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.minimum_order.id_for_label }}" class="form-label">Minimum Order</label>
+                                {{ form.minimum_order }}
+                                {% if form.minimum_order.errors %}
+                                    <div class="text-danger small">{{ form.minimum_order.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality & Certification -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">verified</i>Quality & Certification
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.quality_grade.id_for_label }}" class="form-label">Quality Grade</label>
+                                {{ form.quality_grade }}
+                                {% if form.quality_grade.errors %}
+                                    <div class="text-danger small">{{ form.quality_grade.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    {{ form.organic_certified }}
+                                    <label for="{{ form.organic_certified.id_for_label }}" class="form-check-label">
+                                        Organic Certified
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.certification_details.id_for_label }}" class="form-label">Certification Details</label>
+                            {{ form.certification_details }}
+                            {% if form.certification_details.errors %}
+                                <div class="text-danger small">{{ form.certification_details.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Harvest & Processing -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">agriculture</i>Harvest & Processing
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.harvest_date.id_for_label }}" class="form-label">Harvest Date</label>
+                                {{ form.harvest_date }}
+                                {% if form.harvest_date.errors %}
+                                    <div class="text-danger small">{{ form.harvest_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.processing_method.id_for_label }}" class="form-label">Processing Method</label>
+                                {{ form.processing_method }}
+                                {% if form.processing_method.errors %}
+                                    <div class="text-danger small">{{ form.processing_method.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.storage_conditions.id_for_label }}" class="form-label">Storage Conditions</label>
+                            {{ form.storage_conditions }}
+                            {% if form.storage_conditions.errors %}
+                                <div class="text-danger small">{{ form.storage_conditions.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Delivery -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">location_on</i>Location & Delivery
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="{{ form.pickup_location.id_for_label }}" class="form-label">Pickup Location *</label>
+                            {{ form.pickup_location }}
+                            {% if form.pickup_location.errors %}
+                                <div class="text-danger small">{{ form.pickup_location.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    {{ form.delivery_available }}
+                                    <label for="{{ form.delivery_available.id_for_label }}" class="form-check-label">
+                                        Delivery Available
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.delivery_radius_km.id_for_label }}" class="form-label">Delivery Radius (km)</label>
+                                {{ form.delivery_radius_km }}
+                                {% if form.delivery_radius_km.errors %}
+                                    <div class="text-danger small">{{ form.delivery_radius_km.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.delivery_cost_per_km.id_for_label }}" class="form-label">Cost per km (₦)</label>
+                                {{ form.delivery_cost_per_km }}
+                                {% if form.delivery_cost_per_km.errors %}
+                                    <div class="text-danger small">{{ form.delivery_cost_per_km.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Product Status -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">settings</i>Listing Settings
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.listing_expiry.id_for_label }}" class="form-label">Listing Expiry *</label>
+                            {{ form.listing_expiry }}
+                            {% if form.listing_expiry.errors %}
+                                <div class="text-danger small">{{ form.listing_expiry.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Image -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="material-icons me-2">photo_camera</i>Product Image
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if object.primary_image %}
+                            <div class="current-image mb-3">
+                                <img src="{{ object.primary_image.url }}" alt="{{ object.title }}" class="img-fluid rounded">
+                                <small class="text-muted d-block mt-2">Current image</small>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.primary_image.id_for_label }}" class="form-label">Upload New Image</label>
+                            {{ form.primary_image }}
+                            {% if form.primary_image.errors %}
+                                <div class="text-danger small">{{ form.primary_image.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Upload a high-quality image of your product (JPG, PNG)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons me-1">save</i>Update Product
+                            </button>
+                            <a href="{% url 'marketplace:detail' object.pk %}" class="btn btn-outline-primary">
+                                <i class="material-icons me-1">visibility</i>Preview Product
+                            </a>
+                            <a href="{% url 'marketplace:my_products' %}" class="btn btn-outline-secondary">
+                                <i class="material-icons me-1">cancel</i>Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .page-header i {
+        color: var(--primary-color);
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 12px 12px 0 0 !important;
+    }
+
+    .card-header h5 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .card-header i {
+        color: var(--primary-color);
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .current-image img {
+        max-height: 200px;
+        object-fit: cover;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn i {
+        font-size: 1rem;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .page-header .row {
+            text-align: center;
+        }
+
+        .page-header .col-md-4 {
+            margin-top: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Auto-populate variety dropdown based on selected crop
+    document.getElementById('id_crop').addEventListener('change', function() {
+        const cropId = this.value;
+        const varietySelect = document.getElementById('id_variety');
+        
+        // Clear current options
+        varietySelect.innerHTML = '<option value="">Select Variety</option>';
+        
+        if (cropId) {
+            // Here you would fetch varieties for the selected crop via AJAX
+            // For now, we'll leave it as manual selection
+        }
+    });
+
+    // Toggle delivery fields based on delivery available checkbox
+    document.getElementById('id_delivery_available').addEventListener('change', function() {
+        const deliveryFields = ['id_delivery_radius_km', 'id_delivery_cost_per_km'];
+        const isChecked = this.checked;
+        
+        deliveryFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.disabled = !isChecked;
+                if (!isChecked) {
+                    field.value = '';
+                }
+            }
+        });
+    });
+
+    // Initialize delivery fields state
+    document.addEventListener('DOMContentLoaded', function() {
+        const deliveryCheckbox = document.getElementById('id_delivery_available');
+        if (deliveryCheckbox) {
+            deliveryCheckbox.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+{% endblock %}

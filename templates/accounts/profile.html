@@ -1,0 +1,180 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Profile - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">My Profile</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'dashboard:settings' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons">edit</i>
+            Edit Profile
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle mb-3" width="150" height="150">
+                {% else %}
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                        <i class="material-icons text-white" style="font-size: 4rem;">person</i>
+                    </div>
+                {% endif %}
+                
+                <h4 class="mb-1">{{ user.full_name }}</h4>
+                <p class="text-muted mb-2">{{ user.get_role_display }}</p>
+                <span class="badge bg-{% if user.is_verified %}success{% else %}warning{% endif %} mb-3">
+                    {% if user.is_verified %}Verified{% else %}Pending Verification{% endif %}
+                </span>
+                
+                <div class="d-grid">
+                    <a href="{% url 'accounts:password_change' %}" class="btn btn-outline-primary">
+                        <i class="material-icons">lock</i>
+                        Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Email:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.email }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Username:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.username }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Phone:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.phone_number|default:"Not provided" }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Location:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {% if user.city and user.state %}
+                            {{ user.city }}, {{ user.state }}, {{ user.country }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Member Since:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.date_joined|date:"F d, Y" }}
+                    </div>
+                </div>
+                
+                {% if profile %}
+                <hr>
+                <h6>Additional Information</h6>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Experience:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ profile.experience_years|default:"Not specified" }} {% if profile.experience_years %}years{% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Gender:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ profile.get_gender_display|default:"Not specified" }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Language:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ profile.preferred_language|default:"English" }}
+                    </div>
+                </div>
+                
+                {% if profile.bio %}
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Bio:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ profile.bio }}
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Farm Activity Summary -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Farm Activity Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <h3 class="text-primary">0</h3>
+                            <small class="text-muted">Farms Managed</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <h3 class="text-success">0</h3>
+                            <small class="text-muted">Active Blocks</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <h3 class="text-warning">0</h3>
+                            <small class="text-muted">Total Hectares</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <h3 class="text-info">0</h3>
+                            <small class="text-muted">Completed Seasons</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

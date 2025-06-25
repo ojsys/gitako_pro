@@ -1,0 +1,301 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}
+{% if object %}Edit Income Item{% else %}Add Income Item{% endif %} - Gitako
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        {% if object %}Edit Income Item{% else %}Add Income Item{% endif %}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% if object %}{% url 'budget:detail' object.budget.pk %}{% else %}{% url 'budget:list' %}{% endif %}" 
+           class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Income Item Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Budget Selection -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="form-floating">
+                                {{ form.budget }}
+                                <label for="id_budget">Budget</label>
+                                {% if form.budget.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.budget.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.name }}
+                                <label for="id_name">Income Source Name</label>
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.buyer }}
+                                <label for="id_buyer">Buyer/Customer</label>
+                                {% if form.buyer.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.buyer.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.description }}
+                                <label for="id_description">Description</label>
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Amount and Yield Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.planned_amount }}
+                                </div>
+                                <label for="id_planned_amount">Planned Amount</label>
+                                {% if form.planned_amount.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.planned_amount.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.actual_amount }}
+                                </div>
+                                <label for="id_actual_amount">Actual Amount (Received)</label>
+                                {% if form.actual_amount.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.actual_amount.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Yield Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.planned_yield }}
+                                <label for="id_planned_yield">Planned Yield (tons/kg)</label>
+                                {% if form.planned_yield.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.planned_yield.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.actual_yield }}
+                                <label for="id_actual_yield">Actual Yield (tons/kg)</label>
+                                {% if form.actual_yield.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.actual_yield.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.planned_price }}
+                                </div>
+                                <label for="id_planned_price">Planned Price per Unit</label>
+                                {% if form.planned_price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.planned_price.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.actual_price }}
+                                </div>
+                                <label for="id_actual_price">Actual Price per Unit</label>
+                                {% if form.actual_price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.actual_price.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sale Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.sale_date }}
+                                <label for="id_sale_date">Sale Date</label>
+                                {% if form.sale_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.sale_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% if object %}{% url 'budget:detail' object.budget.pk %}{% else %}{% url 'budget:list' %}{% endif %}" 
+                           class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="material-icons me-1">save</i>
+                            {% if object %}Update{% else %}Add{% endif %} Income Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Income Guidelines -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">info</i>
+                    Income Guidelines
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>💰 Common Income Sources</h6>
+                    <ul class="small text-muted">
+                        <li>Primary crop sales</li>
+                        <li>By-product sales</li>
+                        <li>Government subsidies</li>
+                        <li>Insurance payouts</li>
+                        <li>Contract farming payments</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>📊 Best Practices</h6>
+                    <ul class="small text-muted">
+                        <li>Record both planned and actual amounts</li>
+                        <li>Include all revenue streams</li>
+                        <li>Track yield vs. price changes</li>
+                        <li>Document buyer information</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-calculate amounts based on yield and price
+    const plannedYield = document.getElementById('id_planned_yield');
+    const plannedPrice = document.getElementById('id_planned_price');
+    const plannedAmount = document.getElementById('id_planned_amount');
+    
+    const actualYield = document.getElementById('id_actual_yield');
+    const actualPrice = document.getElementById('id_actual_price');
+    const actualAmount = document.getElementById('id_actual_amount');
+    
+    function updatePlannedAmount() {
+        const yield_val = parseFloat(plannedYield.value) || 0;
+        const price_val = parseFloat(plannedPrice.value) || 0;
+        if (yield_val > 0 && price_val > 0) {
+            plannedAmount.value = (yield_val * price_val).toFixed(2);
+        }
+    }
+    
+    function updateActualAmount() {
+        const yield_val = parseFloat(actualYield.value) || 0;
+        const price_val = parseFloat(actualPrice.value) || 0;
+        if (yield_val > 0 && price_val > 0) {
+            actualAmount.value = (yield_val * price_val).toFixed(2);
+        }
+    }
+    
+    if (plannedYield && plannedPrice) {
+        plannedYield.addEventListener('input', updatePlannedAmount);
+        plannedPrice.addEventListener('input', updatePlannedAmount);
+    }
+    
+    if (actualYield && actualPrice) {
+        actualYield.addEventListener('input', updateActualAmount);
+        actualPrice.addEventListener('input', updateActualAmount);
+    }
+});
+</script>
+{% endblock %}

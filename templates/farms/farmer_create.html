@@ -1,0 +1,287 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Add Farmer - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Add New Farmer</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'farms:farmers' %}" class="btn btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Farmers
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">person_add</i>Farmer Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">Basic Information</h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farmer_name.id_for_label }}" class="form-label">
+                                    Farmer Name <span class="text-danger">*</span>
+                                </label>
+                                {{ form.farmer_name }}
+                                {% if form.farmer_name.errors %}
+                                    <div class="text-danger small">{{ form.farmer_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farmer_email.id_for_label }}" class="form-label">
+                                    Email Address
+                                </label>
+                                {{ form.farmer_email }}
+                                {% if form.farmer_email.errors %}
+                                    <div class="text-danger small">{{ form.farmer_email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farmer_phone.id_for_label }}" class="form-label">
+                                    Phone Number
+                                </label>
+                                {{ form.farmer_phone }}
+                                {% if form.farmer_phone.errors %}
+                                    <div class="text-danger small">{{ form.farmer_phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">
+                                    Location/Address
+                                </label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="text-danger small">{{ form.location.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Farm Assignment -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3 mt-4">Farm Assignment</h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.farm.id_for_label }}" class="form-label">
+                                    Farm <span class="text-danger">*</span>
+                                </label>
+                                {{ form.farm }}
+                                {% if form.farm.errors %}
+                                    <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.block.id_for_label }}" class="form-label">
+                                    Block (Optional)
+                                </label>
+                                {{ form.block }}
+                                {% if form.block.errors %}
+                                    <div class="text-danger small">{{ form.block.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.allocated_hectares.id_for_label }}" class="form-label">
+                                    Allocated Hectares <span class="text-danger">*</span>
+                                </label>
+                                {{ form.allocated_hectares }}
+                                {% if form.allocated_hectares.errors %}
+                                    <div class="text-danger small">{{ form.allocated_hectares.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Agricultural Information -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3 mt-4">Agricultural Information</h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.season_year.id_for_label }}" class="form-label">
+                                    Season Year <span class="text-danger">*</span>
+                                </label>
+                                {{ form.season_year }}
+                                {% if form.season_year.errors %}
+                                    <div class="text-danger small">{{ form.season_year.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.expected_yield.id_for_label }}" class="form-label">
+                                    Expected Yield (tons)
+                                </label>
+                                {{ form.expected_yield }}
+                                {% if form.expected_yield.errors %}
+                                    <div class="text-danger small">{{ form.expected_yield.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farming_experience.id_for_label }}" class="form-label">
+                                    Farming Experience (years)
+                                </label>
+                                {{ form.farming_experience }}
+                                {% if form.farming_experience.errors %}
+                                    <div class="text-danger small">{{ form.farming_experience.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.irrigation_method.id_for_label }}" class="form-label">
+                                    Irrigation Method
+                                </label>
+                                {{ form.irrigation_method }}
+                                {% if form.irrigation_method.errors %}
+                                    <div class="text-danger small">{{ form.irrigation_method.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.soil_type.id_for_label }}" class="form-label">
+                                    Soil Type
+                                </label>
+                                {{ form.soil_type }}
+                                {% if form.soil_type.errors %}
+                                    <div class="text-danger small">{{ form.soil_type.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.registration_date.id_for_label }}" class="form-label">
+                                    Registration Date
+                                </label>
+                                {{ form.registration_date }}
+                                {% if form.registration_date.errors %}
+                                    <div class="text-danger small">{{ form.registration_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Crops Grown</label>
+                                <div class="row">
+                                    {% for choice in form.crops_grown %}
+                                    <div class="col-md-4 col-sm-6">
+                                        <div class="form-check">
+                                            {{ choice.tag }}
+                                            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                {{ choice.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.crops_grown.errors %}
+                                    <div class="text-danger small">{{ form.crops_grown.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Notes -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3 mt-4">Additional Information</h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                    Notes
+                                </label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                    <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'farms:farmers' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">save</i>
+                            Save Farmer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="material-icons me-2">help</i>Help & Tips</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h6 class="alert-heading">Required Fields</h6>
+                    <p class="mb-0">Only farmer name, farm, allocated hectares, and season year are required. All other fields are optional but helpful for better farmer management.</p>
+                </div>
+                
+                <div class="alert alert-success">
+                    <h6 class="alert-heading">Bulk Upload</h6>
+                    <p class="mb-2">Need to add many farmers at once?</p>
+                    <a href="{% url 'farms:farmer_bulk_upload' %}" class="btn btn-sm btn-outline-success">
+                        <i class="material-icons me-1">upload_file</i>
+                        Use Bulk Upload
+                    </a>
+                </div>
+                
+                <h6 class="mt-3">Field Guidelines:</h6>
+                <ul class="small text-muted">
+                    <li><strong>Allocated Hectares:</strong> Use decimal format (e.g., 2.5)</li>
+                    <li><strong>Season Year:</strong> Use 4-digit year (e.g., 2024)</li>
+                    <li><strong>Crops:</strong> Select all crops this farmer grows</li>
+                    <li><strong>Block:</strong> Optional but helps with traceability</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

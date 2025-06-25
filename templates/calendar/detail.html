@@ -1,0 +1,325 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ calendar.name }} - Calendar Detail - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ calendar.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'calendar:list' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="material-icons me-1">arrow_back</i>
+                Back to Calendar
+            </a>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'calendar:edit' calendar.pk %}" class="btn btn-sm btn-outline-primary">
+                <i class="material-icons me-1">edit</i>
+                Edit
+            </a>
+            <a href="{% url 'calendar:activity_create' %}?calendar={{ calendar.pk }}" class="btn btn-sm btn-primary">
+                <i class="material-icons me-1">add</i>
+                Add Activity
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Activities</h6>
+                        <h3 class="mb-0">{{ activities|length }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">event</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Completed</h6>
+                        <h3 class="mb-0">{% for activity in activities %}{% if activity.status == 'completed' %}{{ forloop.counter }}{% endif %}{% endfor %}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">check_circle</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">In Progress</h6>
+                        <h3 class="mb-0">{% for activity in activities %}{% if activity.status == 'in_progress' %}{{ forloop.counter }}{% endif %}{% endfor %}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">pending</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Season Progress</h6>
+                        <h3 class="mb-0">65%</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">trending_up</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Information -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Calendar Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Farm</label>
+                            <p class="mb-0">{{ calendar.farm.name }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Block</label>
+                            <p class="mb-0">{{ calendar.block|default:"All Blocks" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Crop</label>
+                            <p class="mb-0">{{ calendar.crop.name }} ({{ calendar.variety.name }})</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Season</label>
+                            <p class="mb-0">{{ calendar.get_season_type_display }} {{ calendar.season_year }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Start Date</label>
+                            <p class="mb-0">{{ calendar.start_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Expected End Date</label>
+                            <p class="mb-0">{{ calendar.expected_end_date|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% if calendar.description %}
+                <div class="mt-3">
+                    <label class="form-label text-muted">Description</label>
+                    <p class="mb-0">{{ calendar.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Season Timeline</h5>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <small class="text-muted">Days Elapsed</small>
+                        <div class="fw-bold">85</div>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Days Remaining</small>
+                        <div class="fw-bold">45</div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <small class="text-muted">Status</small>
+                    <div class="mt-1">
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activities Timeline -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Activities Timeline</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active">All</button>
+                    <button class="btn btn-outline-secondary">Pending</button>
+                    <button class="btn btn-outline-secondary">Completed</button>
+                    <button class="btn btn-outline-secondary">Overdue</button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if activities %}
+                <div class="timeline">
+                    {% for activity in activities %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker 
+                            {% if activity.status == 'completed' %}bg-success
+                            {% elif activity.status == 'in_progress' %}bg-warning
+                            {% elif activity.status == 'overdue' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ activity.name }}</h6>
+                                    <p class="mb-1 text-muted">{{ activity.description }}</p>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">
+                                                <i class="material-icons me-1" style="font-size: 1rem;">schedule</i>
+                                                {{ activity.scheduled_date|date:"M d, Y" }}
+                                                {% if activity.duration %}
+                                                • {{ activity.duration }} days
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            {% if activity.assigned_to %}
+                                            <small class="text-muted">
+                                                <i class="material-icons me-1" style="font-size: 1rem;">person</i>
+                                                {{ activity.assigned_to.get_full_name|default:activity.assigned_to.username }}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if activity.estimated_cost %}
+                                    <small class="text-muted">
+                                        <i class="material-icons me-1" style="font-size: 1rem;">attach_money</i>
+                                        ₦{{ activity.estimated_cost|floatformat:0 }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-3">
+                                    <span class="badge 
+                                        {% if activity.status == 'completed' %}bg-success
+                                        {% elif activity.status == 'in_progress' %}bg-warning
+                                        {% elif activity.status == 'overdue' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ activity.get_status_display }}
+                                    </span>
+                                    <div class="btn-group btn-group-sm mt-2">
+                                        <a href="{% url 'calendar:activity_detail' activity.pk %}" class="btn btn-outline-info">
+                                            <i class="material-icons me-1" style="font-size: 0.8rem;">visibility</i>
+                                            View
+                                        </a>
+                                        <a href="{% url 'calendar:activity_edit' activity.pk %}" class="btn btn-outline-primary">
+                                            <i class="material-icons me-1" style="font-size: 0.8rem;">edit</i>
+                                            Edit
+                                        </a>
+                                        {% if activity.status == 'pending' %}
+                                        <a href="{% url 'calendar:activity_start' activity.pk %}?next={% url 'calendar:detail' calendar.pk %}" class="btn btn-outline-success">
+                                            <i class="material-icons me-1" style="font-size: 0.8rem;">play_arrow</i>
+                                            Start
+                                        </a>
+                                        {% elif activity.status == 'in_progress' %}
+                                        <a href="{% url 'calendar:activity_complete' activity.pk %}?next={% url 'calendar:detail' calendar.pk %}" class="btn btn-outline-success">
+                                            <i class="material-icons me-1" style="font-size: 0.8rem;">check</i>
+                                            Complete
+                                        </a>
+                                        {% endif %}
+                                        {% if activity.status != 'completed' %}
+                                        <a href="{% url 'calendar:activity_delete' activity.pk %}" class="btn btn-outline-danger">
+                                            <i class="material-icons me-1" style="font-size: 0.8rem;">delete</i>
+                                            Delete
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted" style="font-size: 4rem;">event_note</i>
+                    <h5 class="text-muted mt-3">No activities scheduled yet</h5>
+                    <p class="text-muted">Add activities to start tracking your crop calendar.</p>
+                    <a href="{% url 'calendar:activity_create' %}?calendar={{ calendar.pk }}" class="btn btn-primary mt-3">
+                        <i class="material-icons me-1">add</i>
+                        Add First Activity
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #dee2e6;
+}
+</style>
+{% endblock %}

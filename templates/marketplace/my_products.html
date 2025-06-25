@@ -1,0 +1,675 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}My Products - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">
+                    <i class="material-icons me-2">inventory_2</i>My Products
+                </h1>
+                <p class="text-muted mb-0">Manage your marketplace listings</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'marketplace:create_product' %}" class="btn btn-primary">
+                    <i class="material-icons me-1">add</i>List New Product
+                </a>
+                <a href="{% url 'marketplace:list' %}" class="btn btn-outline-secondary">
+                    <i class="material-icons me-1">store</i>Browse Marketplace
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if products %}
+        <!-- Products Grid -->
+        <div class="products-container">
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="product-card">
+                            <!-- Product Image -->
+                            <div class="product-image">
+                                {% if product.primary_image %}
+                                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i class="material-icons">photo</i>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Status Badge -->
+                                <div class="status-badge status-{{ product.status }}">
+                                    {{ product.get_status_display }}
+                                </div>
+                                
+                                <!-- Featured Badge -->
+                                {% if product.featured %}
+                                    <div class="featured-badge">
+                                        <i class="material-icons">star</i>
+                                        Featured
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="product-info">
+                                <h5 class="product-title">
+                                    <a href="{% url 'marketplace:detail' product.pk %}">{{ product.title }}</a>
+                                </h5>
+                                
+                                <div class="product-meta">
+                                    <span class="category">
+                                        <i class="material-icons">category</i>
+                                        {{ product.category.name }}
+                                    </span>
+                                    <span class="crop">
+                                        <i class="material-icons">eco</i>
+                                        {{ product.crop.name }}
+                                    </span>
+                                </div>
+
+                                <div class="price-info">
+                                    <div class="price">₦{{ product.price_per_unit|floatformat:2 }}</div>
+                                    <div class="unit">per {{ product.unit }}</div>
+                                </div>
+
+                                <div class="quantity-info">
+                                    <span class="available">
+                                        <i class="material-icons">inventory</i>
+                                        {{ product.quantity_available }} {{ product.unit }} available
+                                    </span>
+                                </div>
+
+                                <!-- Stats -->
+                                <div class="product-stats">
+                                    <div class="stat">
+                                        <i class="material-icons">visibility</i>
+                                        <span>{{ product.view_count }} views</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="material-icons">message</i>
+                                        <span>{{ product.inquiry_count }} inquiries</span>
+                                    </div>
+                                </div>
+
+                                <!-- Expiry Warning -->
+                                {% if product.days_until_expiry <= 7 and product.days_until_expiry > 0 %}
+                                    <div class="expiry-warning">
+                                        <i class="material-icons">schedule</i>
+                                        Expires in {{ product.days_until_expiry }} day{{ product.days_until_expiry|pluralize }}
+                                    </div>
+                                {% elif product.is_expired %}
+                                    <div class="expired-notice">
+                                        <i class="material-icons">schedule</i>
+                                        Listing expired
+                                    </div>
+                                {% endif %}
+
+                                <!-- Action Buttons -->
+                                <div class="product-actions">
+                                    <a href="{% url 'marketplace:detail' product.pk %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="material-icons">visibility</i>
+                                        View
+                                    </a>
+                                    <a href="{% url 'marketplace:edit_product' product.pk %}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="material-icons">edit</i>
+                                        Edit
+                                    </a>
+                                    <div class="btn-group">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="material-icons">more_vert</i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if product.status == 'draft' %}
+                                                <li><a class="dropdown-item" href="#" onclick="publishProduct({{ product.pk }})">
+                                                    <i class="material-icons me-2">publish</i>Publish
+                                                </a></li>
+                                            {% elif product.status == 'active' %}
+                                                <li><a class="dropdown-item" href="#" onclick="pauseProduct({{ product.pk }})">
+                                                    <i class="material-icons me-2">pause</i>Pause
+                                                </a></li>
+                                            {% endif %}
+                                            <li>
+                                                <form method="post" action="{% url 'marketplace:duplicate_product' product.pk %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="dropdown-item" onclick="return confirm('Create a copy of this product?')">
+                                                        <i class="material-icons me-2">content_copy</i>Duplicate
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="{% url 'marketplace:delete_product' product.pk %}">
+                                                <i class="material-icons me-2">delete</i>Delete
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="pagination-wrapper">
+                    <nav aria-label="Products pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                        <i class="material-icons">chevron_left</i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                        <i class="material-icons">chevron_right</i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="material-icons">inventory_2</i>
+            </div>
+            <h4>No products listed yet</h4>
+            <p class="text-muted">Start selling by listing your first product on the marketplace.</p>
+            <a href="{% url 'marketplace:create_product' %}" class="btn btn-primary btn-lg">
+                <i class="material-icons me-2">add</i>List Your First Product
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .page-header i {
+        color: var(--primary-color);
+    }
+
+    .products-container {
+        margin-bottom: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    .product-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+
+    .no-image {
+        width: 100%;
+        height: 100%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .no-image i {
+        font-size: 3rem;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-draft {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-sold {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-expired {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: linear-gradient(45deg, #ff9800, #ff5722);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .featured-badge i {
+        font-size: 0.9rem;
+        margin-right: 0.25rem;
+    }
+
+    .product-info {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .product-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .product-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .category, .crop {
+        display: flex;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .category i, .crop i {
+        font-size: 1rem;
+        margin-right: 0.25rem;
+        color: var(--primary-color);
+    }
+
+    .price-info {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .unit {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .quantity-info {
+        margin-bottom: 1rem;
+    }
+
+    .available {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+
+    .available i {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .product-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .stat i {
+        font-size: 1rem;
+        margin-right: 0.25rem;
+        color: var(--primary-color);
+    }
+
+    .expiry-warning {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        background: #fff3cd;
+        color: #856404;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .expiry-warning i {
+        margin-right: 0.5rem;
+    }
+
+    .expired-notice {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        background: #f8d7da;
+        color: #721c24;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .expired-notice i {
+        margin-right: 0.5rem;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    .btn-sm i {
+        font-size: 1rem;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-item i {
+        font-size: 1.1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .empty-icon {
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: #dee2e6;
+    }
+
+    .empty-state h4 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        margin-top: 3rem;
+    }
+
+    .pagination .page-link {
+        border: none;
+        color: #6c757d;
+        padding: 0.75rem 1rem;
+        margin: 0 0.125rem;
+        border-radius: 8px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f8f9fa;
+        color: var(--primary-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .page-header .row {
+            text-align: center;
+        }
+
+        .page-header .col-md-4 {
+            margin-top: 1rem;
+        }
+
+        .product-actions {
+            flex-wrap: wrap;
+        }
+
+        .product-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<script>
+    function publishProduct(productId) {
+        if (confirm('Are you sure you want to publish this product?')) {
+            updateProductStatus(productId, 'active', 'Publishing product...');
+        }
+    }
+
+    function pauseProduct(productId) {
+        if (confirm('Are you sure you want to pause this product listing?')) {
+            updateProductStatus(productId, 'suspended', 'Pausing product...');
+        }
+    }
+
+    function updateProductStatus(productId, status, loadingMessage) {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="material-icons">hourglass_empty</i>' + loadingMessage;
+        button.disabled = true;
+
+        // Make AJAX request
+        fetch(`/marketplace/product/${productId}/update-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value || getCookie('csrftoken')
+            },
+            body: `status=${status}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showAlert('success', data.message);
+                // Reload page to reflect changes
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert('error', 'Error: ' + data.error);
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'An error occurred while updating the product.');
+            // Restore button
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function showAlert(type, message) {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        
+        alertDiv.innerHTML = `
+            <i class="material-icons me-2">${type === 'success' ? 'check_circle' : 'error'}</i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 5000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Add CSRF token to dropdown forms
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add CSRF token as hidden input to forms that don't have it
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            if (!form.querySelector('[name=csrfmiddlewaretoken]')) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = getCookie('csrftoken');
+                form.appendChild(csrfInput);
+            }
+        });
+    });
+</script>
+{% endblock %}

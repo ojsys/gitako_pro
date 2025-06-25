@@ -1,0 +1,299 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Budget Management - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Budget Management</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'budget:create' %}" class="btn btn-primary">
+            <i class="material-icons">add</i>
+            New Budget
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Budgets</h6>
+                        <h3 class="mb-0">{{ total_budgets }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">account_balance</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Active Budgets</h6>
+                        <h3 class="mb-0">{{ active_budgets }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">trending_up</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Planned Income</h6>
+                        <h3 class="mb-0">₦{{ summary.total_planned_income|floatformat:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">attach_money</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Planned Profit</h6>
+                        <h3 class="mb-0">₦{{ summary.planned_profit|floatformat:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">savings</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profit Analysis Chart -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Budget Performance</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="profitChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Planned Expenses:</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        ₦{{ summary.total_planned_expenses|floatformat:0 }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Actual Expenses:</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        ₦{{ summary.total_actual_expenses|floatformat:0 }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Actual Income:</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        ₦{{ summary.total_actual_income|floatformat:0 }}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <strong>Actual Profit:</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span class="{% if summary.actual_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            ₦{{ summary.actual_profit|floatformat:0 }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Budget List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All Budgets</h5>
+    </div>
+    <div class="card-body">
+        {% if budgets %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Farm</th>
+                        <th>Type</th>
+                        <th>Period</th>
+                        <th>Status</th>
+                        <th>Planned Income</th>
+                        <th>Planned Expenses</th>
+                        <th>Expected Profit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for budget in budgets %}
+                    <tr>
+                        <td>
+                            <strong>{{ budget.name }}</strong>
+                            {% if budget.description %}
+                            <br><small class="text-muted">{{ budget.description|truncatechars:50 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ budget.farm.name }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ budget.get_budget_type_display }}</span>
+                        </td>
+                        <td>
+                            {{ budget.start_date|date:"M d" }} - {{ budget.end_date|date:"M d, Y" }}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if budget.status == 'active' %}success{% elif budget.status == 'completed' %}info{% elif budget.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                                {{ budget.get_status_display }}
+                            </span>
+                        </td>
+                        <td>₦{{ budget.total_planned_income|floatformat:0 }}</td>
+                        <td>₦{{ budget.total_planned_expenses|floatformat:0 }}</td>
+                        <td>
+                            <span class="{% if budget.planned_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                ₦{{ budget.planned_profit|floatformat:0 }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'budget:detail' budget.pk %}" class="btn btn-outline-primary">
+                                    <i class="material-icons">visibility</i>
+                                </a>
+                                <a href="{% url 'budget:edit' budget.pk %}" class="btn btn-outline-secondary">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="material-icons text-muted" style="font-size: 4rem;">account_balance</i>
+            <h4 class="text-muted">No Budgets Yet</h4>
+            <p class="text-muted">Create your first budget to start tracking your farm finances.</p>
+            <a href="{% url 'budget:create' %}" class="btn btn-primary">
+                <i class="material-icons">add</i>
+                Create First Budget
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Budget pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item active">
+            <span class="page-link">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+        
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Profit Chart
+const ctx = document.getElementById('profitChart').getContext('2d');
+const profitChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Planned', 'Actual'],
+        datasets: [{
+            label: 'Income',
+            data: [{{ summary.total_planned_income }}, {{ summary.total_actual_income }}],
+            backgroundColor: '#4caf50',
+            borderColor: '#2e7d32',
+            borderWidth: 1
+        }, {
+            label: 'Expenses',
+            data: [{{ summary.total_planned_expenses }}, {{ summary.total_actual_expenses }}],
+            backgroundColor: '#f44336',
+            borderColor: '#c62828',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '₦' + value.toLocaleString();
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ₦' + context.parsed.y.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

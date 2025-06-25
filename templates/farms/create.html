@@ -1,0 +1,192 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Add New Farm - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Add New Farm</h1>
+        <div>
+            <a href="{% url 'farms:list' %}" class="btn btn-outline-secondary">
+                <i class="material-icons me-1">arrow_back</i>Back to Farms
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="material-icons me-2">agriculture</i>Farm Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">Farm Name *</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.total_area.id_for_label }}" class="form-label">Total Area (hectares) *</label>
+                                    {{ form.total_area }}
+                                    {% if form.total_area.errors %}
+                                        <div class="text-danger small">{{ form.total_area.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">Location/Address *</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="text-danger small">{{ form.location.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.latitude.id_for_label }}" class="form-label">Latitude</label>
+                                    {{ form.latitude }}
+                                    {% if form.latitude.errors %}
+                                        <div class="text-danger small">{{ form.latitude.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.longitude.id_for_label }}" class="form-label">Longitude</label>
+                                    {{ form.longitude }}
+                                    {% if form.longitude.errors %}
+                                        <div class="text-danger small">{{ form.longitude.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.soil_type.id_for_label }}" class="form-label">Soil Type</label>
+                                    {{ form.soil_type }}
+                                    {% if form.soil_type.errors %}
+                                        <div class="text-danger small">{{ form.soil_type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.climate_zone.id_for_label }}" class="form-label">Climate Zone</label>
+                                    {{ form.climate_zone }}
+                                    {% if form.climate_zone.errors %}
+                                        <div class="text-danger small">{{ form.climate_zone.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.water_source.id_for_label }}" class="form-label">Water Source</label>
+                                    {{ form.water_source }}
+                                    {% if form.water_source.errors %}
+                                        <div class="text-danger small">{{ form.water_source.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.farm_image.id_for_label }}" class="form-label">Farm Image</label>
+                            {{ form.farm_image }}
+                            {% if form.farm_image.errors %}
+                                <div class="text-danger small">{{ form.farm_image.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text">Upload an image of your farm (optional)</div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'farms:list' %}" class="btn btn-outline-secondary">
+                                <i class="material-icons me-1">cancel</i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons me-1">save</i>Create Farm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="material-icons me-2">help</i>Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">info</i>Farm Details</h6>
+                        <p class="small text-muted">Provide accurate farm area in hectares. This will be used for planning and yield calculations.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">location_on</i>Location</h6>
+                        <p class="small text-muted">Add GPS coordinates if available. This helps with weather data and mapping features.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">terrain</i>Environment</h6>
+                        <p class="small text-muted">Soil type and climate information help with crop recommendations and planning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 12px 12px 0 0 !important;
+    }
+</style>
+{% endblock %}

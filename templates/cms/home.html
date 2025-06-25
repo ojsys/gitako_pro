@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+
+{% block title %}Gitako - Smart Farm Management for African Farmers{% endblock %}
+
+{% block meta_description %}Gitako is a digital farm management system designed for African farmers. Track crops, manage budgets, plan activities, and increase profits with our smart farming platform.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section section-hero">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white">
+                <div class="mb-4">
+                    <div class="floating-icon d-inline-block mb-3">
+                        <i class="material-icons text-white" style="font-size: 4rem;">agriculture</i>
+                    </div>
+                </div>
+                <h1 class="display-3 fw-bold mb-4" style="line-height: 1.1;">
+                    Smart Farm Management for 
+                    <span class="text-warning">African Farmers</span>
+                </h1>
+                <p class="lead mb-5 opacity-90" style="font-size: 1.3rem;">
+                    Transform your farming with Gitako's comprehensive digital platform. 
+                    Track crops, manage budgets, plan activities, and maximize profits with AI-powered insights.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-gradient btn-lg px-4 py-3">
+                        <i class="material-icons me-2">rocket_launch</i>
+                        Start Farming Smart
+                    </a>
+                    <a href="{% url 'cms:features' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="material-icons me-2">play_circle</i>
+                        Explore Features
+                    </a>
+                </div>
+                <div class="d-flex align-items-center text-white-50">
+                    <small class="me-3">
+                        <i class="material-icons me-1" style="font-size: 1rem;">verified</i>
+                        Trusted by 1000+ farmers
+                    </small>
+                    <small>
+                        <i class="material-icons me-1" style="font-size: 1rem;">trending_up</i>
+                        25% average yield increase
+                    </small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center position-relative">
+                    <div class="d-inline-block position-relative">
+                        <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="African farmer using technology" 
+                             class="img-fluid rounded-4 shadow-lg"
+                             style="max-width: 500px;">
+                        <!-- Floating stats cards -->
+                        <div class="position-absolute top-0 start-0 translate-middle">
+                            <div class="bg-white rounded-3 p-3 shadow-lg" style="backdrop-filter: blur(10px);">
+                                <div class="d-flex align-items-center">
+                                    <i class="material-icons text-success me-2">trending_up</i>
+                                    <div>
+                                        <div class="fw-bold text-success">+30%</div>
+                                        <small class="text-muted">Yield Increase</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position-absolute bottom-0 end-0 translate-middle">
+                            <div class="bg-white rounded-3 p-3 shadow-lg" style="backdrop-filter: blur(10px);">
+                                <div class="d-flex align-items-center">
+                                    <i class="material-icons text-primary me-2">savings</i>
+                                    <div>
+                                        <div class="fw-bold text-primary">₦2.5M</div>
+                                        <small class="text-muted">Avg. Revenue</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">star</i>
+                    Core Features
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">
+                Why Choose <span class="gradient-text">Gitako</span>?
+            </h2>
+            <p class="lead text-muted col-lg-6 mx-auto">
+                Built specifically for African farmers with cutting-edge technology and deep agricultural expertise
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="material-icons text-primary" style="font-size: 2.5rem;">event_note</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Smart Crop Calendar</h5>
+                        <p class="text-muted mb-4">Plan and track all farming activities from planting to harvest. AI-powered scheduling ensures you never miss critical tasks.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="material-icons text-success" style="font-size: 2.5rem;">account_balance_wallet</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Budget Management</h5>
+                        <p class="text-muted mb-4">Track expenses, analyze profits, and make data-driven financial decisions. Real-time ROI analysis and profit forecasting.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="material-icons text-warning" style="font-size: 2.5rem;">psychology</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">AI Recommendations</h5>
+                        <p class="text-muted mb-4">Get AI-powered insights for optimal inputs, timing, and best practices. Machine learning from thousands of successful farms.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3">
+                                <i class="material-icons text-info" style="font-size: 2.5rem;">view_module</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Block Management</h5>
+                        <p class="text-muted mb-4">Organize your farm into manageable blocks, assign staff, and track performance per section with detailed analytics.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-10 p-3">
+                                <i class="material-icons text-secondary" style="font-size: 2.5rem;">inventory_2</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Smart Inventory</h5>
+                        <p class="text-muted mb-4">Monitor supplies, equipment, and stock levels. Automated alerts and reorder points prevent stockouts.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 p-3">
+                                <i class="material-icons text-danger" style="font-size: 2.5rem;">storefront</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Secure Marketplace</h5>
+                        <p class="text-muted mb-4">Connect directly with buyers, showcase your produce, and sell with confidence using our secure escrow payment system.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-semibold">
+                            Learn more <i class="material-icons" style="font-size: 1rem;">arrow_forward</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h3 class="fw-bold mb-3">Trusted by Farmers Across Africa</h3>
+            <p class="text-muted">Real impact, measurable results</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">1,000+</div>
+                    <h6 class="fw-semibold text-dark mb-2">Active Farmers</h6>
+                    <p class="text-muted small mb-0">Across 15 Nigerian states</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">5,000+</div>
+                    <h6 class="fw-semibold text-dark mb-2">Hectares Managed</h6>
+                    <p class="text-muted small mb-0">Digitally optimized farmland</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">25%</div>
+                    <h6 class="fw-semibold text-dark mb-2">Yield Increase</h6>
+                    <p class="text-muted small mb-0">Average improvement per farm</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">₦2.5B</div>
+                    <h6 class="fw-semibold text-dark mb-2">Revenue Generated</h6>
+                    <p class="text-muted small mb-0">Total farmer earnings tracked</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">feedback</i>
+                    Success Stories
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">What Farmers Say</h2>
+            <p class="lead text-muted col-lg-6 mx-auto">
+                Real stories from farmers transforming their operations with Gitako
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="testimonial-card shadow-lg h-100">
+                    <div class="card-body p-5">
+                        <div class="testimonial-content">
+                            <div class="mb-4">
+                                <div class="text-warning d-flex">
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                </div>
+                            </div>
+                            <p class="mb-4 fst-italic">"Gitako's crop calendar transformed my farming. I increased my maize yield by 30% in just one season. The AI recommendations are spot-on!"</p>
+                        </div>
+                        <div class="testimonial-author d-flex align-items-center">
+                            <div class="me-3">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
+                                     alt="Adamu Ibrahim" class="rounded-circle border border-3 border-primary" width="60" height="60">
+                            </div>
+                            <div>
+                                <div class="fw-bold">Adamu Ibrahim</div>
+                                <small class="text-muted">Maize Farmer, Kaduna State</small>
+                                <div class="small text-success mt-1">
+                                    <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
+                                    Verified Customer
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card shadow-lg h-100">
+                    <div class="card-body p-5">
+                        <div class="testimonial-content">
+                            <div class="mb-4">
+                                <div class="text-warning d-flex">
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                </div>
+                            </div>
+                            <p class="mb-4 fst-italic">"The budget management feature is a game-changer. I now know exactly where every naira goes and can plan confidently for the next season."</p>
+                        </div>
+                        <div class="testimonial-author d-flex align-items-center">
+                            <div class="me-3">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
+                                     alt="Funmi Adebayo" class="rounded-circle border border-3 border-primary" width="60" height="60">
+                            </div>
+                            <div>
+                                <div class="fw-bold">Funmi Adebayo</div>
+                                <small class="text-muted">Cassava Farmer, Ogun State</small>
+                                <div class="small text-success mt-1">
+                                    <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
+                                    Verified Customer
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card shadow-lg h-100">
+                    <div class="card-body p-5">
+                        <div class="testimonial-content">
+                            <div class="mb-4">
+                                <div class="text-warning d-flex">
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                    <i class="material-icons">star</i>
+                                </div>
+                            </div>
+                            <p class="mb-4 fst-italic">"The marketplace connected me directly with premium buyers. I'm selling at 40% higher prices without any middlemen taking cuts!"</p>
+                        </div>
+                        <div class="testimonial-author d-flex align-items-center">
+                            <div class="me-3">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
+                                     alt="Chukwu Emeka" class="rounded-circle border border-3 border-primary" width="60" height="60">
+                            </div>
+                            <div>
+                                <div class="fw-bold">Chukwu Emeka</div>
+                                <small class="text-muted">Rice Farmer, Enugu State</small>
+                                <div class="small text-success mt-1">
+                                    <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
+                                    Verified Customer
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section section-cta text-white">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="mb-4">
+                    <div class="floating-icon d-inline-block mb-3">
+                        <i class="material-icons text-warning" style="font-size: 3.5rem;">agriculture</i>
+                    </div>
+                </div>
+                <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Farm?</h2>
+                <p class="lead mb-5 opacity-90">
+                    Join over 1,000 farmers already using Gitako to manage smarter, farm better, and earn more. 
+                    Start your digital farming journey today.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-warning btn-lg px-5 py-3 fw-semibold">
+                        <i class="material-icons me-2">rocket_launch</i>
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'cms:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="material-icons me-2">support_agent</i>
+                        Talk to Expert
+                    </a>
+                </div>
+                <div class="row text-center mt-5">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center justify-content-center text-white-50">
+                            <i class="material-icons me-2">check_circle</i>
+                            <small>Free 30-day trial</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center justify-content-center text-white-50">
+                            <i class="material-icons me-2">support</i>
+                            <small>24/7 farmer support</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center justify-content-center text-white-50">
+                            <i class="material-icons me-2">cancel</i>
+                            <small>Cancel anytime</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

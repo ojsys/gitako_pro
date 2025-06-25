@@ -1,0 +1,696 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'marketplace:list' %}">Marketplace</a></li>
+            <li class="breadcrumb-item">{{ product.category.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Product Details -->
+        <div class="col-lg-8">
+            <div class="product-detail-card">
+                <!-- Product Header -->
+                <div class="product-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="product-image">
+                                {% if product.primary_image %}
+                                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="img-fluid">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i class="material-icons">photo</i>
+                                        <p>No image available</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="product-info">
+                                <h1 class="product-title">{{ product.title }}</h1>
+                                
+                                <div class="product-meta">
+                                    <span class="category-badge">
+                                        <i class="material-icons">category</i>
+                                        {{ product.category.name }}
+                                    </span>
+                                    {% if product.organic_certified %}
+                                        <span class="organic-badge">
+                                            <i class="material-icons">verified</i>
+                                            Organic Certified
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="price-section">
+                                    <div class="price">₦{{ product.price_per_unit|floatformat:2 }}</div>
+                                    <div class="unit">per {{ product.unit }}</div>
+                                </div>
+
+                                <div class="availability">
+                                    <div class="quantity">
+                                        <i class="material-icons">inventory</i>
+                                        <strong>{{ product.quantity_available }} {{ product.unit }}</strong> available
+                                    </div>
+                                    {% if product.minimum_order > 1 %}
+                                        <div class="min-order">
+                                            <i class="material-icons">shopping_cart</i>
+                                            Minimum order: {{ product.minimum_order }} {{ product.unit }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="action-buttons">
+                                    {% if user != product.seller %}
+                                        <a href="{% url 'marketplace:create_inquiry' product.pk %}" class="btn btn-primary btn-lg">
+                                            <i class="material-icons me-2">message</i>Send Inquiry
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-lg" onclick="shareProduct()">
+                                            <i class="material-icons me-2">share</i>Share
+                                        </button>
+                                    {% else %}
+                                        <div class="owner-notice">
+                                            <i class="material-icons">info</i>
+                                            This is your product listing
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Details Tabs -->
+                <div class="product-tabs">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#description">
+                                <i class="material-icons me-2">description</i>Description
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#details">
+                                <i class="material-icons me-2">info</i>Details
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#location">
+                                <i class="material-icons me-2">location_on</i>Location
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="description">
+                            <div class="description-content">
+                                <p>{{ product.description|linebreaks }}</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="details">
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <label>Crop:</label>
+                                    <value>{{ product.crop.name }}</value>
+                                </div>
+                                {% if product.variety %}
+                                    <div class="detail-item">
+                                        <label>Variety:</label>
+                                        <value>{{ product.variety.name }}</value>
+                                    </div>
+                                {% endif %}
+                                <div class="detail-item">
+                                    <label>Quality Grade:</label>
+                                    <value>{{ product.get_quality_grade_display }}</value>
+                                </div>
+                                {% if product.harvest_date %}
+                                    <div class="detail-item">
+                                        <label>Harvest Date:</label>
+                                        <value>{{ product.harvest_date|date:"F d, Y" }}</value>
+                                    </div>
+                                {% endif %}
+                                {% if product.processing_method %}
+                                    <div class="detail-item">
+                                        <label>Processing Method:</label>
+                                        <value>{{ product.processing_method }}</value>
+                                    </div>
+                                {% endif %}
+                                {% if product.storage_conditions %}
+                                    <div class="detail-item">
+                                        <label>Storage Conditions:</label>
+                                        <value>{{ product.storage_conditions }}</value>
+                                    </div>
+                                {% endif %}
+                                {% if product.certification_details %}
+                                    <div class="detail-item">
+                                        <label>Certification Details:</label>
+                                        <value>{{ product.certification_details }}</value>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="location">
+                            <div class="location-info">
+                                <div class="pickup-location">
+                                    <h5><i class="material-icons me-2">location_on</i>Pickup Location</h5>
+                                    <p>{{ product.pickup_location }}</p>
+                                </div>
+                                
+                                {% if product.delivery_available %}
+                                    <div class="delivery-info">
+                                        <h5><i class="material-icons me-2">local_shipping</i>Delivery Available</h5>
+                                        {% if product.delivery_radius_km %}
+                                            <p>Delivery radius: {{ product.delivery_radius_km }} km</p>
+                                        {% endif %}
+                                        {% if product.delivery_cost_per_km %}
+                                            <p>Delivery cost: ₦{{ product.delivery_cost_per_km }}/km</p>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="no-delivery">
+                                        <i class="material-icons">info</i>
+                                        Pickup only - no delivery service available
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Seller Information -->
+            <div class="seller-card mb-4">
+                <div class="seller-header">
+                    <h5><i class="material-icons me-2">person</i>Seller Information</h5>
+                </div>
+                <div class="seller-info">
+                    <div class="seller-name">{{ product.seller.get_full_name }}</div>
+                    <div class="farm-info">
+                        <i class="material-icons me-1">agriculture</i>
+                        {{ product.farm.name }}
+                    </div>
+                    {% if seller_rating > 0 %}
+                        <div class="seller-rating">
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= seller_rating %}
+                                        <i class="material-icons">star</i>
+                                    {% else %}
+                                        <i class="material-icons">star_border</i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="rating-value">{{ seller_rating|floatformat:1 }}/5</span>
+                        </div>
+                    {% endif %}
+                    <div class="seller-stats">
+                        <div class="stat">
+                            <span class="number">{{ product.view_count }}</span>
+                            <span class="label">Views</span>
+                        </div>
+                        <div class="stat">
+                            <span class="number">{{ product.inquiry_count }}</span>
+                            <span class="label">Inquiries</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listing Information -->
+            <div class="listing-card mb-4">
+                <div class="listing-header">
+                    <h5><i class="material-icons me-2">schedule</i>Listing Information</h5>
+                </div>
+                <div class="listing-info">
+                    <div class="info-item">
+                        <label>Listed:</label>
+                        <value>{{ product.created_at|date:"M d, Y" }}</value>
+                    </div>
+                    <div class="info-item">
+                        <label>Expires:</label>
+                        <value>{{ product.listing_expiry|date:"M d, Y" }}</value>
+                    </div>
+                    <div class="info-item">
+                        <label>Status:</label>
+                        <value class="status-{{ product.status }}">{{ product.get_status_display }}</value>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Products from Seller -->
+            {% if seller_products %}
+                <div class="related-products-card">
+                    <div class="related-header">
+                        <h5><i class="material-icons me-2">store</i>More from this Seller</h5>
+                    </div>
+                    <div class="related-products">
+                        {% for related_product in seller_products %}
+                            <div class="related-item">
+                                <a href="{% url 'marketplace:detail' related_product.pk %}">
+                                    <div class="related-image">
+                                        {% if related_product.primary_image %}
+                                            <img src="{{ related_product.primary_image.url }}" alt="{{ related_product.title }}">
+                                        {% else %}
+                                            <div class="no-image-small">
+                                                <i class="material-icons">photo</i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="related-info">
+                                        <div class="related-title">{{ related_product.title|truncatechars:30 }}</div>
+                                        <div class="related-price">₦{{ related_product.price_per_unit|floatformat:2 }}/{{ related_product.unit }}</div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-detail-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .product-header {
+        padding: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .product-image {
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f8f9fa;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .no-image {
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .no-image i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .product-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-badge, .organic-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .category-badge {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .organic-badge {
+        background: #e8f5e8;
+        color: #2e7d32;
+    }
+
+    .price-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .unit {
+        font-size: 1.1rem;
+        color: #6c757d;
+    }
+
+    .availability {
+        margin-bottom: 2rem;
+    }
+
+    .quantity, .min-order {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+
+    .quantity i, .min-order i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .owner-notice {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: #fff3cd;
+        color: #856404;
+        border-radius: 8px;
+        border: 1px solid #ffeaa7;
+    }
+
+    .owner-notice i {
+        margin-right: 0.5rem;
+    }
+
+    /* Tabs */
+    .product-tabs {
+        border-top: 1px solid #e9ecef;
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+        padding: 0 2rem;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        font-weight: 500;
+        padding: 1rem 1.5rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        background: none;
+    }
+
+    .tab-content {
+        padding: 2rem;
+    }
+
+    .details-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-item label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .detail-item value {
+        color: #2c3e50;
+    }
+
+    /* Sidebar Cards */
+    .seller-card, .listing-card, .related-products-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .seller-header, .listing-header, .related-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .seller-header h5, .listing-header h5, .related-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+    }
+
+    .seller-info, .listing-info {
+        padding: 1.5rem;
+    }
+
+    .seller-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .farm-info {
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .seller-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stars {
+        color: #ffc107;
+    }
+
+    .rating-value {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .seller-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat .number {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .stat .label {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-item label {
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .status-active {
+        color: #28a745;
+        font-weight: 500;
+    }
+
+    /* Related Products */
+    .related-products {
+        padding: 1rem;
+    }
+
+    .related-item {
+        margin-bottom: 1rem;
+    }
+
+    .related-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .related-item a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+    }
+
+    .related-item a:hover {
+        background-color: #f8f9fa;
+    }
+
+    .related-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .related-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .no-image-small {
+        width: 100%;
+        height: 100%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .related-title {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .related-price {
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .location-info h5 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .no-delivery {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #6c757d;
+        margin-top: 1rem;
+    }
+
+    .no-delivery i {
+        margin-right: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .product-header {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+        }
+
+        .price {
+            font-size: 2rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons .btn {
+            width: 100%;
+        }
+
+        .tab-content {
+            padding: 1rem;
+        }
+
+        .detail-item {
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+        }
+    }
+</style>
+
+<script>
+    function shareProduct() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ product.title }}',
+                text: 'Check out this product on Gitako Marketplace',
+                url: window.location.href
+            });
+        } else {
+            // Fallback - copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Product link copied to clipboard!');
+            });
+        }
+    }
+</script>
+{% endblock %}

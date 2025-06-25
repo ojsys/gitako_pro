@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Gitako</title>
+    <meta name="theme-color" content="#4caf50">
+    
+    <!-- Bootstrap 5 CSS (cached) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .offline-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .offline-icon {
+            font-size: 4rem;
+            color: #ff9800;
+            margin-bottom: 1rem;
+        }
+        
+        .offline-actions {
+            margin-top: 2rem;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-item i {
+            color: #4caf50;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <i class="material-icons offline-icon">wifi_off</i>
+        <h2 class="mb-3">You're Offline</h2>
+        <p class="text-muted mb-4">
+            Don't worry! Gitako works offline too. You can continue working and your data will be synced when you're back online.
+        </p>
+        
+        <div class="feature-list">
+            <h5>What you can do offline:</h5>
+            <div class="feature-item">
+                <i class="material-icons">check_circle</i>
+                <span>View your farm dashboard</span>
+            </div>
+            <div class="feature-item">
+                <i class="material-icons">check_circle</i>
+                <span>Add new activities to your calendar</span>
+            </div>
+            <div class="feature-item">
+                <i class="material-icons">check_circle</i>
+                <span>Update budget information</span>
+            </div>
+            <div class="feature-item">
+                <i class="material-icons">check_circle</i>
+                <span>Record inventory changes</span>
+            </div>
+            <div class="feature-item">
+                <i class="material-icons">check_circle</i>
+                <span>View existing farm data</span>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <i class="material-icons">info</i>
+            All changes will be automatically synced when your connection is restored.
+        </div>
+        
+        <div class="offline-actions">
+            <button class="btn btn-primary me-2" onclick="window.history.back()">
+                <i class="material-icons">arrow_back</i>
+                Go Back
+            </button>
+            <button class="btn btn-outline-primary" onclick="location.reload()">
+                <i class="material-icons">refresh</i>
+                Try Again
+            </button>
+        </div>
+        
+        <div class="mt-4">
+            <small class="text-muted">
+                Connection will be automatically detected when restored.
+            </small>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect when back online
+        window.addEventListener('online', () => {
+            location.reload();
+        });
+        
+        // Check connection periodically
+        setInterval(() => {
+            if (navigator.onLine) {
+                location.reload();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

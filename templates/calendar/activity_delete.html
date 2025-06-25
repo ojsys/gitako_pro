@@ -1,0 +1,98 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Delete Activity - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Delete Activity</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'calendar:activity_detail' object.pk %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Activity
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">warning</i>
+                    Confirm Deletion
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="material-icons me-2">info</i>
+                    <strong>Warning:</strong> This action cannot be undone. All data associated with this activity will be permanently deleted.
+                </div>
+
+                <h6>Activity Details:</h6>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Activity Name</label>
+                            <p class="mb-2"><strong>{{ object.name }}</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Calendar</label>
+                            <p class="mb-2">{{ object.calendar.name }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Activity Type</label>
+                            <p class="mb-2">{{ object.get_activity_type_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Status</label>
+                            <p class="mb-2">
+                                <span class="badge 
+                                    {% if object.status == 'completed' %}bg-success
+                                    {% elif object.status == 'in_progress' %}bg-warning
+                                    {% elif object.status == 'cancelled' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ object.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Scheduled Date</label>
+                            <p class="mb-2">{{ object.scheduled_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">Assigned To</label>
+                            <p class="mb-2">{{ object.assigned_to.get_full_name|default:"Unassigned" }}</p>
+                        </div>
+                    </div>
+                    {% if object.description %}
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="form-label text-muted">Description</label>
+                            <p class="mb-2">{{ object.description }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'calendar:activity_detail' object.pk %}" class="btn btn-outline-secondary">
+                            <i class="material-icons me-1">cancel</i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="material-icons me-1">delete</i>
+                            Delete Activity
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

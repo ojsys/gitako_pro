@@ -1,0 +1,357 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Create Calendar - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New Crop Calendar</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'calendar:list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Calendar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Calendar Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Basic Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Calendar Name <span class="text-danger">*</span></label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Give your calendar a descriptive name</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.season_type.id_for_label }}" class="form-label">Season Type <span class="text-danger">*</span></label>
+                                {{ form.season_type }}
+                                {% if form.season_type.errors %}
+                                    <div class="text-danger small">{{ form.season_type.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Farm and Location -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Farm & Location</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farm.id_for_label }}" class="form-label">Farm <span class="text-danger">*</span></label>
+                                {{ form.farm }}
+                                {% if form.farm.errors %}
+                                    <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.block.id_for_label }}" class="form-label">Block/Field</label>
+                                {{ form.block }}
+                                {% if form.block.errors %}
+                                    <div class="text-danger small">{{ form.block.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Specify which block or leave empty for entire farm</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crop Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Crop Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.crop.id_for_label }}" class="form-label">Crop <span class="text-danger">*</span></label>
+                                {{ form.crop }}
+                                {% if form.crop.errors %}
+                                    <div class="text-danger small">{{ form.crop.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.variety.id_for_label }}" class="form-label">Variety</label>
+                                {{ form.variety }}
+                                {% if form.variety.errors %}
+                                    <div class="text-danger small">{{ form.variety.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Timeline</h6>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.season_year.id_for_label }}" class="form-label">Season Year <span class="text-danger">*</span></label>
+                                {{ form.season_year }}
+                                {% if form.season_year.errors %}
+                                    <div class="text-danger small">{{ form.season_year.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.expected_end_date.id_for_label }}" class="form-label">Expected End Date <span class="text-danger">*</span></label>
+                                {{ form.expected_end_date }}
+                                {% if form.expected_end_date.errors %}
+                                    <div class="text-danger small">{{ form.expected_end_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Options -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Additional Options</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.actual_end_date.id_for_label }}" class="form-label">Actual End Date</label>
+                                {{ form.actual_end_date }}
+                                {% if form.actual_end_date.errors %}
+                                    <div class="text-danger small">{{ form.actual_end_date.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Leave empty if season is ongoing</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                {{ form.is_template }}
+                                <label class="form-check-label" for="{{ form.is_template.id_for_label }}">
+                                    Save as template for future use
+                                </label>
+                                {% if form.is_template.errors %}
+                                    <div class="text-danger small">{{ form.is_template.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'calendar:list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">save</i>
+                            Create Calendar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">help_outline</i>
+                    Calendar Creation Guide
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>📅 Planning Tips</h6>
+                    <ul class="small text-muted">
+                        <li>Choose descriptive names for easy identification</li>
+                        <li>Align dates with local farming seasons</li>
+                        <li>Consider weather patterns in your region</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>🌱 Crop Selection</h6>
+                    <ul class="small text-muted">
+                        <li>Select appropriate varieties for your climate</li>
+                        <li>Consider market demand and prices</li>
+                        <li>Plan crop rotation for soil health</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>⏰ Timeline</h6>
+                    <ul class="small text-muted">
+                        <li>Allow buffer time for weather delays</li>
+                        <li>Plan harvest dates around market peaks</li>
+                        <li>Consider labor availability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
+                        <i class="material-icons me-1">template</i>
+                        Use Template
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <i class="material-icons me-1">copy</i>
+                        Copy Existing Calendar
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm">
+                        <i class="material-icons me-1">download</i>
+                        Import from File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get form elements
+    const farmSelect = document.querySelector('[name="farm"]');
+    const blockSelect = document.querySelector('[name="block"]');
+    const cropSelect = document.querySelector('[name="crop"]');
+    const varietySelect = document.querySelector('[name="variety"]');
+    const startDateInput = document.querySelector('[name="start_date"]');
+    const endDateInput = document.querySelector('[name="expected_end_date"]');
+    
+    // Handle farm -> block relationship
+    if (farmSelect && blockSelect) {
+        farmSelect.addEventListener('change', function() {
+            const farmId = this.value;
+            
+            // Clear current block options
+            blockSelect.innerHTML = '<option value="">Select a block (optional)</option>';
+            
+            if (farmId) {
+                // Fetch blocks for selected farm
+                fetch(`/dashboard/api/farms/${farmId}/blocks/`)
+                    .then(response => response.json())
+                    .then(blocks => {
+                        blocks.forEach(block => {
+                            const option = document.createElement('option');
+                            option.value = block.id;
+                            option.textContent = block.name;
+                            blockSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching blocks:', error);
+                    });
+            }
+        });
+    }
+    
+    // Handle crop -> variety relationship
+    if (cropSelect && varietySelect) {
+        cropSelect.addEventListener('change', function() {
+            const cropId = this.value;
+            
+            // Clear current variety options
+            varietySelect.innerHTML = '<option value="">Select a variety (optional)</option>';
+            
+            if (cropId) {
+                // Fetch varieties for selected crop
+                fetch(`/dashboard/api/crops/${cropId}/varieties/`)
+                    .then(response => response.json())
+                    .then(varieties => {
+                        varieties.forEach(variety => {
+                            const option = document.createElement('option');
+                            option.value = variety.id;
+                            option.textContent = variety.name;
+                            varietySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching varieties:', error);
+                        // Fallback: no varieties available
+                    });
+            }
+        });
+    }
+    
+    // Auto-calculate end date based on crop selection
+    function updateEndDate() {
+        if (cropSelect && cropSelect.value && startDateInput && startDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            let daysToAdd = 90; // Default 3 months
+            
+            // You could fetch this from the API based on crop type
+            // For now, using basic estimates
+            const cropName = cropSelect.options[cropSelect.selectedIndex]?.text?.toLowerCase();
+            if (cropName) {
+                if (cropName.includes('maize') || cropName.includes('corn')) {
+                    daysToAdd = 120; // 4 months
+                } else if (cropName.includes('rice')) {
+                    daysToAdd = 150; // 5 months
+                } else if (cropName.includes('tomato')) {
+                    daysToAdd = 90; // 3 months
+                } else if (cropName.includes('wheat')) {
+                    daysToAdd = 120; // 4 months
+                } else if (cropName.includes('beans')) {
+                    daysToAdd = 75; // 2.5 months
+                }
+            }
+            
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + daysToAdd);
+            endDateInput.value = endDate.toISOString().split('T')[0];
+        }
+    }
+    
+    if (cropSelect && startDateInput) {
+        cropSelect.addEventListener('change', updateEndDate);
+        startDateInput.addEventListener('change', updateEndDate);
+    }
+    
+    // Set default start date to today
+    if (startDateInput && !startDateInput.value) {
+        const today = new Date();
+        startDateInput.value = today.toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}

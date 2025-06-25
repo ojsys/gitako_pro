@@ -1,0 +1,269 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Bulk Upload Farmers - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Bulk Upload Farmers</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'farms:farmers' %}" class="btn btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Farmers
+        </a>
+    </div>
+</div>
+
+<!-- Instructions Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">info</i>Upload Instructions</h5>
+            </div>
+            <div class="card-body">
+                <p>Upload a CSV file with farmer data to quickly add multiple farmers to a specific farm block.</p>
+                
+                <h6>CSV Column Specifications:</h6>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success mt-3">Required Fields:</h6>
+                        <ul class="mb-3">
+                            <li><strong>farmer_name</strong> - Full name of the farmer</li>
+                            <li><strong>allocated_hectares</strong> - Hectares allocated (decimal, e.g., 2.5)</li>
+                            <li><strong>season_year</strong> - Season year (e.g., 2024)</li>
+                        </ul>
+                        
+                        <h6 class="text-info mt-3">Contact Information:</h6>
+                        <ul class="mb-3">
+                            <li><strong>farmer_email</strong> - Email address</li>
+                            <li><strong>farmer_phone</strong> - Phone number (e.g., +234 xxx xxx xxxx)</li>
+                            <li><strong>location</strong> - Farmer's address/location</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-warning mt-3">Agricultural Data:</h6>
+                        <ul class="mb-3">
+                            <li><strong>crops_grown</strong> - Comma-separated crop names (e.g., "Maize, Rice, Cassava")</li>
+                            <li><strong>expected_yield</strong> - Expected yield in tons (decimal)</li>
+                            <li><strong>actual_yield</strong> - Actual yield achieved in tons (decimal)</li>
+                            <li><strong>farming_experience</strong> - Years of farming experience</li>
+                            <li><strong>irrigation_method</strong> - Type of irrigation used</li>
+                            <li><strong>soil_type</strong> - Soil type on farmer's land</li>
+                        </ul>
+                        
+                        <h6 class="text-secondary mt-3">Additional Information:</h6>
+                        <ul class="mb-3">
+                            <li><strong>notes</strong> - Additional notes about the farmer</li>
+                            <li><strong>registration_date</strong> - Date farmer joined (YYYY-MM-DD)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="material-icons me-2">download</i>
+                    <strong>Download Template:</strong> 
+                    <a href="#" class="btn btn-sm btn-outline-info ms-2" onclick="downloadTemplate()">
+                        <i class="material-icons me-1">download</i>
+                        CSV Template
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Form -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">upload_file</i>Upload Farmers Data</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="farm" class="form-label">Target Farm</label>
+                        <select name="farm_id" id="farm" class="form-select" onchange="loadBlocks()" required>
+                            <option value="">Select Farm</option>
+                            {% for farm in farms %}
+                            <option value="{{ farm.id }}" {% if assigned_farm and farm.id == assigned_farm.id %}selected{% endif %}>
+                                {{ farm.name }} ({{ farm.total_area }} ha)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Select the farm where farmers will be assigned</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="block" class="form-label">Target Block <span class="text-danger">*</span></label>
+                        <select name="block_id" id="block" class="form-select" required>
+                            <option value="">Select Block</option>
+                            {% if assigned_farm %}
+                                {% for block in blocks %}
+                                <option value="{{ block.id }}">
+                                    {{ block.name }} ({{ block.size }} ha) - {{ block.crop.name|default:"No crop" }}
+                                </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <div class="form-text">All farmers in the CSV file will be assigned to this block</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="excel_file" class="form-label">CSV File <span class="text-danger">*</span></label>
+                        <input type="file" name="excel_file" id="excel_file" class="form-control" accept=".csv" required>
+                        <div class="form-text">Upload a CSV file with farmer data</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">upload</i>
+                            Upload Farmers
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="material-icons me-2">tips_and_updates</i>Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="material-icons text-success me-2">check_circle</i>
+                        Use the provided CSV template for best results
+                    </li>
+                    <li class="mb-2">
+                        <i class="material-icons text-warning me-2">warning</i>
+                        All farmers will be assigned to the selected block
+                    </li>
+                    <li class="mb-2">
+                        <i class="material-icons text-info me-2">info</i>
+                        Duplicate farmers will be skipped automatically
+                    </li>
+                    <li class="mb-2">
+                        <i class="material-icons text-primary me-2">backup</i>
+                        Make sure to backup existing data before uploading
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Farm Summary -->
+        {% if assigned_farm %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="material-icons me-2">agriculture</i>Farm Summary</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td><strong>Farm:</strong></td>
+                        <td>{{ assigned_farm.name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Area:</strong></td>
+                        <td>{{ assigned_farm.total_area }} ha</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active Blocks:</strong></td>
+                        <td>{{ blocks.count }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function loadBlocks() {
+    const farmSelect = document.getElementById('farm');
+    const blockSelect = document.getElementById('block');
+    const farmId = farmSelect.value;
+    
+    // Clear block options
+    blockSelect.innerHTML = '<option value="">Loading blocks...</option>';
+    
+    if (!farmId) {
+        blockSelect.innerHTML = '<option value="">Select Block</option>';
+        return;
+    }
+    
+    // Fetch blocks for selected farm
+    fetch(`/api/farms/${farmId}/blocks/`)
+        .then(response => response.json())
+        .then(data => {
+            blockSelect.innerHTML = '<option value="">Select Block</option>';
+            data.blocks.forEach(block => {
+                const option = document.createElement('option');
+                option.value = block.id;
+                option.textContent = `${block.name} (${block.size} ha) - ${block.crop || 'No crop'}`;
+                blockSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading blocks:', error);
+            blockSelect.innerHTML = '<option value="">Error loading blocks</option>';
+        });
+}
+
+function downloadTemplate() {
+    // Create a comprehensive CSV template
+    const headers = [
+        'farmer_name',
+        'farmer_email', 
+        'farmer_phone',
+        'location',
+        'allocated_hectares',
+        'season_year',
+        'crops_grown',
+        'expected_yield',
+        'actual_yield',
+        'farming_experience',
+        'irrigation_method',
+        'soil_type',
+        'registration_date',
+        'notes'
+    ];
+    
+    const sampleData = [
+        'John Doe',
+        'john@example.com',
+        '+234 123 456 789',
+        'Lagos State, Nigeria',
+        '2.5',
+        '2024',
+        'Maize, Rice, Cassava',
+        '5.0',
+        '4.8',
+        '8',
+        'Drip irrigation',
+        'Loamy',
+        '2024-01-15',
+        'Experienced farmer with good track record'
+    ];
+    
+    // Create CSV content (Excel will open CSV files)
+    let csvContent = headers.join(',') + '\n';
+    csvContent += sampleData.join(',') + '\n';
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'farmers_upload_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

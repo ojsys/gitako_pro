@@ -1,0 +1,202 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ staff_member.user.full_name }} - Staff Details - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <a href="{% url 'farms:staff' %}" class="text-decoration-none text-muted me-2">
+            <i class="material-icons">arrow_back</i>
+        </a>
+        Staff Details
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'farms:staff_update' staff_member.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="material-icons me-1">edit</i>
+                Edit
+            </a>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+            <i class="material-icons me-1">person_remove</i>
+            Deactivate
+        </button>
+    </div>
+</div>
+
+<!-- Staff Profile Card -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="avatar-lg bg-primary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            {% if staff_member.user.profile_picture %}
+                                <img src="{{ staff_member.user.profile_picture.url }}" alt="{{ staff_member.user.full_name }}" class="rounded-circle" width="120" height="120">
+                            {% else %}
+                                <i class="material-icons text-primary" style="font-size: 4rem;">person</i>
+                            {% endif %}
+                        </div>
+                        <div class="mb-2">
+                            {% if staff_member.is_active %}
+                                <span class="badge bg-success fs-6">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3 class="mb-1">{{ staff_member.user.full_name }}</h3>
+                        <p class="text-muted mb-3">{{ staff_member.get_role_display }}</p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>Role:</strong>
+                                {% if staff_member.role == 'supervisor' %}
+                                    <span class="badge bg-primary ms-2">{{ staff_member.get_role_display }}</span>
+                                {% elif staff_member.role == 'field_worker' %}
+                                    <span class="badge bg-success ms-2">{{ staff_member.get_role_display }}</span>
+                                {% elif staff_member.role == 'specialist' %}
+                                    <span class="badge bg-info ms-2">{{ staff_member.get_role_display }}</span>
+                                {% elif staff_member.role == 'equipment_operator' %}
+                                    <span class="badge bg-secondary ms-2">{{ staff_member.get_role_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark ms-2">{{ staff_member.get_role_display }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>Farm Assignment:</strong>
+                                <span class="ms-2">{{ staff_member.farm.name }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <strong>Email:</strong>
+                                <a href="mailto:{{ staff_member.user.email }}" class="ms-2">{{ staff_member.user.email }}</a>
+                            </div>
+                            <div class="col-sm-6">
+                                {% if staff_member.user.phone_number %}
+                                <strong>Phone:</strong>
+                                <a href="tel:{{ staff_member.user.phone_number }}" class="ms-2">{{ staff_member.user.phone_number }}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if staff_member.user.address %}
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Address:</strong>
+                                <span class="ms-2">{{ staff_member.user.address }}</span>
+                                {% if staff_member.user.city %}, {{ staff_member.user.city }}{% endif %}
+                                {% if staff_member.user.state %}, {{ staff_member.user.state }}{% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>Hire Date:</strong>
+                                <span class="ms-2">{{ staff_member.hire_date|date:"M d, Y"|default:"Not specified" }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                {% if staff_member.salary %}
+                                <strong>Salary:</strong>
+                                <span class="ms-2">₦{{ staff_member.salary|floatformat:0 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Quick Stats -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Member Since:</span>
+                    <span class="fw-bold">{{ staff_member.created_at|date:"M Y" }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Farm:</span>
+                    <span class="fw-bold">{{ staff_member.farm.name }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Status:</span>
+                    {% if staff_member.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Additional Information -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Additional Information</h6>
+            </div>
+            <div class="card-body">
+                {% if staff_member.notes %}
+                    <div class="mb-3">
+                        <strong>Notes:</strong>
+                        <p class="mt-2">{{ staff_member.notes|linebreaks }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="material-icons me-1" style="font-size: 1rem;">schedule</i>
+                            Created: {{ staff_member.created_at|date:"M d, Y g:i A" }}
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="material-icons me-1" style="font-size: 1rem;">update</i>
+                            Last Updated: {{ staff_member.updated_at|date:"M d, Y g:i A" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deactivate Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Deactivate Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deactivate <strong>{{ staff_member.user.full_name }}</strong>?</p>
+                <p class="text-muted small">This will remove their access to the farm but keep their record for historical purposes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="#" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Deactivate</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

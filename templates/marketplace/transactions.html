@@ -1,0 +1,781 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Transactions - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">
+                    <i class="material-icons me-2">receipt_long</i>Transactions
+                </h1>
+                <p class="text-muted mb-0">Track your marketplace purchases and sales</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'marketplace:list' %}" class="btn btn-outline-primary">
+                    <i class="material-icons me-1">store</i>Browse Products
+                </a>
+                <a href="{% url 'marketplace:my_products' %}" class="btn btn-outline-secondary">
+                    <i class="material-icons me-1">inventory_2</i>My Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if transactions %}
+        <!-- Transactions List -->
+        <div class="transactions-container">
+            {% for transaction in transactions %}
+                <div class="transaction-card">
+                    <div class="transaction-header">
+                        <div class="transaction-info">
+                            <div class="transaction-id">
+                                <strong>{{ transaction.reference_number }}</strong>
+                                <span class="transaction-type">
+                                    {% if transaction.buyer == user %}
+                                        <i class="material-icons">shopping_cart</i>
+                                        Purchase
+                                    {% else %}
+                                        <i class="material-icons">sell</i>
+                                        Sale
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="transaction-date">
+                                {{ transaction.created_at|date:"M d, Y g:i A" }}
+                            </div>
+                        </div>
+                        
+                        <div class="transaction-status">
+                            <div class="status-badge status-{{ transaction.status }}">
+                                {{ transaction.get_status_display }}
+                            </div>
+                            <div class="transaction-amount">
+                                ₦{{ transaction.total_amount|floatformat:2 }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="transaction-content">
+                        <!-- Product Information -->
+                        <div class="product-section">
+                            <div class="product-info">
+                                <div class="product-image">
+                                    {% if transaction.product.primary_image %}
+                                        <img src="{{ transaction.product.primary_image.url }}" alt="{{ transaction.product.title }}">
+                                    {% else %}
+                                        <div class="no-image">
+                                            <i class="material-icons">photo</i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="product-details">
+                                    <h6 class="product-title">
+                                        <a href="{% url 'marketplace:detail' transaction.product.pk %}">
+                                            {{ transaction.product.title }}
+                                        </a>
+                                    </h6>
+                                    <div class="product-meta">
+                                        <span class="category">{{ transaction.product.category.name }}</span>
+                                        <span class="crop">{{ transaction.product.crop.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transaction Details -->
+                        <div class="transaction-details">
+                            <div class="details-grid">
+                                <div class="detail-group">
+                                    <h6>Order Details</h6>
+                                    <div class="detail-item">
+                                        <label>Quantity:</label>
+                                        <value>{{ transaction.quantity }} {{ transaction.product.unit }}</value>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Price per Unit:</label>
+                                        <value>₦{{ transaction.price_per_unit|floatformat:2 }}</value>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Subtotal:</label>
+                                        <value>₦{{ transaction.subtotal|floatformat:2 }}</value>
+                                    </div>
+                                    {% if transaction.delivery_cost > 0 %}
+                                        <div class="detail-item">
+                                            <label>Delivery Cost:</label>
+                                            <value>₦{{ transaction.delivery_cost|floatformat:2 }}</value>
+                                        </div>
+                                    {% endif %}
+                                    {% if transaction.platform_fee > 0 %}
+                                        <div class="detail-item">
+                                            <label>Platform Fee:</label>
+                                            <value>₦{{ transaction.platform_fee|floatformat:2 }}</value>
+                                        </div>
+                                    {% endif %}
+                                    <div class="detail-item total">
+                                        <label>Total Amount:</label>
+                                        <value>₦{{ transaction.total_amount|floatformat:2 }}</value>
+                                    </div>
+                                </div>
+
+                                <div class="detail-group">
+                                    <h6>Parties</h6>
+                                    <div class="detail-item">
+                                        <label>Buyer:</label>
+                                        <value>{{ transaction.buyer.get_full_name }}</value>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Seller:</label>
+                                        <value>{{ transaction.seller.get_full_name }}</value>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Farm:</label>
+                                        <value>{{ transaction.product.farm.name }}</value>
+                                    </div>
+                                </div>
+
+                                {% if transaction.payment_method %}
+                                    <div class="detail-group">
+                                        <h6>Payment Information</h6>
+                                        <div class="detail-item">
+                                            <label>Payment Method:</label>
+                                            <value>{{ transaction.get_payment_method_display }}</value>
+                                        </div>
+                                        {% if transaction.payment_date %}
+                                            <div class="detail-item">
+                                                <label>Payment Date:</label>
+                                                <value>{{ transaction.payment_date|date:"M d, Y g:i A" }}</value>
+                                            </div>
+                                        {% endif %}
+                                        {% if transaction.payment_reference %}
+                                            <div class="detail-item">
+                                                <label>Payment Reference:</label>
+                                                <value>{{ transaction.payment_reference }}</value>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Delivery Information -->
+                        {% if transaction.delivery_required %}
+                            <div class="delivery-section">
+                                <h6><i class="material-icons me-2">local_shipping</i>Delivery Information</h6>
+                                <div class="delivery-details">
+                                    {% if transaction.delivery_address %}
+                                        <div class="detail-item">
+                                            <label>Delivery Address:</label>
+                                            <value>{{ transaction.delivery_address }}</value>
+                                        </div>
+                                    {% endif %}
+                                    {% if transaction.delivery_date %}
+                                        <div class="detail-item">
+                                            <label>Delivery Date:</label>
+                                            <value>{{ transaction.delivery_date|date:"M d, Y" }}</value>
+                                        </div>
+                                    {% endif %}
+                                    {% if transaction.tracking_number %}
+                                        <div class="detail-item">
+                                            <label>Tracking Number:</label>
+                                            <value>{{ transaction.tracking_number }}</value>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Notes -->
+                        {% if transaction.buyer_notes or transaction.seller_notes %}
+                            <div class="notes-section">
+                                <h6><i class="material-icons me-2">note</i>Notes</h6>
+                                {% if transaction.buyer_notes %}
+                                    <div class="note-item">
+                                        <label>Buyer Notes:</label>
+                                        <p>{{ transaction.buyer_notes|linebreaks }}</p>
+                                    </div>
+                                {% endif %}
+                                {% if transaction.seller_notes %}
+                                    <div class="note-item">
+                                        <label>Seller Notes:</label>
+                                        <p>{{ transaction.seller_notes|linebreaks }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Escrow Information -->
+                        {% if transaction.status == 'in_escrow' or transaction.escrow_amount > 0 %}
+                            <div class="escrow-section">
+                                <h6><i class="material-icons me-2">security</i>Escrow Information</h6>
+                                <div class="escrow-details">
+                                    <div class="detail-item">
+                                        <label>Escrow Amount:</label>
+                                        <value>₦{{ transaction.escrow_amount|floatformat:2 }}</value>
+                                    </div>
+                                    {% if transaction.escrow_released %}
+                                        <div class="detail-item">
+                                            <label>Escrow Released:</label>
+                                            <value>{{ transaction.escrow_release_date|date:"M d, Y g:i A" }}</value>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if not transaction.escrow_released %}
+                                    <div class="escrow-notice">
+                                        <i class="material-icons">info</i>
+                                        Funds are held in escrow until delivery is confirmed
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="transaction-actions">
+                        {% if transaction.buyer == user %}
+                            <!-- Buyer Actions -->
+                            {% if transaction.status == 'pending' %}
+                                <button class="btn btn-primary btn-sm" onclick="makePayment('{{ transaction.pk }}')">
+                                    <i class="material-icons me-1">payment</i>Make Payment
+                                </button>
+                            {% elif transaction.status == 'shipped' %}
+                                <button class="btn btn-success btn-sm" onclick="confirmDelivery('{{ transaction.pk }}')">
+                                    <i class="material-icons me-1">check_circle</i>Confirm Delivery
+                                </button>
+                            {% elif transaction.status == 'completed' %}
+                                <button class="btn btn-outline-primary btn-sm" onclick="leaveReview('{{ transaction.pk }}')">
+                                    <i class="material-icons me-1">star</i>Leave Review
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <!-- Seller Actions -->
+                            {% if transaction.status == 'paid' %}
+                                <button class="btn btn-primary btn-sm" onclick="markAsShipped('{{ transaction.pk }}')">
+                                    <i class="material-icons me-1">local_shipping</i>Mark as Shipped
+                                </button>
+                            {% elif transaction.status == 'shipped' %}
+                                <button class="btn btn-outline-secondary btn-sm" onclick="updateTracking('{{ transaction.pk }}')">
+                                    <i class="material-icons me-1">edit</i>Update Tracking
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <a href="{% url 'marketplace:detail' transaction.product.pk %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="material-icons me-1">visibility</i>View Product
+                        </a>
+                        
+                        <button class="btn btn-outline-secondary btn-sm" onclick="contactParty('{{ transaction.pk }}')">
+                            <i class="material-icons me-1">message</i>Contact
+                        </button>
+                        
+                        <button class="btn btn-outline-secondary btn-sm" onclick="downloadInvoice('{{ transaction.pk }}')">
+                            <i class="material-icons me-1">download</i>Invoice
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="pagination-wrapper">
+                    <nav aria-label="Transactions pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                        <i class="material-icons">chevron_left</i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                        <i class="material-icons">chevron_right</i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="material-icons">receipt_long</i>
+            </div>
+            <h4>No transactions yet</h4>
+            <p class="text-muted">Your marketplace purchases and sales will appear here once you start trading.</p>
+            <a href="{% url 'marketplace:list' %}" class="btn btn-primary btn-lg">
+                <i class="material-icons me-2">store</i>Browse Marketplace
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .page-header i {
+        color: var(--primary-color);
+    }
+
+    /* Transaction Cards */
+    .transaction-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .transaction-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .transaction-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    }
+
+    .transaction-id {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .transaction-type {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 1rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .transaction-type i {
+        font-size: 1rem;
+        margin-right: 0.25rem;
+        color: var(--primary-color);
+    }
+
+    .transaction-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .transaction-status {
+        text-align: right;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-paid {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-in_escrow {
+        background: #e2e3e5;
+        color: #41464b;
+    }
+
+    .status-shipped {
+        background: #cce5ff;
+        color: #004085;
+    }
+
+    .status-delivered {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-refunded {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .transaction-amount {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    /* Transaction Content */
+    .transaction-content {
+        padding: 1.5rem;
+    }
+
+    .product-section {
+        margin-bottom: 2rem;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .no-image {
+        width: 100%;
+        height: 100%;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .product-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .product-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .product-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    /* Transaction Details */
+    .transaction-details {
+        margin-bottom: 2rem;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .detail-group h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem 0;
+    }
+
+    .detail-item.total {
+        border-top: 1px solid #e9ecef;
+        padding-top: 0.75rem;
+        margin-top: 0.5rem;
+        font-weight: 600;
+    }
+
+    .detail-item.total value {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .detail-item label {
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .detail-item value {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    /* Special Sections */
+    .delivery-section, .notes-section, .escrow-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .delivery-section h6, .notes-section h6, .escrow-section h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .delivery-section i, .notes-section i, .escrow-section i {
+        color: var(--primary-color);
+    }
+
+    .note-item {
+        margin-bottom: 1rem;
+    }
+
+    .note-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .note-item label {
+        display: block;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .note-item p {
+        margin: 0;
+        color: #6c757d;
+        line-height: 1.5;
+    }
+
+    .escrow-notice {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #e3f2fd;
+        border-radius: 6px;
+        color: #1976d2;
+        font-size: 0.9rem;
+    }
+
+    .escrow-notice i {
+        margin-right: 0.5rem;
+    }
+
+    /* Actions */
+    .transaction-actions {
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-sm i {
+        font-size: 1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .empty-icon {
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: #dee2e6;
+    }
+
+    .empty-state h4 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        margin-top: 3rem;
+    }
+
+    .pagination .page-link {
+        border: none;
+        color: #6c757d;
+        padding: 0.75rem 1rem;
+        margin: 0 0.125rem;
+        border-radius: 8px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f8f9fa;
+        color: var(--primary-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .page-header .row {
+            text-align: center;
+        }
+
+        .page-header .col-md-4 {
+            margin-top: 1rem;
+        }
+
+        .transaction-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .transaction-status {
+            text-align: left;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .transaction-actions {
+            flex-direction: column;
+        }
+
+        .transaction-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    function makePayment(transactionId) {
+        alert('Opening payment gateway for transaction ' + transactionId);
+        // This would redirect to payment processor
+    }
+
+    function confirmDelivery(transactionId) {
+        if (confirm('Confirm that you have received this order in good condition?')) {
+            alert('Confirming delivery for transaction ' + transactionId);
+            // AJAX call to confirm delivery
+        }
+    }
+
+    function markAsShipped(transactionId) {
+        const trackingNumber = prompt('Enter tracking number (optional):');
+        alert('Marking transaction ' + transactionId + ' as shipped. Tracking: ' + (trackingNumber || 'None'));
+        // AJAX call to mark as shipped
+    }
+
+    function updateTracking(transactionId) {
+        const trackingNumber = prompt('Enter new tracking number:');
+        if (trackingNumber) {
+            alert('Updating tracking for transaction ' + transactionId + ' to: ' + trackingNumber);
+            // AJAX call to update tracking
+        }
+    }
+
+    function leaveReview(transactionId) {
+        alert('Opening review form for transaction ' + transactionId);
+        // This would open a review modal or redirect to review page
+    }
+
+    function contactParty(transactionId) {
+        alert('Opening contact options for transaction ' + transactionId);
+        // This would show contact information or open messaging
+    }
+
+    function downloadInvoice(transactionId) {
+        alert('Downloading invoice for transaction ' + transactionId);
+        // This would generate and download a PDF invoice
+    }
+</script>
+{% endblock %}

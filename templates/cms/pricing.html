@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+{% block title %}Pricing - Affordable Farm Management Solutions | Gitako{% endblock %}
+
+{% block meta_description %}Simple, transparent pricing for Gitako farm management software. Choose the plan that fits your farm size and budget. Free trial available.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section section-hero">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center text-white">
+                <div class="mb-4">
+                    <span class="badge bg-warning bg-opacity-20 text-warning px-3 py-2 rounded-pill">
+                        <i class="material-icons me-1" style="font-size: 1rem;">price_check</i>
+                        Transparent Pricing
+                    </span>
+                </div>
+                <h1 class="display-3 fw-bold mb-4" style="line-height: 1.1;">
+                    Simple Pricing for <span class="text-warning">Every Farm</span>
+                </h1>
+                <p class="lead mb-5 opacity-90 col-lg-8 mx-auto" style="font-size: 1.3rem;">
+                    Choose the plan that fits your farm size and needs. All plans include our core features 
+                    with no hidden fees or surprise charges.
+                </p>
+                <div class="d-flex align-items-center justify-content-center text-white-50">
+                    <small class="me-4">
+                        <i class="material-icons me-1" style="font-size: 1rem;">schedule</i>
+                        30-day free trial
+                    </small>
+                    <small class="me-4">
+                        <i class="material-icons me-1" style="font-size: 1rem;">cancel</i>
+                        Cancel anytime
+                    </small>
+                    <small>
+                        <i class="material-icons me-1" style="font-size: 1rem;">support</i>
+                        24/7 support
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Plans -->
+<section class="section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <!-- Starter Plan -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="material-icons text-primary" style="font-size: 2rem;">agriculture</i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-3">Starter</h4>
+                        <p class="text-muted mb-4">Perfect for small-scale farmers and those getting started with digital farming</p>
+                        <div class="mb-4">
+                            <div class="display-4 fw-bold text-primary">₦2,500</div>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Up to 2 hectares
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Basic crop calendar
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Budget tracking
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Basic inventory management
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Mobile app access
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Email support
+                            </li>
+                        </ul>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-primary w-100 btn-lg">
+                            <i class="material-icons me-2">rocket_launch</i>
+                            Start Free Trial
+                        </a>
+                        <small class="text-muted d-block mt-2">Free for 30 days</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Plan -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-lg h-100 position-relative">
+                    <div class="position-absolute top-0 start-50 translate-middle">
+                        <span class="badge bg-warning px-3 py-2 rounded-pill">
+                            <i class="material-icons me-1" style="font-size: 0.9rem;">star</i>
+                            Most Popular
+                        </span>
+                    </div>
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="material-icons text-success" style="font-size: 2rem;">trending_up</i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-3">Professional</h4>
+                        <p class="text-muted mb-4">Ideal for medium-scale farmers who want advanced features and analytics</p>
+                        <div class="mb-4">
+                            <div class="display-4 fw-bold text-success">₦7,500</div>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Up to 10 hectares
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Advanced crop calendar
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Complete budget management
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Full inventory & equipment tracking
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Block management
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                AI recommendations
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Marketplace access
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Priority support
+                            </li>
+                        </ul>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-success w-100 btn-lg">
+                            <i class="material-icons me-2">rocket_launch</i>
+                            Start Free Trial
+                        </a>
+                        <small class="text-muted d-block mt-2">Free for 30 days</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="material-icons text-warning" style="font-size: 2rem;">business</i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-3">Enterprise</h4>
+                        <p class="text-muted mb-4">For large farms, cooperatives, and agricultural organizations</p>
+                        <div class="mb-4">
+                            <div class="display-4 fw-bold text-warning">Custom</div>
+                            <small class="text-muted">pricing</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Unlimited hectares
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                All features included
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Multi-farm management
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Staff management
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Advanced analytics
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                API access
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Custom integrations
+                            </li>
+                            <li class="mb-2">
+                                <i class="material-icons text-success me-2" style="font-size: 1rem;">check_circle</i>
+                                Dedicated support
+                            </li>
+                        </ul>
+                        <a href="{% url 'cms:contact' %}" class="btn btn-warning w-100 btn-lg">
+                            <i class="material-icons me-2">contact_support</i>
+                            Contact Sales
+                        </a>
+                        <small class="text-muted d-block mt-2">Custom quote</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Comparison -->
+<section class="stats-section section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <h2 class="display-5 fw-bold mb-3">Compare Plans</h2>
+            <p class="lead text-muted">All the details you need to choose the right plan</p>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-borderless">
+                <thead>
+                    <tr class="border-bottom">
+                        <th class="text-muted fw-normal">Features</th>
+                        <th class="text-center fw-bold">Starter</th>
+                        <th class="text-center fw-bold text-success">Professional</th>
+                        <th class="text-center fw-bold">Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-semibold py-3">Farm Size Limit</td>
+                        <td class="text-center py-3">Up to 2 hectares</td>
+                        <td class="text-center py-3">Up to 10 hectares</td>
+                        <td class="text-center py-3">Unlimited</td>
+                    </tr>
+                    <tr class="bg-light">
+                        <td class="fw-semibold py-3">Crop Calendar</td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold py-3">Budget Management</td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr class="bg-light">
+                        <td class="fw-semibold py-3">Inventory Management</td>
+                        <td class="text-center py-3">Basic</td>
+                        <td class="text-center py-3">Advanced</td>
+                        <td class="text-center py-3">Advanced</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold py-3">Block Management</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr class="bg-light">
+                        <td class="fw-semibold py-3">AI Recommendations</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold py-3">Marketplace Access</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr class="bg-light">
+                        <td class="fw-semibold py-3">Staff Management</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold py-3">Multi-farm Management</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr class="bg-light">
+                        <td class="fw-semibold py-3">API Access</td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-muted">remove</i></td>
+                        <td class="text-center py-3"><i class="material-icons text-success">check_circle</i></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold py-3">Support</td>
+                        <td class="text-center py-3">Email</td>
+                        <td class="text-center py-3">Priority</td>
+                        <td class="text-center py-3">Dedicated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <h2 class="display-5 fw-bold mb-3">Frequently Asked Questions</h2>
+            <p class="lead text-muted">Everything you need to know about our pricing</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="pricingFAQ">
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Is there really a free trial?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#pricingFAQ">
+                            <div class="accordion-body text-muted">
+                                Yes! We offer a full 30-day free trial with no credit card required. You'll have access to all features of your chosen plan during the trial period.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Can I upgrade or downgrade my plan?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                            <div class="accordion-body text-muted">
+                                Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                What payment methods do you accept?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                            <div class="accordion-body text-muted">
+                                We accept all major credit cards, bank transfers, and mobile money payments. All transactions are secure and encrypted.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Is there a setup fee?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                            <div class="accordion-body text-muted">
+                                No setup fees ever! Our pricing is transparent with no hidden charges. You only pay the monthly subscription fee.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                What happens to my data if I cancel?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+                            <div class="accordion-body text-muted">
+                                Your data remains accessible for 90 days after cancellation. You can export all your data at any time. We believe your data belongs to you.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section section-cta text-white">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold mb-4">Start Your Farming Revolution Today</h2>
+                <p class="lead mb-5 opacity-90">
+                    Join thousands of farmers who have transformed their operations with Gitako. 
+                    Choose your plan and start your free trial now.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-warning btn-lg px-5 py-3 fw-semibold">
+                        <i class="material-icons me-2">rocket_launch</i>
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'cms:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="material-icons me-2">chat</i>
+                        Talk to Sales
+                    </a>
+                </div>
+                <small class="text-white-50">
+                    <i class="material-icons me-1" style="font-size: 1rem;">verified</i>
+                    No credit card required • Cancel anytime • 30-day money-back guarantee
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

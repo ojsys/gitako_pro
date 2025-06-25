@@ -1,0 +1,494 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Inventory Supplies - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Inventory Supplies</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Print</button>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary">
+                <i class="material-icons me-1">qr_code_scanner</i>
+                Scan Item
+            </button>
+            <button type="button" class="btn btn-sm btn-primary">
+                <i class="material-icons me-1">add</i>
+                Add Supply
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Items</h6>
+                        <h3 class="mb-0">247</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">inventory_2</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Low Stock</h6>
+                        <h3 class="mb-0">12</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">warning</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Out of Stock</h6>
+                        <h3 class="mb-0">5</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">block</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Value</h6>
+                        <h3 class="mb-0">₦2.8M</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">account_balance_wallet</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label for="categoryFilter" class="form-label">Category</label>
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">All Categories</option>
+                            <option value="seeds">Seeds & Seedlings</option>
+                            <option value="fertilizers">Fertilizers</option>
+                            <option value="pesticides">Pesticides</option>
+                            <option value="tools">Tools & Equipment</option>
+                            <option value="feeds">Animal Feeds</option>
+                            <option value="medicines">Veterinary Medicines</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Stock Status</label>
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="in_stock">In Stock</option>
+                            <option value="low_stock">Low Stock</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="locationFilter" class="form-label">Location</label>
+                        <select id="locationFilter" class="form-select">
+                            <option value="">All Locations</option>
+                            <option value="warehouse_a">Warehouse A</option>
+                            <option value="warehouse_b">Warehouse B</option>
+                            <option value="field_storage">Field Storage</option>
+                            <option value="office">Office</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchInput" class="form-label">Search</label>
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search supplies...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="material-icons">search</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Low Stock Alerts -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h5 class="mb-0 text-warning">
+                    <i class="material-icons me-2">warning</i>
+                    Low Stock Alerts
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center p-2 bg-light rounded">
+                            <div class="avatar-sm bg-danger bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                <i class="material-icons text-danger">eco</i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">NPK Fertilizer</h6>
+                                <small class="text-danger">5 bags remaining</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center p-2 bg-light rounded">
+                            <div class="avatar-sm bg-warning bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                <i class="material-icons text-warning">local_florist</i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Maize Seeds (Hybrid)</h6>
+                                <small class="text-warning">12 kg remaining</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center p-2 bg-light rounded">
+                            <div class="avatar-sm bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                <i class="material-icons text-info">bug_report</i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Insecticide (Lambda)</h6>
+                                <small class="text-info">3 liters remaining</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-warning btn-sm">
+                        <i class="material-icons me-1">shopping_cart</i>
+                        Reorder All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Supplies Inventory Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Supplies Inventory</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active" data-view="table">
+                        <i class="material-icons">table_rows</i>
+                    </button>
+                    <button class="btn btn-outline-secondary" data-view="grid">
+                        <i class="material-icons">grid_view</i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Table View -->
+                <div id="tableView">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>SKU/Batch</th>
+                                    <th>Current Stock</th>
+                                    <th>Unit Price</th>
+                                    <th>Total Value</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr class="supply-row" data-category="fertilizers" data-status="in_stock">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="material-icons text-success">eco</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">NPK 15-15-15 Fertilizer</h6>
+                                                <small class="text-muted">50kg bags</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-success">Fertilizers</span></td>
+                                    <td>NPK-001-2024</td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-bold">45 bags</span>
+                                            <small class="d-block text-muted">Min: 20 bags</small>
+                                        </div>
+                                    </td>
+                                    <td>₦15,500</td>
+                                    <td>₦697,500</td>
+                                    <td>Warehouse A</td>
+                                    <td><span class="badge bg-success">In Stock</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">Edit</button>
+                                            <button class="btn btn-outline-secondary">Move</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="supply-row" data-category="seeds" data-status="low_stock">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-warning bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="material-icons text-warning">local_florist</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">Maize Seeds - Hybrid Variety</h6>
+                                                <small class="text-muted">Premium hybrid seeds</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary">Seeds</span></td>
+                                    <td>MAIZE-H01-2024</td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-bold text-warning">12 kg</span>
+                                            <small class="d-block text-muted">Min: 25 kg</small>
+                                        </div>
+                                    </td>
+                                    <td>₦8,500</td>
+                                    <td>₦102,000</td>
+                                    <td>Cold Storage</td>
+                                    <td><span class="badge bg-warning">Low Stock</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">Edit</button>
+                                            <button class="btn btn-warning">Reorder</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="supply-row" data-category="pesticides" data-status="in_stock">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="material-icons text-info">bug_report</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">Lambda-Cyhalothrin 2.5% EC</h6>
+                                                <small class="text-muted">Broad spectrum insecticide</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger">Pesticides</span></td>
+                                    <td>LAMBDA-001</td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-bold">8 liters</span>
+                                            <small class="d-block text-muted">Min: 5 liters</small>
+                                        </div>
+                                    </td>
+                                    <td>₦12,800</td>
+                                    <td>₦102,400</td>
+                                    <td>Chemical Store</td>
+                                    <td><span class="badge bg-success">In Stock</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">Edit</button>
+                                            <button class="btn btn-outline-secondary">Transfer</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="supply-row" data-category="tools" data-status="in_stock">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-secondary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="material-icons text-secondary">build</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">Hand Sprayer 16L</h6>
+                                                <small class="text-muted">Manual knapsack sprayer</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Tools</span></td>
+                                    <td>SPRAY-16L-001</td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-bold">15 units</span>
+                                            <small class="d-block text-muted">Min: 5 units</small>
+                                        </div>
+                                    </td>
+                                    <td>₦28,500</td>
+                                    <td>₦427,500</td>
+                                    <td>Tool Shed</td>
+                                    <td><span class="badge bg-success">In Stock</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">Edit</button>
+                                            <button class="btn btn-outline-info">Assign</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="supply-row" data-category="feeds" data-status="out_of_stock">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-warning bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                                <i class="material-icons text-warning">pets</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">Poultry Starter Feed</h6>
+                                                <small class="text-muted">High protein starter feed</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-warning">Feeds</span></td>
+                                    <td>POULTRY-START-001</td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-bold text-danger">0 bags</span>
+                                            <small class="d-block text-muted">Min: 10 bags</small>
+                                        </div>
+                                    </td>
+                                    <td>₦18,200</td>
+                                    <td>₦0</td>
+                                    <td>Feed Store</td>
+                                    <td><span class="badge bg-danger">Out of Stock</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary">Edit</button>
+                                            <button class="btn btn-danger">Urgent Reorder</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Supplies pagination" class="mt-3">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <!-- Grid View (Hidden by default) -->
+                <div id="gridView" style="display: none;">
+                    <div class="text-center py-5">
+                        <i class="material-icons text-muted" style="font-size: 4rem;">grid_view</i>
+                        <h5 class="text-muted mt-3">Grid View</h5>
+                        <p class="text-muted">Grid layout coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View switcher
+    const viewButtons = document.querySelectorAll('[data-view]');
+    const tableView = document.getElementById('tableView');
+    const gridView = document.getElementById('gridView');
+    
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const viewType = this.getAttribute('data-view');
+            
+            // Update active button
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show selected view
+            if (viewType === 'table') {
+                tableView.style.display = 'block';
+                gridView.style.display = 'none';
+            } else {
+                tableView.style.display = 'none';
+                gridView.style.display = 'block';
+            }
+        });
+    });
+    
+    // Filter functionality
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const locationFilter = document.getElementById('locationFilter');
+    const searchInput = document.getElementById('searchInput');
+    const supplyRows = document.querySelectorAll('.supply-row');
+    
+    function filterSupplies() {
+        const categoryValue = categoryFilter.value.toLowerCase();
+        const statusValue = statusFilter.value.toLowerCase();
+        const searchValue = searchInput.value.toLowerCase();
+        
+        supplyRows.forEach(row => {
+            const rowCategory = row.getAttribute('data-category');
+            const rowStatus = row.getAttribute('data-status');
+            const rowText = row.textContent.toLowerCase();
+            
+            const categoryMatch = !categoryValue || rowCategory === categoryValue;
+            const statusMatch = !statusValue || rowStatus === statusValue;
+            const searchMatch = !searchValue || rowText.includes(searchValue);
+            
+            if (categoryMatch && statusMatch && searchMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    categoryFilter.addEventListener('change', filterSupplies);
+    statusFilter.addEventListener('change', filterSupplies);
+    locationFilter.addEventListener('change', filterSupplies);
+    searchInput.addEventListener('input', filterSupplies);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,355 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_urls %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--bg-primary);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+
+    .stat-icon.primary { background: var(--dark-color); }
+    .stat-icon.success { background: var(--primary-color); }
+    .stat-icon.warning { background: var(--primary-color); }
+    .stat-icon.info { background: var(--dark-color); }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .app-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .app-card {
+        background: var(--bg-primary);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .app-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .app-header {
+        background: var(--header-bg);
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .app-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .app-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .app-models {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .model-item {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .model-item:last-child {
+        border-bottom: none;
+    }
+
+    .model-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        color: var(--text-primary) !important;
+        text-decoration: none;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+
+    .model-link:hover {
+        background: var(--bg-secondary);
+        padding-left: 2rem;
+    }
+
+    .model-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .model-action {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .action-view {
+        background: var(--dark-color);
+        color: white;
+        border: 1px solid var(--primary-color);
+    }
+
+    .action-add {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .action-change {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .model-action:hover {
+        transform: scale(1.05);
+    }
+
+    .welcome-section {
+        background: var(--header-bg);
+        color: white;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        text-align: center;
+        border: 2px solid var(--primary-color);
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .quick-action {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid var(--primary-dark);
+    }
+
+    .quick-action:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <div class="welcome-title">Welcome to Gitako Admin</div>
+    <div class="welcome-subtitle">Agricultural Marketplace Management</div>
+    <div class="quick-actions">
+        <a href="{% url 'dashboard:dashboard' %}" class="quick-action">
+            <i class="material-icons">dashboard</i>
+            Dashboard
+        </a>
+        <a href="{% url 'farms:list' %}" class="quick-action">
+            <i class="material-icons">agriculture</i>
+            View Farms
+        </a>
+        <a href="{% url 'marketplace:list' %}" class="quick-action">
+            <i class="material-icons">store</i>
+            Marketplace
+        </a>
+        <a href="{% url 'admin:accounts_user_changelist' %}" class="quick-action">
+            <i class="material-icons">people</i>
+            Manage Users
+        </a>
+    </div>
+</div>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">{{ total_users|default:"0" }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-icon primary">
+                <i class="material-icons">people</i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">{{ total_farms|default:"0" }}</div>
+                <div class="stat-label">Active Farms</div>
+            </div>
+            <div class="stat-icon success">
+                <i class="material-icons">agriculture</i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">{{ total_products|default:"0" }}</div>
+                <div class="stat-label">Marketplace Products</div>
+            </div>
+            <div class="stat-icon warning">
+                <i class="material-icons">store</i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-value">{{ total_transactions|default:"0" }}</div>
+                <div class="stat-label">Total Transactions</div>
+            </div>
+            <div class="stat-icon info">
+                <i class="material-icons">account_balance</i>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if app_list %}
+<div class="app-list">
+    {% for app in app_list %}
+    <div class="app-card">
+        <div class="app-header">
+            <div class="app-icon">
+                {% if app.app_label == 'auth' %}
+                    <i class="material-icons">security</i>
+                {% elif app.app_label == 'farms' %}
+                    <i class="material-icons">agriculture</i>
+                {% elif app.app_label == 'marketplace' %}
+                    <i class="material-icons">store</i>
+                {% elif app.app_label == 'accounts' %}
+                    <i class="material-icons">person</i>
+                {% elif app.app_label == 'budget' %}
+                    <i class="material-icons">account_balance</i>
+                {% elif app.app_label == 'calendar' %}
+                    <i class="material-icons">event</i>
+                {% elif app.app_label == 'inventory' %}
+                    <i class="material-icons">inventory</i>
+                {% else %}
+                    <i class="material-icons">settings</i>
+                {% endif %}
+            </div>
+            <h2 class="app-title">{{ app.name }}</h2>
+        </div>
+        
+        <ul class="app-models">
+            {% for model in app.models %}
+            <li class="model-item">
+                <div class="model-link">
+                    <span>{{ model.name }}</span>
+                    <div class="model-actions">
+                        {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}" class="model-action action-view">View</a>
+                        {% endif %}
+                        {% if model.add_url %}
+                            <a href="{{ model.add_url }}" class="model-action action-add">Add</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+    <i class="material-icons" style="font-size: 4rem; margin-bottom: 1rem;">admin_panel_settings</i>
+    <p>No apps are available for administration.</p>
+</div>
+{% endif %}
+{% endblock %}

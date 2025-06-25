@@ -1,0 +1,586 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Send Inquiry - {{ product.title }} - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'marketplace:list' %}">Marketplace</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'marketplace:detail' product.pk %}">{{ product.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Send Inquiry</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <div class="inquiry-form-card">
+                <div class="form-header">
+                    <h2><i class="material-icons me-2">message</i>Send Inquiry</h2>
+                    <p class="text-muted">Contact the seller about this product</p>
+                </div>
+
+                <form method="post" class="inquiry-form">
+                    {% csrf_token %}
+                    
+                    <!-- Product Summary -->
+                    <div class="product-summary">
+                        <h5>Product Details</h5>
+                        <div class="product-info">
+                            <div class="product-image">
+                                {% if product.primary_image %}
+                                    <img src="{{ product.primary_image.url }}" alt="{{ product.title }}">
+                                {% else %}
+                                    <div class="no-image">
+                                        <i class="material-icons">photo</i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="product-details">
+                                <h6>{{ product.title }}</h6>
+                                <p class="price">₦{{ product.price_per_unit|floatformat:2 }} per {{ product.unit }}</p>
+                                <p class="availability">{{ product.quantity_available }} {{ product.unit }} available</p>
+                                <p class="seller">Seller: {{ product.seller.get_full_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inquiry Form -->
+                    <div class="form-section">
+                        <h5>Your Inquiry</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.quantity_requested.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">inventory</i>Quantity Requested *
+                                    </label>
+                                    {{ form.quantity_requested }}
+                                    {% if form.quantity_requested.errors %}
+                                        <div class="error-message">{{ form.quantity_requested.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-hint">How much do you want to purchase? (in {{ product.unit }})</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.offered_price_per_unit.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">monetization_on</i>Offered Price per {{ product.unit }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₦</span>
+                                        {{ form.offered_price_per_unit }}
+                                    </div>
+                                    {% if form.offered_price_per_unit.errors %}
+                                        <div class="error-message">{{ form.offered_price_per_unit.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-hint">Optional: Make a price offer (Current: ₦{{ product.price_per_unit|floatformat:2 }})</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.message.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">message</i>Message *
+                            </label>
+                            {{ form.message }}
+                            {% if form.message.errors %}
+                                <div class="error-message">{{ form.message.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Provide details about your requirements, questions, or any specific needs</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.buyer_contact.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">phone</i>Your Contact Information
+                            </label>
+                            {{ form.buyer_contact }}
+                            {% if form.buyer_contact.errors %}
+                                <div class="error-message">{{ form.buyer_contact.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Phone number or preferred contact method</div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Section -->
+                    <div class="form-section delivery-section">
+                        <h5>Delivery Requirements</h5>
+                        
+                        <div class="delivery-toggle">
+                            <div class="form-check form-switch">
+                                {{ form.delivery_required }}
+                                <label class="form-check-label fw-semibold" for="{{ form.delivery_required.id_for_label }}">
+                                    <i class="material-icons me-2">local_shipping</i>I need delivery service
+                                </label>
+                            </div>
+                            {% if form.delivery_required.errors %}
+                                <div class="error-message">{{ form.delivery_required.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="delivery-details" id="deliveryDetails" style="display: none;">
+                            <div class="form-group">
+                                <label for="{{ form.delivery_address.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">location_on</i>Delivery Address
+                                </label>
+                                {{ form.delivery_address }}
+                                {% if form.delivery_address.errors %}
+                                    <div class="error-message">{{ form.delivery_address.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-hint">Provide complete address where you want the product delivered</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.preferred_delivery_date.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">event</i>Preferred Delivery Date
+                                </label>
+                                {{ form.preferred_delivery_date }}
+                                {% if form.preferred_delivery_date.errors %}
+                                    <div class="error-message">{{ form.preferred_delivery_date.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-hint">When would you like to receive the product?</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Actions -->
+                    <div class="form-actions">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'marketplace:detail' product.pk %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="material-icons me-2">arrow_back</i>Back to Product
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="material-icons me-2">send</i>Send Inquiry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sidebar-content">
+                <!-- Inquiry Tips -->
+                <div class="tips-card mb-4">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">lightbulb</i>Inquiry Tips
+                    </h5>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">message</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Be Specific</h6>
+                            <p>Clearly state your quantity needs, delivery preferences, and any specific requirements.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">schedule</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Include Timeline</h6>
+                            <p>Mention when you need the product and your preferred delivery or pickup date.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">handshake</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Be Professional</h6>
+                            <p>Use polite language and provide complete contact information for faster response.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Info Summary -->
+                <div class="seller-summary-card">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">person</i>Seller Information
+                    </h5>
+                    <div class="seller-info">
+                        <div class="seller-name">{{ product.seller.get_full_name }}</div>
+                        <div class="farm-name">{{ product.farm.name }}</div>
+                        <div class="location">
+                            <i class="material-icons me-1">location_on</i>
+                            {{ product.pickup_location }}
+                        </div>
+                        {% if product.delivery_available %}
+                            <div class="delivery-available">
+                                <i class="material-icons me-1">local_shipping</i>
+                                Delivery available
+                                {% if product.delivery_radius_km %}
+                                    ({{ product.delivery_radius_km }}km radius)
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .inquiry-form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-header h2 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-header i {
+        color: var(--primary-color);
+    }
+
+    .inquiry-form {
+        padding: 2rem;
+    }
+
+    .product-summary {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-summary h5 {
+        margin-bottom: 1rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .no-image {
+        width: 100%;
+        height: 100%;
+        background: #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .product-details h6 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .product-details p {
+        margin: 0 0 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .price {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .availability {
+        color: #6c757d;
+    }
+
+    .seller {
+        color: #495057;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section h5 {
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: #fafbfc;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.15);
+        background-color: white;
+    }
+
+    .form-hint {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    .input-group-text {
+        background-color: var(--primary-color);
+        color: white;
+        border: 2px solid var(--primary-color);
+        font-weight: bold;
+    }
+
+    /* Delivery Section */
+    .delivery-section {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+
+    .delivery-toggle .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .delivery-details {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .btn-lg {
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+    /* Sidebar */
+    .sidebar-content {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .tips-card, .seller-summary-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .card-title i {
+        color: var(--primary-color);
+    }
+
+    .tip-item {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .tip-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .tip-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #e3f2fd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .tip-icon i {
+        color: #1976d2;
+        font-size: 1.1rem;
+    }
+
+    .tip-content h6 {
+        margin: 0 0 0.25rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .tip-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6c757d;
+        line-height: 1.4;
+    }
+
+    .seller-info {
+        margin-top: 1rem;
+    }
+
+    .seller-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .farm-name {
+        color: #6c757d;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+
+    .location, .delivery-available {
+        display: flex;
+        align-items: center;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .location i, .delivery-available i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-header {
+            padding: 1.5rem;
+        }
+
+        .inquiry-form {
+            padding: 1rem;
+        }
+
+        .product-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .product-image {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+
+        .form-actions .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deliveryToggle = document.getElementById('{{ form.delivery_required.id_for_label }}');
+        const deliveryDetails = document.getElementById('deliveryDetails');
+        
+        function toggleDeliveryDetails() {
+            if (deliveryToggle.checked) {
+                deliveryDetails.style.display = 'block';
+            } else {
+                deliveryDetails.style.display = 'none';
+            }
+        }
+        
+        deliveryToggle.addEventListener('change', toggleDeliveryDetails);
+        toggleDeliveryDetails(); // Initialize on page load
+    });
+</script>
+{% endblock %}

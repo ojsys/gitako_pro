@@ -1,0 +1,519 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Create Budget - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New Budget</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'budget:list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Budgets
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Budget Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="budgetForm">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Basic Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.name }}
+                                <label for="id_name">Budget Name</label>
+                                <div class="form-text">Give your budget a descriptive name</div>
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.budget_type }}
+                                <label for="id_budget_type">Budget Type</label>
+                                {% if form.budget_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.budget_type.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.status }}
+                                <label for="id_status">Status</label>
+                                {% if form.status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating mb-3">
+                                {{ form.description }}
+                                <label for="id_description">Description (Optional)</label>
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Farm and Location -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Farm & Location</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.farm }}
+                                <label for="id_farm">Farm</label>
+                                {% if form.farm.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.farm.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.block }}
+                                <label for="id_block">Block/Field (Optional)</label>
+                                <div class="form-text">Specify which block or leave empty for entire farm</div>
+                                {% if form.block.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.block.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Association -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Calendar Association (Optional)</h6>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating mb-3">
+                                {{ form.calendar }}
+                                <label for="id_calendar">Link to Crop Calendar</label>
+                                <div class="form-text">Link this budget to a specific crop calendar for better tracking</div>
+                                {% if form.calendar.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.calendar.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Budget Period</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.start_date }}
+                                <label for="id_start_date">Start Date</label>
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.start_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.end_date }}
+                                <label for="id_end_date">End Date</label>
+                                {% if form.end_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.end_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expected Yield and Pricing -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Yield & Pricing Expectations</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.expected_yield }}
+                                <label for="id_expected_yield">Expected Yield (tons/kg)</label>
+                                <div class="form-text">Estimated total harvest quantity</div>
+                                {% if form.expected_yield.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.expected_yield.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.expected_price_per_unit }}
+                                </div>
+                                <div class="form-text">Expected selling price per kg/ton</div>
+                                {% if form.expected_price_per_unit.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.expected_price_per_unit.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expected Revenue Calculation -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Expected Revenue Calculation</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Expected Yield</small>
+                                            <div id="displayYield" class="fw-bold">0 tons</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Price per Unit</small>
+                                            <div id="displayPrice" class="fw-bold">₦0</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Total Expected Revenue</small>
+                                            <div id="displayRevenue" class="fw-bold text-success">₦0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'budget:list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">save</i>
+                            Create Budget
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Budget Templates -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">template</i>
+                    Budget Templates
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Start with a pre-built budget template for common crops</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-success btn-sm" onclick="loadTemplate('maize')">
+                        <i class="material-icons me-1">agriculture</i>
+                        Maize Budget Template
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="loadTemplate('rice')">
+                        <i class="material-icons me-1">grain</i>
+                        Rice Budget Template
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="loadTemplate('tomato')">
+                        <i class="material-icons me-1">local_florist</i>
+                        Tomato Budget Template
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadTemplate('vegetable')">
+                        <i class="material-icons me-1">eco</i>
+                        Vegetable Budget Template
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Planning Guide -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">help_outline</i>
+                    Budget Planning Guide
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>💰 Income Sources</h6>
+                    <ul class="small text-muted">
+                        <li>Primary harvest sales</li>
+                        <li>By-product sales (e.g., crop residue)</li>
+                        <li>Government subsidies</li>
+                        <li>Insurance payouts</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>💸 Common Expenses</h6>
+                    <ul class="small text-muted">
+                        <li>Seeds/seedlings (10-15% of budget)</li>
+                        <li>Fertilizers (20-25% of budget)</li>
+                        <li>Labor costs (30-40% of budget)</li>
+                        <li>Equipment/tools</li>
+                        <li>Transportation</li>
+                        <li>Storage and processing</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>📊 Best Practices</h6>
+                    <ul class="small text-muted">
+                        <li>Add 10-20% buffer for unexpected costs</li>
+                        <li>Track actual vs planned regularly</li>
+                        <li>Review market prices frequently</li>
+                        <li>Plan for seasonal variations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
+                        <i class="material-icons me-1">copy</i>
+                        Copy Existing Budget
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <i class="material-icons me-1">download</i>
+                        Import from Excel
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm">
+                        <i class="material-icons me-1">calculate</i>
+                        Budget Calculator
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-calculate end date based on budget type
+    const budgetTypeSelect = document.getElementById('id_budget_type');
+    const startDateInput = document.getElementById('id_start_date');
+    const endDateInput = document.getElementById('id_end_date');
+    const yieldInput = document.getElementById('id_expected_yield');
+    const priceInput = document.getElementById('id_expected_price_per_unit');
+    
+    function updateEndDate() {
+        if (budgetTypeSelect.value && startDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            let monthsToAdd = 3; // Default 3 months
+            
+            switch(budgetTypeSelect.value) {
+                case 'seasonal':
+                    monthsToAdd = 4;
+                    break;
+                case 'annual':
+                    monthsToAdd = 12;
+                    break;
+                case 'project':
+                    monthsToAdd = 6;
+                    break;
+                case 'block':
+                    monthsToAdd = 3;
+                    break;
+                default:
+                    monthsToAdd = 3;
+            }
+            
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + monthsToAdd);
+            endDateInput.value = endDate.toISOString().split('T')[0];
+        }
+    }
+    
+    function updateRevenueCalculation() {
+        const yield_val = parseFloat(yieldInput.value) || 0;
+        const price_val = parseFloat(priceInput.value) || 0;
+        const revenue = yield_val * price_val;
+        
+        document.getElementById('displayYield').textContent = yield_val.toFixed(2) + ' tons';
+        document.getElementById('displayPrice').textContent = '₦' + price_val.toLocaleString();
+        document.getElementById('displayRevenue').textContent = '₦' + revenue.toLocaleString();
+    }
+    
+    budgetTypeSelect.addEventListener('change', updateEndDate);
+    startDateInput.addEventListener('change', updateEndDate);
+    yieldInput.addEventListener('input', updateRevenueCalculation);
+    priceInput.addEventListener('input', updateRevenueCalculation);
+    
+    // Set default start date to today
+    if (!startDateInput.value) {
+        const today = new Date();
+        startDateInput.value = today.toISOString().split('T')[0];
+    }
+    
+    // Handle farm selection change to load blocks and calendars
+    const farmSelect = document.getElementById('id_farm');
+    const blockSelect = document.getElementById('id_block');
+    const calendarSelect = document.getElementById('id_calendar');
+    
+    farmSelect.addEventListener('change', function() {
+        const farmId = this.value;
+        
+        // Store original options if not already stored
+        if (!blockSelect.dataset.originalOptions) {
+            blockSelect.dataset.originalOptions = blockSelect.innerHTML;
+        }
+        if (!calendarSelect.dataset.originalOptions) {
+            calendarSelect.dataset.originalOptions = calendarSelect.innerHTML;
+        }
+        
+        // Reset to empty option
+        blockSelect.innerHTML = '<option value="">Select a block (optional)</option>';
+        calendarSelect.innerHTML = '<option value="">Select a calendar (optional)</option>';
+        
+        if (farmId) {
+            // Load blocks for selected farm
+            fetch(`{% url 'budget:ajax_load_blocks' %}?farm_id=${farmId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.blocks.forEach(block => {
+                        const option = document.createElement('option');
+                        option.value = block.id;
+                        option.textContent = block.name;
+                        blockSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading blocks:', error));
+            
+            // Load calendars for selected farm
+            fetch(`{% url 'budget:ajax_load_calendars' %}?farm_id=${farmId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.calendars.forEach(calendar => {
+                        const option = document.createElement('option');
+                        option.value = calendar.id;
+                        option.textContent = `${calendar.name} (${calendar.crop} - ${calendar.season} ${calendar.year})`;
+                        calendarSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading calendars:', error));
+        }
+    });
+});
+
+// Budget template functions
+function loadTemplate(cropType) {
+    const templates = {
+        maize: {
+            name: 'Maize Budget 2024',
+            description: 'Comprehensive budget for maize cultivation including all major expenses and expected returns',
+            expected_yield: 5.5,
+            expected_price_per_unit: 450000,
+            budget_type: 'seasonal'
+        },
+        rice: {
+            name: 'Rice Production Budget 2024',
+            description: 'Rice cultivation budget covering wet season production cycle',
+            expected_yield: 6.2,
+            expected_price_per_unit: 500000,
+            budget_type: 'seasonal'
+        },
+        tomato: {
+            name: 'Tomato Farming Budget 2024',
+            description: 'Intensive tomato production budget with greenhouse considerations',
+            expected_yield: 15.0,
+            expected_price_per_unit: 300000,
+            budget_type: 'seasonal'
+        },
+        vegetable: {
+            name: 'Mixed Vegetable Budget 2024',
+            description: 'Diversified vegetable production budget for year-round cultivation',
+            expected_yield: 8.0,
+            expected_price_per_unit: 200000,
+            budget_type: 'seasonal'
+        }
+    };
+    
+    const template = templates[cropType];
+    if (template) {
+        document.getElementById('id_name').value = template.name;
+        document.getElementById('id_description').value = template.description;
+        document.getElementById('id_expected_yield').value = template.expected_yield;
+        document.getElementById('id_expected_price_per_unit').value = template.expected_price_per_unit;
+        document.getElementById('id_budget_type').value = template.budget_type;
+        
+        // Trigger events to update calculations
+        document.getElementById('id_budget_type').dispatchEvent(new Event('change'));
+        document.getElementById('id_expected_yield').dispatchEvent(new Event('input'));
+        document.getElementById('id_expected_price_per_unit').dispatchEvent(new Event('input'));
+        
+        // Show success message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <strong>Template Loaded!</strong> ${template.name} template has been applied to your budget.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('form'));
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+}
+</script>
+{% endblock %}

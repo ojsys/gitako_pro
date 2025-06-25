@@ -1,0 +1,344 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Update Activity - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Update Activity</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'calendar:activity_detail' object.pk %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="material-icons me-1">visibility</i>
+            View Activity
+        </a>
+        <a href="{% url 'calendar:activities' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Activities
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Activity Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Basic Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.calendar.id_for_label }}" class="form-label">Calendar <span class="text-danger">*</span></label>
+                                {{ form.calendar }}
+                                {% if form.calendar.errors %}
+                                    <div class="text-danger small">{{ form.calendar.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.activity_type.id_for_label }}" class="form-label">Activity Type <span class="text-danger">*</span></label>
+                                {{ form.activity_type }}
+                                {% if form.activity_type.errors %}
+                                    <div class="text-danger small">{{ form.activity_type.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Activity Name <span class="text-danger">*</span></label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority and Status -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Priority & Status</h6>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority <span class="text-danger">*</span></label>
+                                {{ form.priority }}
+                                {% if form.priority.errors %}
+                                    <div class="text-danger small">{{ form.priority.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.assigned_to.id_for_label }}" class="form-label">Assigned To</label>
+                                {{ form.assigned_to }}
+                                {% if form.assigned_to.errors %}
+                                    <div class="text-danger small">{{ form.assigned_to.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduling -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Scheduling</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">Scheduled Date <span class="text-danger">*</span></label>
+                                {{ form.scheduled_date }}
+                                {% if form.scheduled_date.errors %}
+                                    <div class="text-danger small">{{ form.scheduled_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.scheduled_end_date.id_for_label }}" class="form-label">Scheduled End Date</label>
+                                {{ form.scheduled_end_date }}
+                                {% if form.scheduled_end_date.errors %}
+                                    <div class="text-danger small">{{ form.scheduled_end_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.actual_start_date.id_for_label }}" class="form-label">Actual Start Date</label>
+                                {{ form.actual_start_date }}
+                                {% if form.actual_start_date.errors %}
+                                    <div class="text-danger small">{{ form.actual_start_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.actual_end_date.id_for_label }}" class="form-label">Actual End Date</label>
+                                {{ form.actual_end_date }}
+                                {% if form.actual_end_date.errors %}
+                                    <div class="text-danger small">{{ form.actual_end_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost and Labor -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Cost & Labor</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="{{ form.estimated_cost.id_for_label }}" class="form-label">Estimated Cost</label>
+                                {{ form.estimated_cost }}
+                                {% if form.estimated_cost.errors %}
+                                    <div class="text-danger small">{{ form.estimated_cost.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="{{ form.actual_cost.id_for_label }}" class="form-label">Actual Cost</label>
+                                {{ form.actual_cost }}
+                                {% if form.actual_cost.errors %}
+                                    <div class="text-danger small">{{ form.actual_cost.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="{{ form.labor_hours.id_for_label }}" class="form-label">Labor Hours</label>
+                                {{ form.labor_hours }}
+                                {% if form.labor_hours.errors %}
+                                    <div class="text-danger small">{{ form.labor_hours.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="{{ form.actual_labor_hours.id_for_label }}" class="form-label">Actual Labor Hours</label>
+                                {{ form.actual_labor_hours }}
+                                {% if form.actual_labor_hours.errors %}
+                                    <div class="text-danger small">{{ form.actual_labor_hours.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resources -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Resources</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.materials_needed.id_for_label }}" class="form-label">Materials Needed</label>
+                                {{ form.materials_needed }}
+                                {% if form.materials_needed.errors %}
+                                    <div class="text-danger small">{{ form.materials_needed.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.equipment_needed.id_for_label }}" class="form-label">Equipment Needed</label>
+                                {{ form.equipment_needed }}
+                                {% if form.equipment_needed.errors %}
+                                    <div class="text-danger small">{{ form.equipment_needed.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Additional Options</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.weather_dependent }}
+                                <label class="form-check-label" for="{{ form.weather_dependent.id_for_label }}">
+                                    Weather Dependent
+                                </label>
+                                {% if form.weather_dependent.errors %}
+                                    <div class="text-danger small">{{ form.weather_dependent.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="mb-3">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                    <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'calendar:activity_detail' object.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">save</i>
+                            Update Activity
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Activity Info -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">info</i>
+                    Activity Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>📊 Status</h6>
+                    <span class="badge bg-{% if object.status == 'completed' %}success{% elif object.status == 'in_progress' %}warning{% elif object.status == 'cancelled' %}danger{% elif object.is_overdue %}danger{% else %}secondary{% endif %}">
+                        {% if object.is_overdue and object.status not in 'completed,cancelled' %}
+                            Overdue
+                        {% else %}
+                            {{ object.get_status_display }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>📅 Timeline</h6>
+                    <ul class="small text-muted">
+                        <li><strong>Created:</strong> {{ object.created_at|date:"M d, Y" }}</li>
+                        <li><strong>Last Updated:</strong> {{ object.updated_at|date:"M d, Y" }}</li>
+                        <li><strong>Created By:</strong> {{ object.created_by.get_full_name }}</li>
+                        {% if object.days_until_due %}
+                            <li><strong>Due in:</strong> {{ object.days_until_due }} days</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                {% if object.estimated_cost or object.actual_cost %}
+                <div class="mb-3">
+                    <h6>💰 Cost Tracking</h6>
+                    <ul class="small text-muted">
+                        {% if object.estimated_cost %}
+                            <li><strong>Estimated:</strong> ${{ object.estimated_cost }}</li>
+                        {% endif %}
+                        {% if object.actual_cost %}
+                            <li><strong>Actual:</strong> ${{ object.actual_cost }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if object.status == 'pending' %}
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="updateStatus('in_progress')">
+                            <i class="material-icons me-1">play_arrow</i>
+                            Start Activity
+                        </button>
+                    {% endif %}
+                    {% if object.status == 'in_progress' %}
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="updateStatus('completed')">
+                            <i class="material-icons me-1">check_circle</i>
+                            Mark Complete
+                        </button>
+                    {% endif %}
+                    <button type="button" class="btn btn-outline-info btn-sm">
+                        <i class="material-icons me-1">content_copy</i>
+                        Duplicate Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateStatus(status) {
+    if (confirm('Are you sure you want to update the activity status?')) {
+        // This would be implemented with AJAX in a real application
+        alert('Status update functionality would be implemented here');
+    }
+}
+</script>
+{% endblock %}

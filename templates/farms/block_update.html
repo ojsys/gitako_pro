@@ -1,0 +1,309 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Edit {{ farm_block.name }} - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Edit Block: {{ farm_block.name }}</h1>
+        <div>
+            <a href="{% url 'farms:block_detail' pk=farm_block.pk %}" class="btn btn-outline-secondary me-2">
+                <i class="material-icons me-1">arrow_back</i>Back to Details
+            </a>
+            <a href="{% url 'farms:blocks' %}" class="btn btn-outline-secondary">
+                <i class="material-icons me-1">list</i>All Blocks
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="material-icons me-2">edit</i>Update Block Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.farm.id_for_label }}" class="form-label">Farm *</label>
+                                    {{ form.farm }}
+                                    {% if form.farm.errors %}
+                                        <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">Block Name *</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.size.id_for_label }}" class="form-label">Size (hectares) *</label>
+                                    {{ form.size }}
+                                    {% if form.size.errors %}
+                                        <div class="text-danger small">{{ form.size.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.crop.id_for_label }}" class="form-label">Crop</label>
+                                    {{ form.crop }}
+                                    {% if form.crop.errors %}
+                                        <div class="text-danger small">{{ form.crop.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.variety.id_for_label }}" class="form-label">Variety</label>
+                                    {{ form.variety }}
+                                    {% if form.variety.errors %}
+                                        <div class="text-danger small">{{ form.variety.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.plant_population.id_for_label }}" class="form-label">Plant Population (per hectare)</label>
+                                    {{ form.plant_population }}
+                                    {% if form.plant_population.errors %}
+                                        <div class="text-danger small">{{ form.plant_population.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.expected_yield.id_for_label }}" class="form-label">Expected Yield (tons)</label>
+                                    {{ form.expected_yield }}
+                                    {% if form.expected_yield.errors %}
+                                        <div class="text-danger small">{{ form.expected_yield.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.soil_ph.id_for_label }}" class="form-label">Soil pH</label>
+                                    {{ form.soil_ph }}
+                                    {% if form.soil_ph.errors %}
+                                        <div class="text-danger small">{{ form.soil_ph.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.block_manager.id_for_label }}" class="form-label">Block Manager</label>
+                                    {{ form.block_manager }}
+                                    {% if form.block_manager.errors %}
+                                        <div class="text-danger small">{{ form.block_manager.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.irrigation_type.id_for_label }}" class="form-label">Irrigation Type</label>
+                                    {{ form.irrigation_type }}
+                                    {% if form.irrigation_type.errors %}
+                                        <div class="text-danger small">{{ form.irrigation_type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.planting_date.id_for_label }}" class="form-label">Planting Date</label>
+                                    {{ form.planting_date }}
+                                    {% if form.planting_date.errors %}
+                                        <div class="text-danger small">{{ form.planting_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.expected_harvest_date.id_for_label }}" class="form-label">Expected Harvest Date</label>
+                                    {{ form.expected_harvest_date }}
+                                    {% if form.expected_harvest_date.errors %}
+                                        <div class="text-danger small">{{ form.expected_harvest_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.actual_harvest_date.id_for_label }}" class="form-label">Actual Harvest Date</label>
+                                    {{ form.actual_harvest_date }}
+                                    {% if form.actual_harvest_date.errors %}
+                                        <div class="text-danger small">{{ form.actual_harvest_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'farms:block_detail' pk=farm_block.pk %}" class="btn btn-outline-secondary">
+                                <i class="material-icons me-1">cancel</i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons me-1">save</i>Update Block
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="material-icons me-2">info</i>Current Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td class="text-muted">Current Size:</td>
+                            <td class="fw-bold">{{ block.size }} ha</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Current Crop:</td>
+                            <td class="fw-bold">
+                                {% if block.crop %}{{ block.crop.name }}{% else %}None{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Status:</td>
+                            <td>
+                                <span class="badge bg-{% if block.is_active %}success{% else %}secondary{% endif %}">
+                                    {{ block.planting_status }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Created:</td>
+                            <td>{{ block.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Last Updated:</td>
+                            <td>{{ block.updated_at|date:"M d, Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="material-icons me-2">help</i>Update Guidelines
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">warning</i>Size Changes</h6>
+                        <p class="small text-muted">Changing block size affects farm area calculations. Ensure the new size doesn't exceed available farm area.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">eco</i>Crop Changes</h6>
+                        <p class="small text-muted">Changing crops may affect existing calendar activities and budget plans.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="material-icons me-1">event</i>Dates</h6>
+                        <p class="small text-muted">Set actual harvest date only when harvesting is complete.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 15px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    .card {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .table-borderless td {
+        border: none;
+        padding: 0.3rem 0;
+    }
+    
+    input[type="date"] {
+        position: relative;
+    }
+</style>
+
+<script>
+    // Auto-populate variety dropdown based on selected crop
+    document.getElementById('id_crop').addEventListener('change', function() {
+        const cropId = this.value;
+        const varietySelect = document.getElementById('id_variety');
+        
+        // Clear current options
+        varietySelect.innerHTML = '<option value="">Select a variety</option>';
+        
+        if (cropId) {
+            // Here you would fetch varieties for the selected crop via AJAX
+            // For now, we'll leave it as manual selection
+        }
+    });
+</script>
+{% endblock %}

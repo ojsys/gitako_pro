@@ -1,0 +1,116 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Delete Expense Item - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Delete Expense Item</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'budget:detail' object.budget.pk %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Budget
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">warning</i>
+                    Confirm Deletion
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> This action cannot be undone. Deleting this expense item will:
+                    <ul class="mb-0 mt-2">
+                        <li>Remove the expense item permanently</li>
+                        <li>Update the budget totals automatically</li>
+                        <li>Affect budget calculations and reports</li>
+                    </ul>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Expense Item Details:</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ object.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Budget:</th>
+                                <td>{{ object.budget.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Category:</th>
+                                <td>{{ object.category.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Planned Amount:</th>
+                                <td>₦{{ object.planned_amount|floatformat:2 }}</td>
+                            </tr>
+                            {% if object.actual_amount %}
+                            <tr>
+                                <th>Actual Amount:</th>
+                                <td>₦{{ object.actual_amount|floatformat:2 }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if object.supplier %}
+                            <tr>
+                                <th>Supplier:</th>
+                                <td>{{ object.supplier }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if object.expense_date %}
+                            <tr>
+                                <th>Expense Date:</th>
+                                <td>{{ object.expense_date|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if object.receipt_number %}
+                            <tr>
+                                <th>Receipt Number:</th>
+                                <td>{{ object.receipt_number }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if object.description %}
+                        <h6>Description:</h6>
+                        <p class="text-muted">{{ object.description }}</p>
+                        {% endif %}
+                        
+                        <div class="alert alert-info">
+                            <strong>Budget Impact:</strong>
+                            <ul class="mb-0">
+                                <li>This will reduce planned expenses by ₦{{ object.planned_amount|floatformat:2 }}</li>
+                                {% if object.actual_amount %}
+                                <li>This will reduce actual expenses by ₦{{ object.actual_amount|floatformat:2 }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'budget:detail' object.budget.pk %}" class="btn btn-outline-secondary">
+                            <i class="material-icons me-1">cancel</i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="material-icons me-1">delete</i>
+                            Delete Expense Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

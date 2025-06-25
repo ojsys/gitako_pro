@@ -1,0 +1,947 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}List New Product - Gitako Marketplace{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="listing-header mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="header-icon me-3">
+                        <i class="material-icons">storefront</i>
+                    </div>
+                    <div>
+                        <h1 class="h2 mb-1 fw-bold">List Your Product</h1>
+                        <p class="text-muted mb-0">Reach thousands of buyers in the Gitako marketplace</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'marketplace:list' %}" class="btn btn-outline-primary me-2">
+                    <i class="material-icons me-1">arrow_back</i>Back to Marketplace
+                </a>
+                <a href="{% url 'marketplace:my_products' %}" class="btn btn-outline-secondary">
+                    <i class="material-icons me-1">inventory_2</i>My Products
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-xl-8 col-lg-7">
+            <form method="post" enctype="multipart/form-data" class="product-form">
+                {% csrf_token %}
+                
+                <!-- Step 1: Basic Information -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">1</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Basic Information</h4>
+                            <p class="section-subtitle">Tell buyers about your product</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="form-group">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">title</i>Product Title *
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="error-message">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-hint">Choose a clear, descriptive title for your product</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">category</i>Category *
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="error-message">{{ form.category.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">description</i>Product Description *
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="error-message">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Provide detailed information about quality, characteristics, and benefits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Crop Details -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">2</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Crop Details</h4>
+                            <p class="section-subtitle">Specify what you're selling</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.crop.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">eco</i>Crop *
+                                    </label>
+                                    {{ form.crop }}
+                                    {% if form.crop.errors %}
+                                        <div class="error-message">{{ form.crop.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.variety.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">grain</i>Variety
+                                    </label>
+                                    {{ form.variety }}
+                                    {% if form.variety.errors %}
+                                        <div class="error-message">{{ form.variety.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-hint">Specify the variety if applicable</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Pricing & Quantity -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">3</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Pricing & Quantity</h4>
+                            <p class="section-subtitle">Set your price and available quantity</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="pricing-grid">
+                            <div class="pricing-item">
+                                <label for="{{ form.quantity_available.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">inventory</i>Available Quantity *
+                                </label>
+                                {{ form.quantity_available }}
+                                {% if form.quantity_available.errors %}
+                                    <div class="error-message">{{ form.quantity_available.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="pricing-item">
+                                <label for="{{ form.unit.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">straighten</i>Unit *
+                                </label>
+                                {{ form.unit }}
+                                {% if form.unit.errors %}
+                                    <div class="error-message">{{ form.unit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="pricing-item">
+                                <label for="{{ form.price_per_unit.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">monetization_on</i>Price per Unit *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.price_per_unit }}
+                                </div>
+                                {% if form.price_per_unit.errors %}
+                                    <div class="error-message">{{ form.price_per_unit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="pricing-item">
+                                <label for="{{ form.minimum_order.id_for_label }}" class="form-label">
+                                    <i class="material-icons me-2">shopping_cart</i>Minimum Order
+                                </label>
+                                {{ form.minimum_order }}
+                                {% if form.minimum_order.errors %}
+                                    <div class="error-message">{{ form.minimum_order.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Quality & Certification -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">4</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Quality & Certification</h4>
+                            <p class="section-subtitle">Build trust with quality information</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.quality_grade.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">star</i>Quality Grade
+                                    </label>
+                                    {{ form.quality_grade }}
+                                    {% if form.quality_grade.errors %}
+                                        <div class="error-message">{{ form.quality_grade.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.harvest_date.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">event</i>Harvest Date
+                                    </label>
+                                    {{ form.harvest_date }}
+                                    {% if form.harvest_date.errors %}
+                                        <div class="error-message">{{ form.harvest_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="organic-checkbox">
+                                        <div class="form-check">
+                                            {{ form.organic_certified }}
+                                            <label class="form-check-label" for="{{ form.organic_certified.id_for_label }}">
+                                                <i class="material-icons me-2">verified</i>Organic Certified
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% if form.organic_certified.errors %}
+                                        <div class="error-message">{{ form.organic_certified.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.certification_details.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">assignment_turned_in</i>Certification Details
+                            </label>
+                            {{ form.certification_details }}
+                            {% if form.certification_details.errors %}
+                                <div class="error-message">{{ form.certification_details.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Include certification numbers, organic body details, etc.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Location & Logistics -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">5</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Location & Logistics</h4>
+                            <p class="section-subtitle">How buyers can get your product</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="{{ form.pickup_location.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">location_on</i>Pickup Location *
+                            </label>
+                            {{ form.pickup_location }}
+                            {% if form.pickup_location.errors %}
+                                <div class="error-message">{{ form.pickup_location.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Provide a clear address or landmark for pickup</div>
+                        </div>
+
+                        <div class="delivery-section">
+                            <div class="delivery-toggle mb-3">
+                                <div class="form-check form-switch">
+                                    {{ form.delivery_available }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.delivery_available.id_for_label }}">
+                                        <i class="material-icons me-2">local_shipping</i>I offer delivery service
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="delivery-details" id="deliveryDetails" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="{{ form.delivery_radius_km.id_for_label }}" class="form-label">
+                                                <i class="material-icons me-2">room</i>Delivery Radius (km)
+                                            </label>
+                                            {{ form.delivery_radius_km }}
+                                            {% if form.delivery_radius_km.errors %}
+                                                <div class="error-message">{{ form.delivery_radius_km.errors.0 }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="{{ form.delivery_cost_per_km.id_for_label }}" class="form-label">
+                                                <i class="material-icons me-2">attach_money</i>Cost per km (₦)
+                                            </label>
+                                            {{ form.delivery_cost_per_km }}
+                                            {% if form.delivery_cost_per_km.errors %}
+                                                <div class="error-message">{{ form.delivery_cost_per_km.errors.0 }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Additional Details -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">6</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Additional Details</h4>
+                            <p class="section-subtitle">Storage, processing, and expiry information</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.processing_method.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">build</i>Processing Method
+                                    </label>
+                                    {{ form.processing_method }}
+                                    {% if form.processing_method.errors %}
+                                        <div class="error-message">{{ form.processing_method.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.listing_expiry.id_for_label }}" class="form-label">
+                                        <i class="material-icons me-2">schedule</i>Listing Expiry *
+                                    </label>
+                                    {{ form.listing_expiry }}
+                                    {% if form.listing_expiry.errors %}
+                                        <div class="error-message">{{ form.listing_expiry.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.storage_conditions.id_for_label }}" class="form-label">
+                                <i class="material-icons me-2">warehouse</i>Storage Conditions
+                            </label>
+                            {{ form.storage_conditions }}
+                            {% if form.storage_conditions.errors %}
+                                <div class="error-message">{{ form.storage_conditions.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-hint">Describe how the product is stored (temperature, humidity, etc.)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Product Image -->
+                <div class="form-section mb-4">
+                    <div class="section-header">
+                        <div class="step-number">7</div>
+                        <div class="section-info">
+                            <h4 class="section-title">Product Images</h4>
+                            <p class="section-subtitle">Show your product to potential buyers</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="image-upload-area">
+                            <div class="upload-zone" onclick="document.getElementById('{{ form.primary_image.id_for_label }}').click();">
+                                <div class="upload-icon">
+                                    <i class="material-icons">cloud_upload</i>
+                                </div>
+                                <h5>Upload Product Image</h5>
+                                <p class="text-muted">Click to browse or drag and drop your image here</p>
+                                <div class="upload-specs">
+                                    <span class="badge bg-light text-dark">JPG, PNG or WEBP</span>
+                                    <span class="badge bg-light text-dark">Max 5MB</span>
+                                </div>
+                            </div>
+                            {{ form.primary_image }}
+                            {% if form.primary_image.errors %}
+                                <div class="error-message">{{ form.primary_image.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Actions -->
+                <div class="form-actions">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'marketplace:list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="material-icons me-2">cancel</i>Cancel
+                        </a>
+                        <div class="submit-buttons">
+                            <button type="submit" name="action" value="draft" class="btn btn-outline-primary btn-lg me-3">
+                                <i class="material-icons me-2">save</i>Save as Draft
+                            </button>
+                            <button type="submit" name="action" value="publish" class="btn btn-primary btn-lg">
+                                <i class="material-icons me-2">publish</i>Publish Listing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="sidebar-content">
+                <!-- Progress Tracker -->
+                <div class="progress-card mb-4">
+                    <h5 class="card-title mb-3">
+                        <i class="material-icons me-2">timeline</i>Your Progress
+                    </h5>
+                    <div class="progress-steps">
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-circle">1</div>
+                            <span>Basic Info</span>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-circle">2</div>
+                            <span>Crop Details</span>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-circle">3</div>
+                            <span>Pricing</span>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <div class="step-circle">4</div>
+                            <span>Quality</span>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <div class="step-circle">5</div>
+                            <span>Location</span>
+                        </div>
+                        <div class="progress-step" data-step="6">
+                            <div class="step-circle">6</div>
+                            <span>Details</span>
+                        </div>
+                        <div class="progress-step" data-step="7">
+                            <div class="step-circle">7</div>
+                            <span>Images</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="tips-card mb-4">
+                    <h5 class="card-title mb-3">
+                        <i class="material-icons me-2">lightbulb</i>Listing Tips
+                    </h5>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">camera_alt</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>High-Quality Photos</h6>
+                            <p>Use natural lighting and show your product from multiple angles. Clear photos increase buyer trust by 40%.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">description</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Detailed Descriptions</h6>
+                            <p>Include harvest date, growing methods, and storage conditions. Transparency builds buyer confidence.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="material-icons">trending_up</i>
+                        </div>
+                        <div class="tip-content">
+                            <h6>Competitive Pricing</h6>
+                            <p>Research similar products in your area. Fair pricing leads to faster sales and repeat customers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Stats -->
+                <div class="stats-card">
+                    <h5 class="card-title mb-3">
+                        <i class="material-icons me-2">insights</i>Success Stats
+                    </h5>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">of listings with photos sell faster</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">₦2.4M</div>
+                        <div class="stat-label">average monthly sales volume</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">48hrs</div>
+                        <div class="stat-label">average time to first inquiry</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Header Styling */
+    .listing-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .section-info h4 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .section-info p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: #fafbfc;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.15);
+        background-color: white;
+    }
+
+    .form-hint {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Pricing Grid */
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .pricing-item .form-control {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .input-group-text {
+        background-color: var(--primary-color);
+        color: white;
+        border: 2px solid var(--primary-color);
+        font-weight: bold;
+    }
+
+    /* Organic Checkbox */
+    .organic-checkbox {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 2px dashed #dee2e6;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    /* Delivery Section */
+    .delivery-section {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .delivery-toggle .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    .delivery-details {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Image Upload */
+    .image-upload-area {
+        text-align: center;
+    }
+
+    .upload-zone {
+        border: 3px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #fafbfc;
+    }
+
+    .upload-zone:hover {
+        border-color: var(--primary-color);
+        background-color: #f0f8f0;
+    }
+
+    .upload-icon i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .upload-specs {
+        margin-top: 1rem;
+    }
+
+    .upload-specs .badge {
+        margin: 0 0.25rem;
+    }
+
+    #id_primary_image {
+        display: none;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        margin-top: 2rem;
+    }
+
+    .btn-lg {
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 10px;
+    }
+
+    /* Sidebar */
+    .sidebar-content {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .progress-card, .tips-card, .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-title i {
+        color: var(--primary-color);
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .progress-step {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .progress-step.active {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .step-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-right: 0.75rem;
+    }
+
+    .progress-step.active .step-circle {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    /* Tips */
+    .tip-item {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .tip-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .tip-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #e3f2fd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .tip-icon i {
+        color: #1976d2;
+        font-size: 1.1rem;
+    }
+
+    .tip-content h6 {
+        margin: 0 0 0.25rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .tip-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6c757d;
+        line-height: 1.4;
+    }
+
+    /* Stats */
+    .stat-item {
+        text-align: center;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .stat-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .listing-header {
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .step-number {
+            margin-bottom: 0.5rem;
+            margin-right: 0;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+        }
+
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .submit-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    // Delivery toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const deliveryToggle = document.getElementById('{{ form.delivery_available.id_for_label }}');
+        const deliveryDetails = document.getElementById('deliveryDetails');
+        
+        function toggleDeliveryDetails() {
+            if (deliveryToggle.checked) {
+                deliveryDetails.style.display = 'block';
+            } else {
+                deliveryDetails.style.display = 'none';
+            }
+        }
+        
+        deliveryToggle.addEventListener('change', toggleDeliveryDetails);
+        toggleDeliveryDetails(); // Initialize on page load
+        
+        // Progress tracking
+        const formSections = document.querySelectorAll('.form-section');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        
+        // Simple scroll-based progress tracking
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset;
+            const windowHeight = window.innerHeight;
+            
+            formSections.forEach((section, index) => {
+                const sectionTop = section.offsetTop - 200;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
+                    // Remove active class from all steps
+                    progressSteps.forEach(step => step.classList.remove('active'));
+                    // Add active class to current step
+                    if (progressSteps[index]) {
+                        progressSteps[index].classList.add('active');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ activity.name }} - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ activity.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'calendar:activity_edit' activity.pk %}" class="btn btn-sm btn-primary">
+                <i class="material-icons me-1">edit</i>
+                Edit
+            </a>
+            {% if activity.status == 'pending' %}
+            <a href="{% url 'calendar:activity_start' activity.pk %}?next={% url 'calendar:activity_detail' activity.pk %}" class="btn btn-sm btn-success">
+                <i class="material-icons me-1">play_arrow</i>
+                Start
+            </a>
+            {% elif activity.status == 'in_progress' %}
+            <a href="{% url 'calendar:activity_complete' activity.pk %}?next={% url 'calendar:activity_detail' activity.pk %}" class="btn btn-sm btn-success">
+                <i class="material-icons me-1">check</i>
+                Complete
+            </a>
+            {% endif %}
+            {% if activity.status != 'completed' %}
+            <a href="{% url 'calendar:activity_delete' activity.pk %}" class="btn btn-sm btn-outline-danger">
+                <i class="material-icons me-1">delete</i>
+                Delete
+            </a>
+            {% endif %}
+        </div>
+        <a href="{% url 'calendar:activities' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Activities
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Activity Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Activity Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Calendar:</strong> {{ activity.calendar.name }}</p>
+                        <p><strong>Farm:</strong> {{ activity.calendar.farm.name }}</p>
+                        {% if activity.calendar.block %}
+                            <p><strong>Block:</strong> {{ activity.calendar.block.name }}</p>
+                        {% endif %}
+                        <p><strong>Crop:</strong> {{ activity.calendar.crop.name }}</p>
+                        <p><strong>Activity Type:</strong> {{ activity.get_activity_type_display }}</p>
+                        <p><strong>Priority:</strong> 
+                            <span class="badge bg-{% if activity.priority == 'urgent' %}danger{% elif activity.priority == 'high' %}warning{% elif activity.priority == 'medium' %}info{% else %}secondary{% endif %}">
+                                {{ activity.get_priority_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-{% if activity.status == 'completed' %}success{% elif activity.status == 'in_progress' %}warning{% elif activity.status == 'cancelled' %}danger{% elif activity.is_overdue %}danger{% else %}secondary{% endif %}">
+                                {% if activity.is_overdue and activity.status not in 'completed,cancelled' %}
+                                    Overdue
+                                {% else %}
+                                    {{ activity.get_status_display }}
+                                {% endif %}
+                            </span>
+                        </p>
+                        {% if activity.assigned_to %}
+                            <p><strong>Assigned To:</strong> {{ activity.assigned_to.get_full_name }}</p>
+                        {% endif %}
+                        <p><strong>Scheduled Date:</strong> {{ activity.scheduled_date|date:"M d, Y" }}</p>
+                        {% if activity.scheduled_end_date %}
+                            <p><strong>Scheduled End:</strong> {{ activity.scheduled_end_date|date:"M d, Y" }}</p>
+                        {% endif %}
+                        {% if activity.weather_dependent %}
+                            <p><strong>Weather Dependent:</strong> <i class="material-icons text-warning">wb_sunny</i> Yes</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if activity.description %}
+                <div class="mt-3">
+                    <h6>Description</h6>
+                    <p class="text-muted">{{ activity.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Progress Tracking</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Scheduled Timeline</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Start:</strong> {{ activity.scheduled_date|date:"M d, Y" }}</li>
+                            {% if activity.scheduled_end_date %}
+                                <li><strong>End:</strong> {{ activity.scheduled_end_date|date:"M d, Y" }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Actual Timeline</h6>
+                        <ul class="list-unstyled">
+                            {% if activity.actual_start_date %}
+                                <li><strong>Started:</strong> {{ activity.actual_start_date|date:"M d, Y" }}</li>
+                            {% else %}
+                                <li class="text-muted">Not started yet</li>
+                            {% endif %}
+                            {% if activity.actual_end_date %}
+                                <li><strong>Completed:</strong> {{ activity.actual_end_date|date:"M d, Y" }}</li>
+                            {% elif activity.status == 'completed' %}
+                                <li class="text-muted">Completed (date not recorded)</li>
+                            {% else %}
+                                <li class="text-muted">Not completed yet</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost and Labor -->
+        {% if activity.estimated_cost or activity.actual_cost or activity.labor_hours or activity.actual_labor_hours %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Cost & Labor Tracking</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Cost</h6>
+                        {% if activity.estimated_cost %}
+                            <p><strong>Estimated:</strong> ${{ activity.estimated_cost }}</p>
+                        {% endif %}
+                        {% if activity.actual_cost %}
+                            <p><strong>Actual:</strong> ${{ activity.actual_cost }}</p>
+                        {% endif %}
+                        {% if activity.estimated_cost and activity.actual_cost %}
+                            {% with variance=activity.actual_cost|floatformat:2|add:0|add:activity.estimated_cost|floatformat:2|add:0 %}
+                                <p><strong>Variance:</strong> 
+                                    <span class="{% if variance > 0 %}text-danger{% elif variance < 0 %}text-success{% else %}text-muted{% endif %}">
+                                        ${{ variance|floatformat:2 }}
+                                    </span>
+                                </p>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Labor Hours</h6>
+                        {% if activity.labor_hours %}
+                            <p><strong>Estimated:</strong> {{ activity.labor_hours }} hours</p>
+                        {% endif %}
+                        {% if activity.actual_labor_hours %}
+                            <p><strong>Actual:</strong> {{ activity.actual_labor_hours }} hours</p>
+                        {% endif %}
+                        {% if activity.labor_hours and activity.actual_labor_hours %}
+                            {% with variance=activity.actual_labor_hours|add:activity.labor_hours|add:0 %}
+                                <p><strong>Variance:</strong> 
+                                    <span class="{% if variance > 0 %}text-danger{% elif variance < 0 %}text-success{% else %}text-muted{% endif %}">
+                                        {{ variance }} hours
+                                    </span>
+                                </p>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Resources -->
+        {% if activity.materials_needed or activity.equipment_needed %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Resources Required</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if activity.materials_needed %}
+                    <div class="col-md-6">
+                        <h6>Materials Needed</h6>
+                        <div class="text-muted">{{ activity.materials_needed|linebreaks }}</div>
+                    </div>
+                    {% endif %}
+                    {% if activity.equipment_needed %}
+                    <div class="col-md-6">
+                        <h6>Equipment Needed</h6>
+                        <div class="text-muted">{{ activity.equipment_needed|linebreaks }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Notes -->
+        {% if activity.notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Notes</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-muted">{{ activity.notes|linebreaks }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if activity.status == 'pending' %}
+                        <button type="button" class="btn btn-success btn-sm" onclick="updateStatus('in_progress')">
+                            <i class="material-icons me-1">play_arrow</i>
+                            Start Activity
+                        </button>
+                    {% endif %}
+                    {% if activity.status == 'in_progress' %}
+                        <button type="button" class="btn btn-success btn-sm" onclick="updateStatus('completed')">
+                            <i class="material-icons me-1">check_circle</i>
+                            Mark Complete
+                        </button>
+                    {% endif %}
+                    {% if activity.status in 'pending,in_progress' %}
+                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="updateStatus('cancelled')">
+                            <i class="material-icons me-1">cancel</i>
+                            Cancel Activity
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'calendar:activity_edit' activity.pk %}" class="btn btn-outline-primary btn-sm">
+                        <i class="material-icons me-1">edit</i>
+                        Edit Details
+                    </a>
+                    <button type="button" class="btn btn-outline-info btn-sm">
+                        <i class="material-icons me-1">content_copy</i>
+                        Duplicate Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Info -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Activity Information</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li><strong>Created:</strong> {{ activity.created_at|date:"M d, Y H:i" }}</li>
+                    <li><strong>Updated:</strong> {{ activity.updated_at|date:"M d, Y H:i" }}</li>
+                    <li><strong>Created By:</strong> {{ activity.created_by.get_full_name }}</li>
+                    {% if activity.days_until_due %}
+                        <li><strong>Due in:</strong> {{ activity.days_until_due }} days</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Related Calendar -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Related Calendar</h5>
+            </div>
+            <div class="card-body">
+                <h6>{{ activity.calendar.name }}</h6>
+                <p class="small text-muted">
+                    {{ activity.calendar.farm.name }}
+                    {% if activity.calendar.block %} - {{ activity.calendar.block.name }}{% endif %}
+                </p>
+                <p class="small text-muted">
+                    {{ activity.calendar.crop.name }}
+                    {% if activity.calendar.variety %} ({{ activity.calendar.variety.name }}){% endif %}
+                </p>
+                <a href="{% url 'calendar:detail' activity.calendar.pk %}" class="btn btn-outline-primary btn-sm">
+                    <i class="material-icons me-1">visibility</i>
+                    View Calendar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateStatus(status) {
+    if (confirm('Are you sure you want to update the activity status?')) {
+        // This would be implemented with AJAX in a real application
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "calendar:activity_edit" activity.pk %}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = status;
+        
+        form.appendChild(csrfToken);
+        form.appendChild(statusInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Farm Staff - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Farm Staff</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+        <a href="{% url 'farms:staff_create' %}" class="btn btn-sm btn-primary">
+            <i class="material-icons me-1">person_add</i>
+            Add Staff
+        </a>
+    </div>
+</div>
+
+<!-- Staff Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Staff</h6>
+                        <h3 class="mb-0">{{ total_staff|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">people</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">By Role</h6>
+                        <h3 class="mb-0">{{ staff_by_role|length|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">work</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">My Farms</h6>
+                        <h3 class="mb-0">{{ farms|length|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">agriculture</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Staff Roles</h6>
+                        <h3 class="mb-0">{{ roles|length|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">trending_up</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Staff Directory</h5>
+                </div>
+                
+                <!-- Search and Filter Form -->
+                <form method="get" class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control form-control-sm" name="search" 
+                               placeholder="Search staff..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="farm" class="form-select form-select-sm">
+                            <option value="">All Farms</option>
+                            {% for farm in farms %}
+                                <option value="{{ farm.id }}" {% if request.GET.farm == farm.id|stringformat:'s' %}selected{% endif %}>
+                                    {{ farm.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="">All Roles</option>
+                            {% for role_key, role_label in roles %}
+                                <option value="{{ role_key }}" {% if request.GET.role == role_key %}selected{% endif %}>
+                                    {{ role_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
+                        <a href="{% url 'farms:staff' %}" class="btn btn-sm btn-outline-secondary">Clear</a>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Staff Member</th>
+                                <th>Role</th>
+                                <th>Farm Assignment</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff in staff_members %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                            {% if staff.user.profile_picture %}
+                                                <img src="{{ staff.user.profile_picture.url }}" alt="{{ staff.user.full_name }}" class="rounded-circle" width="32" height="32">
+                                            {% else %}
+                                                <i class="material-icons text-primary">person</i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ staff.user.full_name }}</h6>
+                                            <small class="text-muted">{{ staff.get_role_display }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if staff.role == 'supervisor' %}
+                                        <span class="badge bg-primary">{{ staff.get_role_display }}</span>
+                                    {% elif staff.role == 'field_worker' %}
+                                        <span class="badge bg-success">{{ staff.get_role_display }}</span>
+                                    {% elif staff.role == 'specialist' %}
+                                        <span class="badge bg-info">{{ staff.get_role_display }}</span>
+                                    {% elif staff.role == 'equipment_operator' %}
+                                        <span class="badge bg-secondary">{{ staff.get_role_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">{{ staff.get_role_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ staff.farm.name }}</td>
+                                <td>
+                                    <div>
+                                        {% if staff.user.phone_number %}
+                                            <small class="text-muted d-block">{{ staff.user.phone_number }}</small>
+                                        {% endif %}
+                                        <small class="text-muted">{{ staff.user.email }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if staff.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'farms:staff_detail' staff.pk %}" class="btn btn-outline-primary">View</a>
+                                        <a href="{% url 'farms:staff_update' staff.pk %}" class="btn btn-outline-secondary">Edit</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="material-icons" style="font-size: 3rem; opacity: 0.3;">people</i>
+                                    <p class="mb-0">No staff members found.</p>
+                                    <a href="{% url 'farms:staff_create' %}" class="btn btn-sm btn-primary mt-2">
+                                        <i class="material-icons me-1">person_add</i>
+                                        Add First Staff Member
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff Role Distribution -->
+{% if staff_by_role %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Staff by Role</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for role_data in staff_by_role %}
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <div class="h4 mb-1">{{ role_data.count }}</div>
+                            <div class="text-muted small">{{ role_data.role|title }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row mt-3">
+    <div class="col-12">
+        <nav aria-label="Staff pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.farm %}&farm={{ request.GET.farm }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.farm %}&farm={{ request.GET.farm }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.farm %}&farm={{ request.GET.farm }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.farm %}&farm={{ request.GET.farm }}{% endif %}{% if request.GET.role %}&role={{ request.GET.role }}{% endif %}">Last &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #dee2e6;
+}
+</style>
+{% endblock %}

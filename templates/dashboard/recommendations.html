@@ -1,0 +1,196 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}AI Recommendations - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">AI Recommendations</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Refresh</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+    </div>
+</div>
+
+<!-- Current Recommendations -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Today's Recommendations</h5>
+                <span class="badge bg-success">3 New</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <i class="material-icons me-3 text-info">agriculture</i>
+                                <div>
+                                    <h6 class="alert-heading mb-2">Fertilizer Application</h6>
+                                    <p class="mb-2">Apply nitrogen fertilizer to Block A (Maize). Soil nitrogen levels are below optimal range.</p>
+                                    <small><strong>Priority:</strong> High | <strong>Due:</strong> Within 3 days</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-warning">
+                            <div class="d-flex">
+                                <i class="material-icons me-3 text-warning">wb_cloudy</i>
+                                <div>
+                                    <h6 class="alert-heading mb-2">Weather Advisory</h6>
+                                    <p class="mb-2">Rain expected in 2 days. Consider early harvest of Block C tomatoes to prevent losses.</p>
+                                    <small><strong>Priority:</strong> Medium | <strong>Due:</strong> Tomorrow</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="alert alert-success">
+                            <div class="d-flex">
+                                <i class="material-icons me-3 text-success">shopping_cart</i>
+                                <div>
+                                    <h6 class="alert-heading mb-2">Supply Reorder</h6>
+                                    <p class="mb-2">Seeds for next planting season available at 15% discount until month end.</p>
+                                    <small><strong>Priority:</strong> Low | <strong>Due:</strong> End of month</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recommendation Categories -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Crop Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Pest Control Schedule</h6>
+                            <p class="mb-1">Time to spray Block B rice for stem borer prevention</p>
+                            <small class="text-muted">Based on growth stage analysis</small>
+                        </div>
+                        <span class="badge bg-warning rounded-pill">2 days</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Irrigation Optimization</h6>
+                            <p class="mb-1">Reduce watering frequency for Block D by 20%</p>
+                            <small class="text-muted">Soil moisture levels are optimal</small>
+                        </div>
+                        <span class="badge bg-info rounded-pill">Now</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Harvest Planning</h6>
+                            <p class="mb-1">Maize in Block A will be ready in 2 weeks</p>
+                            <small class="text-muted">Prepare storage and transportation</small>
+                        </div>
+                        <span class="badge bg-success rounded-pill">14 days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Financial Optimization</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Cost Reduction</h6>
+                            <p class="mb-1">Switch to generic fertilizer brand for 12% savings</p>
+                            <small class="text-muted">Same nutrient content, different supplier</small>
+                        </div>
+                        <span class="badge bg-success rounded-pill">₦45k</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Revenue Opportunity</h6>
+                            <p class="mb-1">Tomato prices up 25% - sell remaining stock now</p>
+                            <small class="text-muted">Market demand is high this week</small>
+                        </div>
+                        <span class="badge bg-warning rounded-pill">₦67k</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Budget Planning</h6>
+                            <p class="mb-1">Allocate extra ₦50k for next season's seeds</p>
+                            <small class="text-muted">Price increase expected next quarter</small>
+                        </div>
+                        <span class="badge bg-info rounded-pill">Q2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">AI Performance Insights</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="material-icons text-success" style="font-size: 2rem;">trending_up</i>
+                            <h4 class="mt-2">87%</h4>
+                            <small class="text-muted">Recommendation Accuracy</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="material-icons text-info" style="font-size: 2rem;">savings</i>
+                            <h4 class="mt-2">₦156k</h4>
+                            <small class="text-muted">Total Savings This Season</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="material-icons text-warning" style="font-size: 2rem;">speed</i>
+                            <h4 class="mt-2">+23%</h4>
+                            <small class="text-muted">Yield Improvement</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="material-icons text-primary" style="font-size: 2rem;">psychology</i>
+                            <h4 class="mt-2">142</h4>
+                            <small class="text-muted">Recommendations Followed</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>How AI Recommendations Work</h6>
+                    <p class="text-muted">
+                        Our AI analyzes your farm data, weather patterns, soil conditions, and market prices to provide 
+                        personalized recommendations. The system learns from your actions and continuously improves its suggestions 
+                        to help you maximize yields and profitability.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

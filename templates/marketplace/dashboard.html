@@ -1,0 +1,918 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Marketplace Dashboard - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">
+                    <i class="material-icons me-2">dashboard</i>Marketplace Dashboard
+                </h1>
+                <p class="text-muted mb-0">Overview of your marketplace activities</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'marketplace:create_product' %}" class="btn btn-primary">
+                    <i class="material-icons me-1">add</i>List Product
+                </a>
+                <a href="{% url 'marketplace:list' %}" class="btn btn-outline-secondary">
+                    <i class="material-icons me-1">store</i>Browse
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <!-- Seller Stats -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card seller-stats">
+                <div class="stats-icon">
+                    <i class="material-icons">inventory_2</i>
+                </div>
+                <div class="stats-content">
+                    <h4>{{ seller_stats.total_products }}</h4>
+                    <p>Total Products</p>
+                    <div class="stats-detail">
+                        <span class="active-count">{{ seller_stats.active_products }} active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card sales-stats">
+                <div class="stats-icon">
+                    <i class="material-icons">trending_up</i>
+                </div>
+                <div class="stats-content">
+                    <h4>{{ seller_stats.total_sales }}</h4>
+                    <p>Total Sales</p>
+                    <div class="stats-detail">
+                        <span class="growth">+{{ seller_stats.total_sales }} this month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card inquiries-stats">
+                <div class="stats-icon">
+                    <i class="material-icons">message</i>
+                </div>
+                <div class="stats-content">
+                    <h4>{{ seller_stats.pending_inquiries }}</h4>
+                    <p>Pending Inquiries</p>
+                    <div class="stats-detail">
+                        <span class="pending-count">Requires response</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card purchases-stats">
+                <div class="stats-icon">
+                    <i class="material-icons">shopping_cart</i>
+                </div>
+                <div class="stats-content">
+                    <h4>{{ buyer_stats.total_purchases }}</h4>
+                    <p>Purchases</p>
+                    <div class="stats-detail">
+                        <span class="pending-count">{{ buyer_stats.pending_transactions }} pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Transactions -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">receipt_long</i>Recent Transactions
+                    </h5>
+                    <a href="{% url 'marketplace:transactions' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_transactions %}
+                        <div class="transactions-list">
+                            {% for transaction in recent_transactions %}
+                                <div class="transaction-item">
+                                    <div class="transaction-info">
+                                        <div class="transaction-details">
+                                            <h6 class="transaction-title">
+                                                <a href="{% url 'marketplace:detail' transaction.product.pk %}">
+                                                    {{ transaction.product.title }}
+                                                </a>
+                                            </h6>
+                                            <div class="transaction-meta">
+                                                <span class="transaction-type">
+                                                    {% if transaction.buyer == user %}
+                                                        <i class="material-icons">shopping_cart</i>Purchase
+                                                    {% else %}
+                                                        <i class="material-icons">sell</i>Sale
+                                                    {% endif %}
+                                                </span>
+                                                <span class="transaction-date">{{ transaction.created_at|date:"M d, Y" }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-status">
+                                            <div class="status-badge status-{{ transaction.status }}">
+                                                {{ transaction.get_status_display }}
+                                            </div>
+                                            <div class="transaction-amount">₦{{ transaction.total_amount|floatformat:2 }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="material-icons">receipt_long</i>
+                            <p>No transactions yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Inquiries -->
+        <div class="col-lg-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">message</i>Recent Inquiries
+                    </h5>
+                    <a href="{% url 'marketplace:my_inquiries' %}" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_inquiries %}
+                        <div class="inquiries-list">
+                            {% for inquiry in recent_inquiries %}
+                                <div class="inquiry-item">
+                                    <div class="inquiry-info">
+                                        <h6 class="inquiry-title">
+                                            <a href="{% url 'marketplace:detail' inquiry.product.pk %}">
+                                                {{ inquiry.product.title|truncatechars:30 }}
+                                            </a>
+                                        </h6>
+                                        <div class="inquiry-meta">
+                                            <span class="inquiry-from">
+                                                {% if inquiry.buyer == user %}
+                                                    To: {{ inquiry.product.seller.get_full_name }}
+                                                {% else %}
+                                                    From: {{ inquiry.buyer.get_full_name }}
+                                                {% endif %}
+                                            </span>
+                                            <span class="inquiry-date">{{ inquiry.created_at|date:"M d" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="inquiry-status">
+                                        <div class="status-badge status-{{ inquiry.status }}">
+                                            {{ inquiry.get_status_display }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state-small">
+                            <i class="material-icons">message</i>
+                            <p>No inquiries yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Performance -->
+    <div class="row mt-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">flash_on</i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <a href="{% url 'marketplace:create_product' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="material-icons">add_business</i>
+                            </div>
+                            <div class="action-content">
+                                <h6>List New Product</h6>
+                                <p>Start selling your produce</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'marketplace:my_products' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="material-icons">edit</i>
+                            </div>
+                            <div class="action-content">
+                                <h6>Manage Products</h6>
+                                <p>Update your listings</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'marketplace:list' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="material-icons">search</i>
+                            </div>
+                            <div class="action-content">
+                                <h6>Browse Products</h6>
+                                <p>Find what you need</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'marketplace:my_inquiries' %}?tab=received" class="action-item">
+                            <div class="action-icon">
+                                <i class="material-icons">reply</i>
+                            </div>
+                            <div class="action-content">
+                                <h6>Respond to Inquiries</h6>
+                                <p>{{ seller_stats.pending_inquiries }} pending</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">analytics</i>Sales Performance
+                    </h5>
+                    <div class="chart-controls">
+                        <button class="btn btn-outline-secondary btn-sm active" onclick="switchChart('week')">7 Days</button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="switchChart('month')">30 Days</button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="switchChart('year')">12 Months</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="salesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">₦{{ seller_stats.total_sales|default:0 }}</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ seller_stats.active_products }}</div>
+                            <div class="stat-label">Active Listings</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ buyer_stats.sent_inquiries }}</div>
+                            <div class="stat-label">Inquiries Sent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips & Recommendations -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="dashboard-card tips-card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="material-icons me-2">lightbulb</i>Tips to Boost Your Sales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="tips-grid">
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="material-icons">camera_alt</i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Add High-Quality Photos</h6>
+                                <p>Products with photos get 3x more inquiries. Upload clear images of your produce.</p>
+                                <a href="{% url 'marketplace:my_products' %}" class="tip-action">Update Photos</a>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="material-icons">trending_up</i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Competitive Pricing</h6>
+                                <p>Research market prices to ensure your products are competitively priced.</p>
+                                <a href="{% url 'marketplace:list' %}" class="tip-action">Check Market</a>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="material-icons">schedule</i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Quick Response</h6>
+                                <p>Respond to inquiries within 24 hours to increase conversion rates.</p>
+                                <a href="{% url 'marketplace:my_inquiries' %}?tab=received" class="tip-action">Check Inquiries</a>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="material-icons">verified</i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Product Certification</h6>
+                                <p>Highlight organic or quality certifications to build buyer trust.</p>
+                                <a href="{% url 'marketplace:create_product' %}" class="tip-action">Add Certification</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .dashboard-header i {
+        color: var(--primary-color);
+    }
+
+    /* Statistics Cards */
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .seller-stats .stats-icon {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #1976d2;
+    }
+
+    .sales-stats .stats-icon {
+        background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        color: #388e3c;
+    }
+
+    .inquiries-stats .stats-icon {
+        background: linear-gradient(135deg, #fff3e0, #ffcc80);
+        color: #f57c00;
+    }
+
+    .purchases-stats .stats-icon {
+        background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        color: #c2185b;
+    }
+
+    .stats-icon i {
+        font-size: 2rem;
+    }
+
+    .stats-content h4 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .stats-content p {
+        color: #6c757d;
+        margin: 0 0 0.5rem 0;
+        font-weight: 500;
+    }
+
+    .stats-detail {
+        font-size: 0.8rem;
+    }
+
+    .active-count, .growth {
+        color: #28a745;
+        font-weight: 500;
+    }
+
+    .pending-count {
+        color: #ffc107;
+        font-weight: 500;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+        height: 100%;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(135deg, #f8f9fa, #ffffff);
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card-title {
+        margin: 0;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-title i {
+        color: var(--primary-color);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Transaction Items */
+    .transaction-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.3s ease;
+    }
+
+    .transaction-item:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .transaction-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .transaction-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .transaction-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .transaction-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .transaction-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .transaction-type {
+        display: flex;
+        align-items: center;
+    }
+
+    .transaction-type i {
+        font-size: 1rem;
+        margin-right: 0.25rem;
+        color: var(--primary-color);
+    }
+
+    .transaction-status {
+        text-align: right;
+    }
+
+    .transaction-amount {
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-top: 0.25rem;
+    }
+
+    /* Inquiry Items */
+    .inquiry-item {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .inquiry-item:last-child {
+        border-bottom: none;
+    }
+
+    .inquiry-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .inquiry-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .inquiry-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .inquiry-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .inquiry-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-responded {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-accepted {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-paid {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    /* Empty States */
+    .empty-state-small {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state-small i {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: #dee2e6;
+    }
+
+    /* Quick Actions */
+    .action-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e9ecef;
+    }
+
+    .action-item:hover {
+        background-color: #f8f9fa;
+        border-color: var(--primary-color);
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .action-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .action-icon i {
+        color: #1976d2;
+        font-size: 1.2rem;
+    }
+
+    .action-content h6 {
+        margin: 0 0 0.25rem 0;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .action-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    /* Chart */
+    .chart-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chart-controls .btn.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .chart-container {
+        margin: 1.5rem 0;
+    }
+
+    .chart-stats {
+        display: flex;
+        justify-content: space-around;
+        padding: 1rem 0;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    /* Tips */
+    .tips-card {
+        background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    }
+
+    .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .tip-item {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e9ecef;
+    }
+
+    .tip-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .tip-icon i {
+        color: #1976d2;
+        font-size: 1.5rem;
+    }
+
+    .tip-content h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .tip-content p {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .tip-action {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .tip-action:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 1.5rem;
+        }
+
+        .dashboard-header .row {
+            text-align: center;
+        }
+
+        .dashboard-header .col-md-4 {
+            margin-top: 1rem;
+        }
+
+        .stats-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .stats-icon {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .transaction-info, .inquiry-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .transaction-status, .inquiry-status {
+            text-align: left;
+        }
+
+        .chart-controls {
+            justify-content: center;
+        }
+
+        .chart-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .tips-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    // Initialize Chart
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        
+        // Sample data - in production, this would come from the backend
+        const salesData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Sales (₦)',
+                data: [12000, 19000, 8000, 25000, 22000, 30000, 15000],
+                borderColor: 'rgb(46, 125, 50)',
+                backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                tension: 0.1,
+                fill: true
+            }]
+        };
+
+        const config = {
+            type: 'line',
+            data: salesData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return '₦' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        window.salesChart = new Chart(ctx, config);
+    });
+
+    function switchChart(period) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.chart-controls .btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        event.target.classList.add('active');
+        
+        // Update chart data based on period
+        let newData, newLabels;
+        
+        switch(period) {
+            case 'week':
+                newLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                newData = [12000, 19000, 8000, 25000, 22000, 30000, 15000];
+                break;
+            case 'month':
+                newLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                newData = [85000, 92000, 78000, 105000];
+                break;
+            case 'year':
+                newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                newData = [320000, 280000, 350000, 400000, 450000, 380000, 420000, 460000, 390000, 410000, 440000, 480000];
+                break;
+        }
+        
+        window.salesChart.data.labels = newLabels;
+        window.salesChart.data.datasets[0].data = newData;
+        window.salesChart.update();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+
+{% block title %}Features - Comprehensive Farm Management Tools | Gitako{% endblock %}
+
+{% block meta_description %}Discover Gitako's powerful features: crop calendar, budget management, inventory tracking, marketplace, AI recommendations, and more for modern farming.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section section-hero">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white">
+                <div class="mb-4">
+                    <span class="badge bg-warning bg-opacity-20 text-warning px-3 py-2 rounded-pill">
+                        <i class="material-icons me-1" style="font-size: 1rem;">star</i>
+                        Complete Feature Set
+                    </span>
+                </div>
+                <h1 class="display-3 fw-bold mb-4" style="line-height: 1.1;">
+                    Everything You Need for 
+                    <span class="text-warning">Smart Farming</span>
+                </h1>
+                <p class="lead mb-5 opacity-90" style="font-size: 1.3rem;">
+                    From crop planning to marketplace sales, Gitako provides a comprehensive suite of tools 
+                    designed specifically for African farmers.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-gradient btn-lg px-4 py-3">
+                        <i class="material-icons me-2">rocket_launch</i>
+                        Try All Features Free
+                    </a>
+                    <a href="{% url 'cms:pricing' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="material-icons me-2">price_check</i>
+                        View Pricing
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Modern farming technology dashboard" 
+                         class="img-fluid rounded-4 shadow-lg"
+                         style="max-width: 500px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Features -->
+<section class="section-lg">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">settings</i>
+                    Core Features
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">
+                Powerful Tools for <span class="gradient-text">Modern Farming</span>
+            </h2>
+        </div>
+        
+        <div class="row g-5">
+            <!-- Crop Calendar -->
+            <div class="col-lg-6">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="feature-card h-100 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-3 mb-3">
+                                    <i class="material-icons text-primary" style="font-size: 2rem;">event_note</i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Smart Crop Calendar</h5>
+                                <p class="text-muted mb-3">AI-powered scheduling ensures you never miss critical farming tasks.</p>
+                                <ul class="list-unstyled small text-muted">
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Activity templates</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Weather integration</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Progress tracking</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Staff assignments</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                             alt="Calendar planning" class="img-fluid rounded-3 shadow">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Management -->
+            <div class="col-lg-6">
+                <div class="row align-items-center">
+                    <div class="col-md-6 order-md-2">
+                        <div class="feature-card h-100 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3 mb-3">
+                                    <i class="material-icons text-success" style="font-size: 2rem;">account_balance_wallet</i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Budget Management</h5>
+                                <p class="text-muted mb-3">Track expenses, analyze profits, and make data-driven financial decisions.</p>
+                                <ul class="list-unstyled small text-muted">
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Real-time ROI analysis</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Profit forecasting</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Expense categorization</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Financial reports</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 order-md-1">
+                        <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                             alt="Financial planning" class="img-fluid rounded-3 shadow">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Management -->
+            <div class="col-lg-6">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="feature-card h-100 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 mb-3">
+                                    <i class="material-icons text-info" style="font-size: 2rem;">view_module</i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Block Management</h5>
+                                <p class="text-muted mb-3">Organize farms into manageable blocks with detailed performance analytics.</p>
+                                <ul class="list-unstyled small text-muted">
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Field organization</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Staff assignments</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Performance tracking</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Yield comparison</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                             alt="Farm organization" class="img-fluid rounded-3 shadow">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Management -->
+            <div class="col-lg-6">
+                <div class="row align-items-center">
+                    <div class="col-md-6 order-md-2">
+                        <div class="feature-card h-100 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 p-3 mb-3">
+                                    <i class="material-icons text-warning" style="font-size: 2rem;">inventory_2</i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Smart Inventory</h5>
+                                <p class="text-muted mb-3">Monitor supplies and equipment with automated alerts and reorder points.</p>
+                                <ul class="list-unstyled small text-muted">
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Stock level monitoring</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Automated alerts</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Equipment tracking</li>
+                                    <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Supplier management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 order-md-1">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                             alt="Inventory management" class="img-fluid rounded-3 shadow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Features -->
+<section class="stats-section section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <div class="d-inline-block mb-3">
+                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                    <i class="material-icons me-1" style="font-size: 1rem;">auto_awesome</i>
+                    Advanced Features
+                </span>
+            </div>
+            <h2 class="display-5 fw-bold mb-3">Next-Generation Farming Tools</h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="feature-card h-100 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="material-icons text-primary" style="font-size: 2.5rem;">psychology</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">AI Recommendations</h5>
+                        <p class="text-muted mb-4">Get personalized insights powered by machine learning from thousands of successful farms.</p>
+                        <ul class="list-unstyled text-start small text-muted">
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Optimal planting times</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Input recommendations</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Disease prediction</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Yield optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="feature-card h-100 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 p-3">
+                                <i class="material-icons text-danger" style="font-size: 2.5rem;">storefront</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Secure Marketplace</h5>
+                        <p class="text-muted mb-4">Connect directly with buyers and sell your produce with confidence using our escrow system.</p>
+                        <ul class="list-unstyled text-start small text-muted">
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Direct buyer connections</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Secure escrow payments</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Quality verification</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Price transparency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="feature-card h-100 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="material-icons text-success" style="font-size: 2.5rem;">cloud_sync</i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Offline Capability</h5>
+                        <p class="text-muted mb-4">Work seamlessly even without internet connection. Data syncs automatically when online.</p>
+                        <ul class="list-unstyled text-start small text-muted">
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Offline data entry</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Auto-sync when online</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>PWA installation</li>
+                            <li><i class="material-icons text-success me-2" style="font-size: 1rem;">check</i>Background updates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Comparison -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-6">
+            <h2 class="display-5 fw-bold mb-3">Feature Comparison</h2>
+            <p class="lead text-muted">See how Gitako compares to traditional farming methods</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th class="text-muted fw-normal">Feature</th>
+                                <th class="text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="material-icons text-muted mb-2" style="font-size: 2rem;">edit_note</i>
+                                        <span class="fw-bold">Traditional Methods</span>
+                                    </div>
+                                </th>
+                                <th class="text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="material-icons text-success mb-2" style="font-size: 2rem;">agriculture</i>
+                                        <span class="fw-bold text-success">Gitako Platform</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-semibold">Record Keeping</td>
+                                <td class="text-center">
+                                    <i class="material-icons text-danger">close</i>
+                                    <small class="d-block text-muted">Paper-based, error-prone</small>
+                                </td>
+                                <td class="text-center">
+                                    <i class="material-icons text-success">check_circle</i>
+                                    <small class="d-block text-muted">Digital, automated, accurate</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Financial Tracking</td>
+                                <td class="text-center">
+                                    <i class="material-icons text-danger">close</i>
+                                    <small class="d-block text-muted">Manual calculations</small>
+                                </td>
+                                <td class="text-center">
+                                    <i class="material-icons text-success">check_circle</i>
+                                    <small class="d-block text-muted">Real-time analytics</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Market Access</td>
+                                <td class="text-center">
+                                    <i class="material-icons text-warning">remove</i>
+                                    <small class="d-block text-muted">Limited to local markets</small>
+                                </td>
+                                <td class="text-center">
+                                    <i class="material-icons text-success">check_circle</i>
+                                    <small class="d-block text-muted">Direct buyer connections</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Planning & Scheduling</td>
+                                <td class="text-center">
+                                    <i class="material-icons text-danger">close</i>
+                                    <small class="d-block text-muted">Experience-based guessing</small>
+                                </td>
+                                <td class="text-center">
+                                    <i class="material-icons text-success">check_circle</i>
+                                    <small class="d-block text-muted">AI-powered recommendations</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Data Backup</td>
+                                <td class="text-center">
+                                    <i class="material-icons text-danger">close</i>
+                                    <small class="d-block text-muted">Risk of data loss</small>
+                                </td>
+                                <td class="text-center">
+                                    <i class="material-icons text-success">check_circle</i>
+                                    <small class="d-block text-muted">Cloud-based, secure</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section section-cta text-white">
+    <div class="container text-center position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold mb-4">Experience All Features Today</h2>
+                <p class="lead mb-5 opacity-90">
+                    Start your free trial and discover how Gitako's comprehensive feature set can transform your farming operations.
+                </p>
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-warning btn-lg px-5 py-3 fw-semibold">
+                        <i class="material-icons me-2">rocket_launch</i>
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'cms:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="material-icons me-2">help</i>
+                        Get Demo
+                    </a>
+                </div>
+                <small class="text-white-50">
+                    <i class="material-icons me-1" style="font-size: 1rem;">schedule</i>
+                    30-day free trial • No credit card required • Cancel anytime
+                </small>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

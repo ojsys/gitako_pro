@@ -1,0 +1,337 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}
+    {% if is_farm_manager and assigned_farm and not is_superuser and user_role != 'farm_owner' %}
+        My Farm - {{ assigned_farm.name }} - Gitako
+    {% else %}
+        Farm Management - Gitako
+    {% endif %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        {% if is_farm_manager and assigned_farm and not is_superuser and user_role != 'farm_owner' %}
+            My Farm - {{ assigned_farm.name }}
+        {% else %}
+            Farm Management
+        {% endif %}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+        {% if is_superuser or user_role == 'farm_owner' %}
+        <a href="{% url 'farms:create' %}" class="btn btn-sm btn-primary">
+            <i class="material-icons me-1">add</i>
+            Add Farm
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Farm Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">
+                            {% if is_farm_manager and assigned_farm and not is_superuser and user_role != 'farm_owner' %}
+                                Farm Area
+                            {% else %}
+                                Total Farms
+                            {% endif %}
+                        </h6>
+                        <h3 class="mb-0">
+                            {% if is_farm_manager and assigned_farm and not is_superuser and user_role != 'farm_owner' %}
+                                {{ total_area|default:0|floatformat:1 }} ha
+                            {% else %}
+                                {{ total_farms|default:0 }}
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">landscape</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Active Blocks</h6>
+                        <h3 class="mb-0">{{ total_blocks|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">grid_view</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Block Area</h6>
+                        <h3 class="mb-0">{{ total_allocated_area|default:0|floatformat:1 }} ha</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">straighten</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Staff Members</h6>
+                        <h3 class="mb-0">{{ total_staff|default:0 }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2rem;">people</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manager Action Cards -->
+{% if is_farm_manager and assigned_farm and not is_superuser and user_role != 'farm_owner' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Farm Management Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'farms:blocks' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">grid_view</i>
+                            <h6 class="mb-1">Manage Blocks</h6>
+                            <small class="text-muted">View and manage farm blocks</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'farms:staff' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">people</i>
+                            <h6 class="mb-1">Manage Staff</h6>
+                            <small class="text-muted">Assign and manage staff</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'calendar:list' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">event</i>
+                            <h6 class="mb-1">Farm Calendar</h6>
+                            <small class="text-muted">Plan activities and tasks</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'inventory:supplies' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">inventory</i>
+                            <h6 class="mb-1">Inventory</h6>
+                            <small class="text-muted">Manage supplies and equipment</small>
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'budget:list' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">account_balance</i>
+                            <h6 class="mb-1">Budget</h6>
+                            <small class="text-muted">Track expenses and budget</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'farms:farmers' %}" class="btn btn-outline-danger w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">agriculture</i>
+                            <h6 class="mb-1">Farmers</h6>
+                            <small class="text-muted">Manage farmer records</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'marketplace:list' %}" class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">store</i>
+                            <h6 class="mb-1">Marketplace</h6>
+                            <small class="text-muted">Buy/sell produce and supplies</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <a href="{% url 'dashboard:recommendations' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4">
+                            <i class="material-icons mb-2" style="font-size: 2.5rem;">lightbulb</i>
+                            <h6 class="mb-1">Recommendations</h6>
+                            <small class="text-muted">Get farming advice</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Farm Details Card -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ assigned_farm.name }} Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="150">Location:</th>
+                                <td>{{ assigned_farm.location|default:"Not specified" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Area:</th>
+                                <td>{{ assigned_farm.total_area|floatformat:2 }} hectares</td>
+                            </tr>
+                            <tr>
+                                <th>Farm Type:</th>
+                                <td>{{ assigned_farm.get_farm_type_display|default:"Not specified" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Established:</th>
+                                <td>{{ assigned_farm.created_at|date:"F Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    {% if assigned_farm.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="material-icons text-success mb-3" style="font-size: 5rem;">agriculture</i>
+                            <h5>{{ assigned_farm.name }}</h5>
+                            <p class="text-muted">Managed by {{ request.user.full_name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- Regular Farms List for Farm Owners and SuperUsers -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    {% if is_superuser %}
+                        All Farms
+                    {% else %}
+                        Your Farms
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if farms %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Farm Name</th>
+                                <th>Location</th>
+                                <th>Size (hectares)</th>
+                                <th>Blocks</th>
+                                <th>Owner</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for farm in farms %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                            <i class="material-icons text-success">landscape</i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ farm.name }}</h6>
+                                            <small class="text-muted">Est. {{ farm.created_at|date:"Y" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ farm.location|default:"Not specified" }}</td>
+                                <td>{{ farm.total_area|floatformat:1 }}</td>
+                                <td>{{ farm.blocks.count }}</td>
+                                <td>
+                                    {% if is_superuser %}
+                                        {{ farm.owner.full_name|default:farm.owner.username }}
+                                    {% else %}
+                                        You
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if farm.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'farms:detail' farm.pk %}" class="btn btn-outline-primary">View</a>
+                                        {% if is_superuser or user_role == 'farm_owner' %}
+                                        <a href="{% url 'farms:update' farm.pk %}" class="btn btn-outline-secondary">Edit</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted mb-3" style="font-size: 4rem;">agriculture</i>
+                    <h5 class="text-muted">No farms found</h5>
+                    <p class="text-muted">
+                        {% if is_superuser %}
+                            No farms have been created yet.
+                        {% elif user_role == 'farm_owner' %}
+                            You haven't created any farms yet.
+                        {% else %}
+                            You are not assigned to any farm yet.
+                        {% endif %}
+                    </p>
+                    {% if is_superuser or user_role == 'farm_owner' %}
+                    <a href="{% url 'farms:create' %}" class="btn btn-primary">
+                        <i class="material-icons me-1">add</i>
+                        Create First Farm
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

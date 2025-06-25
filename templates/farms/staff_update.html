@@ -1,0 +1,253 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Edit {{ object.user.full_name }} - Staff Management - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <a href="{% url 'farms:staff_detail' object.pk %}" class="text-decoration-none text-muted me-2">
+            <i class="material-icons">arrow_back</i>
+        </a>
+        Edit Staff Member
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">person</i>
+                    Edit {{ object.user.full_name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.user.id_for_label }}" class="form-label">
+                                    Staff Member <span class="text-danger">*</span>
+                                </label>
+                                {{ form.user }}
+                                {% if form.user.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.user.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Select the user account for this staff member</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.farm.id_for_label }}" class="form-label">
+                                    Farm Assignment <span class="text-danger">*</span>
+                                </label>
+                                {{ form.farm }}
+                                {% if form.farm.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.farm.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.role.id_for_label }}" class="form-label">
+                                    Role <span class="text-danger">*</span>
+                                </label>
+                                {{ form.role }}
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.role.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.hire_date.id_for_label }}" class="form-label">
+                                    Hire Date
+                                </label>
+                                {{ form.hire_date }}
+                                {% if form.hire_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.hire_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.salary.id_for_label }}" class="form-label">
+                                    Salary (₦)
+                                </label>
+                                {{ form.salary }}
+                                {% if form.salary.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.salary.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Monthly salary in Naira</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.skills %}
+                    <div class="mb-3">
+                        <label for="{{ form.skills.id_for_label }}" class="form-label">
+                            Skills & Specializations
+                        </label>
+                        {{ form.skills }}
+                        {% if form.skills.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.skills.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">List relevant skills separated by commas</div>
+                    </div>
+                    {% endif %}
+
+                    {% if form.notes %}
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">
+                            Notes
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.notes.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Additional notes about this staff member</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Active Staff Member
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.is_active.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Uncheck to deactivate this staff member</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'farms:staff_detail' object.pk %}" class="btn btn-secondary">
+                            <i class="material-icons me-1">cancel</i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons me-1">save</i>
+                            Update Staff Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="material-icons me-1">help</i>
+                    Staff Management Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="material-icons text-success me-1" style="font-size: 1rem;">check_circle</i>
+                        <small>Keep staff information updated for better farm management</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="material-icons text-success me-1" style="font-size: 1rem;">check_circle</i>
+                        <small>Assign appropriate roles to match responsibilities</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="material-icons text-success me-1" style="font-size: 1rem;">check_circle</i>
+                        <small>Set salary information for budget tracking</small>
+                    </li>
+                    <li class="mb-0">
+                        <i class="material-icons text-success me-1" style="font-size: 1rem;">check_circle</i>
+                        <small>Deactivate instead of deleting for record keeping</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Current Staff Info -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">Current Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                        <i class="material-icons text-primary">person</i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">{{ object.user.full_name }}</h6>
+                        <small class="text-muted">{{ object.get_role_display }}</small>
+                    </div>
+                </div>
+                <small class="text-muted">
+                    <i class="material-icons me-1" style="font-size: 1rem;">agriculture</i>
+                    {{ object.farm.name }}
+                </small>
+                <br>
+                <small class="text-muted">
+                    <i class="material-icons me-1" style="font-size: 1rem;">schedule</i>
+                    Staff since {{ object.created_at|date:"M Y" }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form classes for Bootstrap styling
+    const formElements = document.querySelectorAll('input, select, textarea');
+    formElements.forEach(function(element) {
+        if (!element.classList.contains('form-check-input')) {
+            element.classList.add('form-control');
+        }
+    });
+    
+    // Handle date input
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(function(input) {
+        input.classList.add('form-control');
+    });
+});
+</script>
+{% endblock %}

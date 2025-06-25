@@ -1,0 +1,546 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Gitako{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .stats-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .stats-card.success { background: linear-gradient(135deg, #2e7d32, #388e3c); }
+    .stats-card.info { background: linear-gradient(135deg, #1976d2, #1e88e5); }
+    .stats-card.warning { background: linear-gradient(135deg, #f57c00, #ff9800); }
+    .stats-card.danger { background: linear-gradient(135deg, #d32f2f, #f44336); }
+    .stats-card.primary { background: linear-gradient(135deg, #7b1fa2, #9c27b0); }
+    .stats-card.dark { background: linear-gradient(135deg, #424242, #616161); }
+    .chart-container { position: relative; height: 300px; }
+    .metric-item { text-align: center; padding: 1rem; border-radius: 8px; background: #f8f9fa; }
+    .alert-item { border-left: 4px solid; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
+    .alert-danger { border-left-color: #dc3545; background-color: #f8d7da; }
+    .alert-warning { border-left-color: #ffc107; background-color: #fff3cd; }
+    .alert-info { border-left-color: #0dcaf0; background-color: #d1ecf1; }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Farm Analytics Dashboard</h1>
+        <p class="text-muted mb-0">Welcome back! Here's your farm performance overview.</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                <i class="material-icons me-1">print</i>Export Report
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshDashboard()">
+                <i class="material-icons me-1">refresh</i>Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Primary Stats Cards -->
+<div class="row mb-4">
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Total Farms</h6>
+                        <h3 class="mb-0">{{ total_farms|default:0 }}</h3>
+                        <small class="text-white-50">{{ total_area|floatformat:1 }} hectares</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">landscape</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Active Blocks</h6>
+                        <h3 class="mb-0">{{ total_blocks|default:0 }}</h3>
+                        <small class="text-white-50">{{ total_allocated_area|floatformat:1 }} ha allocated</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">grid_view</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Staff Members</h6>
+                        <h3 class="mb-0">{{ total_staff|default:0 }}</h3>
+                        <small class="text-white-50">Active workers</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">people</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Farmers</h6>
+                        <h3 class="mb-0">{{ total_farmers|default:0 }}</h3>
+                        <small class="text-white-50">{{ total_farmer_area|floatformat:1 }} ha managed</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">agriculture</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Season Budget</h6>
+                        <h3 class="mb-0">₦{{ budget_summary.total_budget|floatformat:0|default:"0" }}</h3>
+                        <small class="text-white-50">{{ budget_summary.utilization_percentage|default:0 }}% used</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">account_balance</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-2 col-md-4 col-6 mb-3">
+        <div class="card stats-card dark text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50 mb-1">Activities</h6>
+                        <h3 class="mb-0">{{ activity_stats.pending|default:0 }}</h3>
+                        <small class="text-white-50">Pending tasks</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">task</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="metric-item">
+            <h4 class="text-primary mb-1">{{ performance_metrics.farm_utilization }}%</h4>
+            <small class="text-muted">Farm Utilization</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-item">
+            <h4 class="text-success mb-1">{{ performance_metrics.avg_block_size }} ha</h4>
+            <small class="text-muted">Average Block Size</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-item">
+            <h4 class="text-info mb-1">{{ performance_metrics.farmers_per_hectare }}</h4>
+            <small class="text-muted">Farmers per Hectare</small>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Charts Row -->
+<div class="row mb-4">
+    <!-- Crop Distribution Chart -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">donut_small</i>Crop Distribution by Area
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="cropDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Block Status Chart -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">bar_chart</i>Block Status Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="blockStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Status and Budget Overview -->
+<div class="row mb-4">
+    <!-- Activity Status -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">assignment</i>Activity Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="activityStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget Utilization -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">account_balance_wallet</i>Budget Utilization
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4 class="text-primary mb-1">₦{{ budget_summary.total_budget|floatformat:0 }}</h4>
+                        <small class="text-muted">Total Budget</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-warning mb-1">₦{{ budget_summary.total_spent|floatformat:0 }}</h4>
+                        <small class="text-muted">Spent</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-success mb-1">₦{{ budget_summary.remaining|floatformat:0 }}</h4>
+                        <small class="text-muted">Remaining</small>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ budget_summary.utilization_percentage }}%" aria-valuenow="{{ budget_summary.utilization_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">{{ budget_summary.utilization_percentage }}% Utilized</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">flash_on</i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'farms:create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">add_business</i>
+                            <small>Add Farm</small>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'farms:block_create' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">grid_on</i>
+                            <small>Add Block</small>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'calendar:activities' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">event</i>
+                            <small>View Activities</small>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'farms:staff_create' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">person_add</i>
+                            <small>Add Staff</small>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'budget:list' %}" class="btn btn-outline-danger w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">account_balance</i>
+                            <small>Manage Budget</small>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-6 mb-3">
+                        <a href="{% url 'inventory:supplies' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">inventory</i>
+                            <small>Check Inventory</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities and Alerts -->
+<div class="row">
+    <!-- Recent Activities -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">history</i>Recent Activities
+                </h5>
+                <a href="{% url 'calendar:activities' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm 
+                                    {% if activity.status == 'completed' %}bg-success bg-opacity-10
+                                    {% elif activity.status == 'in_progress' %}bg-warning bg-opacity-10
+                                    {% elif activity.status == 'cancelled' %}bg-danger bg-opacity-10
+                                    {% else %}bg-secondary bg-opacity-10{% endif %}
+                                    rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons 
+                                    {% if activity.status == 'completed' %}text-success
+                                    {% elif activity.status == 'in_progress' %}text-warning
+                                    {% elif activity.status == 'cancelled' %}text-danger
+                                    {% else %}text-secondary{% endif %}" style="font-size: 1rem;">
+                                        {% if activity.activity_type == 'planting' %}agriculture
+                                        {% elif activity.activity_type == 'fertilizer' %}scatter_plot
+                                        {% elif activity.activity_type == 'weeding' %}grass
+                                        {% elif activity.activity_type == 'pest_control' %}bug_report
+                                        {% elif activity.activity_type == 'harvesting' %}agriculture
+                                        {% else %}task{% endif %}
+                                    </i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">{{ activity.name }}</h6>
+                                    <p class="mb-0 text-muted small">{{ activity.calendar.farm.name }} - {{ activity.description|truncatechars:40 }}</p>
+                                    <small class="text-muted">{{ activity.scheduled_date|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                            <span class="badge 
+                                {% if activity.status == 'completed' %}bg-success
+                                {% elif activity.status == 'in_progress' %}bg-warning
+                                {% elif activity.status == 'cancelled' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ activity.get_status_display }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="material-icons text-muted" style="font-size: 3rem;">event_note</i>
+                            <h6 class="text-muted mt-2">No recent activities</h6>
+                            <p class="text-muted">Start planning your farm activities.</p>
+                            <a href="{% url 'calendar:activity_create' %}" class="btn btn-primary btn-sm">
+                                <i class="material-icons me-1">add</i>Add Activity
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alerts and Upcoming Tasks -->
+    <div class="col-md-4">
+        <!-- System Alerts -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">notification_important</i>System Alerts
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if low_stock_count > 0 %}
+                <div class="alert-item alert-danger">
+                    <strong>Low Stock Alert:</strong> {{ low_stock_count }} item{{ low_stock_count|pluralize }} running low.
+                    <a href="{% url 'inventory:supplies' %}" class="text-decoration-none">View Inventory</a>
+                </div>
+                {% endif %}
+                
+                {% if activity_stats.overdue > 0 %}
+                <div class="alert-item alert-warning">
+                    <strong>Overdue Tasks:</strong> {{ activity_stats.overdue }} activit{{ activity_stats.overdue|pluralize:"y,ies" }} overdue.
+                    <a href="{% url 'calendar:activities' %}" class="text-decoration-none">Check Activities</a>
+                </div>
+                {% endif %}
+                
+                {% if performance_metrics.farm_utilization < 70 %}
+                <div class="alert-item alert-info">
+                    <strong>Farm Utilization:</strong> Only {{ performance_metrics.farm_utilization }}% of your farm is utilized.
+                    <a href="{% url 'farms:block_create' %}" class="text-decoration-none">Add Blocks</a>
+                </div>
+                {% endif %}
+                
+                {% if low_stock_count == 0 and activity_stats.overdue == 0 and performance_metrics.farm_utilization >= 70 %}
+                <div class="text-center py-3">
+                    <i class="material-icons text-success" style="font-size: 2rem;">check_circle</i>
+                    <p class="text-muted mt-2 mb-0">All systems running smoothly!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Upcoming Activities -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">schedule</i>Upcoming This Week
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_activities %}
+                    {% for activity in upcoming_activities %}
+                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                        <div class="text-center me-3" style="min-width: 50px;">
+                            <div class="fw-bold text-primary">{{ activity.scheduled_date|date:"d" }}</div>
+                            <small class="text-muted">{{ activity.scheduled_date|date:"M" }}</small>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ activity.name }}</h6>
+                            <small class="text-muted">{{ activity.calendar.farm.name }}</small>
+                        </div>
+                        <span class="badge bg-info">{{ activity.get_priority_display }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="material-icons text-muted" style="font-size: 2rem;">event_available</i>
+                        <p class="text-muted mt-2 mb-0">No upcoming activities this week.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced JavaScript for Charts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Crop Distribution Chart
+    const cropCtx = document.getElementById('cropDistributionChart').getContext('2d');
+    new Chart(cropCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for crop in crop_distribution %}'{{ crop.crop__name|default:"Unknown" }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for crop in crop_distribution %}{{ crop.total_area|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: ['#2e7d32', '#1976d2', '#f57c00', '#d32f2f', '#7b1fa2'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Block Status Chart
+    const blockCtx = document.getElementById('blockStatusChart').getContext('2d');
+    new Chart(blockCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Growing', 'Harvested', 'Pending', 'Total'],
+            datasets: [{
+                label: 'Blocks',
+                data: [{{ growing_blocks }}, {{ harvested_blocks }}, {{ pending_blocks }}, {{ total_blocks }}],
+                backgroundColor: ['#2e7d32', '#f57c00', '#1976d2', '#424242'],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // Activity Status Chart
+    const activityCtx = document.getElementById('activityStatusChart').getContext('2d');
+    new Chart(activityCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Pending', 'In Progress', 'Completed', 'Overdue'],
+            datasets: [{
+                data: [
+                    {{ activity_stats.pending }},
+                    {{ activity_stats.in_progress }},
+                    {{ activity_stats.completed }},
+                    {{ activity_stats.overdue }}
+                ],
+                backgroundColor: ['#6c757d', '#ffc107', '#28a745', '#dc3545'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+});
+
+function refreshDashboard() {
+    location.reload();
+}
+</script>
+{% endblock %}
