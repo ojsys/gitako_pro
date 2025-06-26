@@ -30,6 +30,7 @@ urlpatterns = [
     path('inventory/', include('apps.inventory.urls')),
     path('marketplace/', include('apps.marketplace.urls')),  # Re-enabled after fixing encoding issue
     path('notifications/', include('apps.notifications.urls')),
+    path('reports/', include('apps.reports.urls')),
 ]
 
 # Serve media files in development

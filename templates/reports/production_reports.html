@@ -1,0 +1,234 @@
+{% extends 'reports/base_reports.html' %}
+{% load static %}
+
+{% block title %}Production Reports - Gitako{% endblock %}
+
+{% block reports_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Production Reports</h2>
+        <p class="text-muted mb-0">Crop yield analysis and production insights</p>
+    </div>
+    <div>
+        <a href="{% url 'reports:create_report' %}?category=production" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Production Report
+        </a>
+    </div>
+</div>
+
+<!-- Production Report Statistics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Total Production Reports</h6>
+                    <div class="metric-value">{{ stats.total_production_reports }}</div>
+                </div>
+                <div class="text-success">
+                    <i class="fas fa-seedling fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Completed This Month</h6>
+                    <div class="metric-value text-success">{{ stats.completed_this_month }}</div>
+                </div>
+                <div class="text-success">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Report Types -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Production Report Types</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card report-type-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                                <h6>Yield Analysis</h6>
+                                <p class="text-muted small">Comprehensive analysis of crop yields and performance</p>
+                                <a href="{% url 'reports:create_report' %}?type=yield_analysis" class="btn btn-outline-success btn-sm">
+                                    Generate Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card report-type-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-leaf fa-3x text-primary mb-3"></i>
+                                <h6>Crop Performance</h6>
+                                <p class="text-muted small">Detailed performance analysis across different crops</p>
+                                <a href="{% url 'reports:create_report' %}?type=crop_performance" class="btn btn-outline-primary btn-sm">
+                                    Generate Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card report-type-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt fa-3x text-warning mb-3"></i>
+                                <h6>Seasonal Comparison</h6>
+                                <p class="text-muted small">Analysis of yield patterns across different seasons</p>
+                                <a href="{% url 'reports:create_report' %}?type=seasonal_comparison" class="btn btn-outline-warning btn-sm">
+                                    Generate Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card report-type-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-th fa-3x text-info mb-3"></i>
+                                <h6>Block Efficiency</h6>
+                                <p class="text-muted small">Production efficiency analysis across different blocks</p>
+                                <a href="{% url 'reports:create_report' %}?type=block_efficiency" class="btn btn-outline-info btn-sm">
+                                    Generate Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card report-type-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-3x text-secondary mb-3"></i>
+                                <h6>Farmer Performance</h6>
+                                <p class="text-muted small">Performance analysis and rankings of individual farmers</p>
+                                <a href="{% url 'reports:create_report' %}?type=farmer_performance" class="btn btn-outline-secondary btn-sm">
+                                    Generate Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Production Reports -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Production Reports</h5>
+                <a href="{% url 'reports:report_list' %}?category=production" class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Period</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in recent_reports %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'reports:report_detail' report.id %}" class="text-decoration-none">
+                                            {{ report.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ report.get_report_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="report-status status-{{ report.status }}">
+                                            {{ report.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ report.date_from }} to {{ report.date_to }}</td>
+                                    <td>{{ report.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'reports:report_detail' report.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if report.status == 'completed' %}
+                                            <button class="btn btn-outline-success btn-sm" onclick="exportReport('{{ report.id }}', 'pdf')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-seedling fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Production Reports Yet</h5>
+                        <p class="text-muted">Create your first production report to analyze crop yields and performance.</p>
+                        <a href="{% url 'reports:create_report' %}?category=production" class="btn btn-primary">
+                            Create Production Report
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.report-type-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.report-type-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function exportReport(reportId, format) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/reports/${reportId}/export/`;
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    
+    const formatInput = document.createElement('input');
+    formatInput.type = 'hidden';
+    formatInput.name = 'format';
+    formatInput.value = format;
+    
+    form.appendChild(csrfInput);
+    form.appendChild(formatInput);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+</script>
+{% endblock %}

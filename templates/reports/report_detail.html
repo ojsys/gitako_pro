@@ -1,0 +1,255 @@
+{% extends 'reports/base_reports.html' %}
+{% load static %}
+
+{% block title %}{{ report.name }} - Gitako{% endblock %}
+
+{% block reports_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>{{ report.name }}</h2>
+        <p class="text-muted mb-0">{{ report.get_report_type_display }} • {{ report.date_from }} to {{ report.date_to }}</p>
+    </div>
+    <div class="btn-group">
+        <a href="{% url 'reports:report_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+        {% if report.status == 'completed' %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-download me-2"></i>Export
+            </button>
+            <ul class="dropdown-menu">
+                {% for format, label in available_formats %}
+                <li>
+                    <a class="dropdown-item" href="#" onclick="exportReport('{{ report.id }}', '{{ format }}')">
+                        <i class="fas fa-file-{{ format }} me-2"></i>{{ label }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <button class="btn btn-outline-primary" onclick="regenerateReport()">
+            <i class="fas fa-refresh me-2"></i>Regenerate
+        </button>
+    </div>
+</div>
+
+<!-- Report Status -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Status</h6>
+                        <span class="report-status status-{{ report.status }}">
+                            {{ report.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Created</h6>
+                        <p class="mb-0">{{ report.created_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Generated</h6>
+                        <p class="mb-0">
+                            {% if report.generated_at %}
+                                {{ report.generated_at|date:"M d, Y H:i" }}
+                            {% else %}
+                                Not generated yet
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Farm</h6>
+                        <p class="mb-0">
+                            {% if report.farm %}
+                                {{ report.farm.name }}
+                            {% else %}
+                                All farms
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% if report.description %}
+                <hr>
+                <h6 class="text-muted mb-1">Description</h6>
+                <p class="mb-0">{{ report.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Content -->
+{% if report.status == 'completed' and report_data %}
+<div id="reportContent">
+    <!-- Financial Reports -->
+    {% if report.report_type == 'budget_vs_actual' or report.report_type == 'profit_loss' or report.report_type == 'cost_analysis' or report.report_type == 'cash_flow' or report.report_type == 'financial_summary' %}
+        {% include 'reports/partials/financial_report_content.html' %}
+    
+    <!-- Production Reports -->
+    {% elif report.report_type == 'yield_analysis' or report.report_type == 'crop_performance' or report.report_type == 'seasonal_comparison' or report.report_type == 'block_efficiency' or report.report_type == 'farmer_performance' %}
+        {% include 'reports/partials/production_report_content.html' %}
+    
+    <!-- Other report types -->
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <h5>Report Data</h5>
+                <pre class="bg-light p-3 rounded">{{ report_data|pprint }}</pre>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% elif report.status == 'generating' %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5>Generating Report...</h5>
+        <p class="text-muted">This may take a few moments. The page will refresh automatically when complete.</p>
+    </div>
+</div>
+
+{% elif report.status == 'failed' %}
+<div class="card border-danger">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-exclamation-triangle text-danger fa-3x mb-3"></i>
+        <h5 class="text-danger">Report Generation Failed</h5>
+        <p class="text-muted">{{ report.error_message|default:"An error occurred while generating the report." }}</p>
+        <button class="btn btn-outline-primary" onclick="regenerateReport()">
+            <i class="fas fa-refresh me-2"></i>Try Again
+        </button>
+    </div>
+</div>
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">Report Not Generated</h5>
+        <p class="text-muted">This report is in draft status and hasn't been generated yet.</p>
+        <button class="btn btn-primary" onclick="regenerateReport()">
+            <i class="fas fa-play me-2"></i>Generate Report
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<!-- Export History -->
+{% if existing_exports %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Export History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th>Status</th>
+                                <th>File Size</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for export in existing_exports %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info">{{ export.get_export_format_display }}</span>
+                                </td>
+                                <td>
+                                    <span class="report-status status-{{ export.status }}">
+                                        {{ export.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if export.file_size %}
+                                        {{ export.file_size|filesizeformat }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ export.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    {% if export.status == 'completed' %}
+                                    <a href="{% url 'reports:download_export' export.id %}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                    {% elif export.status == 'failed' %}
+                                    <button class="btn btn-sm btn-outline-danger" disabled title="{{ export.error_message }}">
+                                        <i class="fas fa-exclamation-triangle"></i> Failed
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>
+                                        <i class="fas fa-spinner fa-spin"></i> Processing
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- JavaScript for Report Actions -->
+<script>
+function regenerateReport() {
+    if (confirm('Are you sure you want to regenerate this report? This will overwrite the existing data.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "reports:regenerate_report" report.id %}';
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+}
+
+// Auto-refresh for generating reports
+{% if report.status == 'generating' %}
+setTimeout(function() {
+    location.reload();
+}, 10000); // Refresh every 10 seconds
+{% endif %}
+
+// Load chart data if report is completed
+{% if report.status == 'completed' and report_data %}
+document.addEventListener('DOMContentLoaded', function() {
+    loadReportCharts();
+});
+
+function loadReportCharts() {
+    // This would be implemented based on the specific report type and data
+    console.log('Loading charts for report type: {{ report.report_type }}');
+    
+    // Example: Load financial charts
+    {% if report.report_type == 'budget_vs_actual' or report.report_type == 'profit_loss' or report.report_type == 'cost_analysis' or report.report_type == 'cash_flow' %}
+    loadFinancialCharts({{ report_data|safe }});
+    {% endif %}
+}
+{% endif %}
+</script>
+
+{% csrf_token %}
+{% endblock %}

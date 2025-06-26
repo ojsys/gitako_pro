@@ -1,0 +1,294 @@
+{% extends 'reports/base_reports.html' %}
+{% load static %}
+
+{% block title %}Create Report - Gitako{% endblock %}
+
+{% block reports_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Create New Report</h2>
+    <a href="{% url 'reports:dashboard' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Report Configuration</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="reportForm">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Report Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.report_type.id_for_label }}" class="form-label">Report Type</label>
+                            {{ form.report_type }}
+                            {% if form.report_type.errors %}
+                                <div class="text-danger small">{{ form.report_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Date Range -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.date_from.id_for_label }}" class="form-label">Start Date</label>
+                            {{ form.date_from }}
+                            {% if form.date_from.errors %}
+                                <div class="text-danger small">{{ form.date_from.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.date_to.id_for_label }}" class="form-label">End Date</label>
+                            {{ form.date_to }}
+                            {% if form.date_to.errors %}
+                                <div class="text-danger small">{{ form.date_to.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Farm Selection -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.farm.id_for_label }}" class="form-label">Farm (Optional)</label>
+                            {{ form.farm }}
+                            <small class="form-text text-muted">Leave blank to include all farms</small>
+                            {% if form.farm.errors %}
+                                <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description (Optional)</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    Advanced Filters <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </h6>
+                        </div>
+                        <div class="collapse" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Crop Filter -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.crop_filter.id_for_label }}" class="form-label">Crop Filter</label>
+                                        {{ form.crop_filter }}
+                                        <small class="form-text text-muted">{{ form.crop_filter.help_text }}</small>
+                                    </div>
+                                    
+                                    <!-- Budget Category Filter -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.budget_category_filter.id_for_label }}" class="form-label">Budget Category</label>
+                                        {{ form.budget_category_filter }}
+                                        <small class="form-text text-muted">{{ form.budget_category_filter.help_text }}</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <!-- Options -->
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            {{ form.include_projections }}
+                                            <label class="form-check-label" for="{{ form.include_projections.id_for_label }}">
+                                                Include Projections
+                                            </label>
+                                            <small class="form-text text-muted d-block">{{ form.include_projections.help_text }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            {{ form.group_by_month }}
+                                            <label class="form-check-label" for="{{ form.group_by_month.id_for_label }}">
+                                                Group by Month
+                                            </label>
+                                            <small class="form-text text-muted d-block">{{ form.group_by_month.help_text }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'reports:dashboard' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-chart-bar me-2"></i>Generate Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Type Information -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Report Types</h5>
+            </div>
+            <div class="card-body">
+                <div id="reportTypeInfo">
+                    <p class="text-muted">Select a report type to see details</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Date Presets -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Date Ranges</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(7)">
+                        Last 7 days
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(30)">
+                        Last 30 days
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(90)">
+                        Last 3 months
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(365)">
+                        Last year
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setCurrentMonth()">
+                        Current month
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Report type descriptions
+const reportTypeDescriptions = {
+    'budget_vs_actual': {
+        title: 'Budget vs Actual Analysis',
+        description: 'Compare planned budget amounts with actual expenses and income to identify variances and performance.',
+        features: ['Budget variance analysis', 'Percentage comparisons', 'Category breakdowns', 'Trend analysis']
+    },
+    'profit_loss': {
+        title: 'Profit & Loss Statement',
+        description: 'Comprehensive financial statement showing revenue, expenses, and net profit for the selected period.',
+        features: ['Revenue breakdown', 'Expense categorization', 'Profit margins', 'Monthly comparisons']
+    },
+    'cost_analysis': {
+        title: 'Cost Analysis Report',
+        description: 'Detailed analysis of costs per hectare, crop, and category to optimize resource allocation.',
+        features: ['Cost per hectare', 'Category analysis', 'Farm comparisons', 'Cost optimization insights']
+    },
+    'cash_flow': {
+        title: 'Cash Flow Report',
+        description: 'Track cash inflows and outflows to understand liquidity and cash management.',
+        features: ['Cash flow statements', 'Monthly breakdowns', 'Liquidity analysis', 'Cash projections']
+    },
+    'yield_analysis': {
+        title: 'Yield Analysis Report',
+        description: 'Analyze crop yields across different blocks, seasons, and varieties to optimize production.',
+        features: ['Yield comparisons', 'Block performance', 'Seasonal trends', 'Variety analysis']
+    },
+    'crop_performance': {
+        title: 'Crop Performance Report',
+        description: 'Comprehensive analysis of crop performance including yield, quality, and profitability.',
+        features: ['Performance metrics', 'Quality indicators', 'Profitability analysis', 'Benchmarking']
+    }
+};
+
+// Update report type information when selection changes
+document.getElementById('{{ form.report_type.id_for_label }}').addEventListener('change', function() {
+    const selectedType = this.value;
+    const infoDiv = document.getElementById('reportTypeInfo');
+    
+    if (selectedType && reportTypeDescriptions[selectedType]) {
+        const info = reportTypeDescriptions[selectedType];
+        infoDiv.innerHTML = `
+            <h6>${info.title}</h6>
+            <p class="small text-muted">${info.description}</p>
+            <h6 class="mt-3">Features:</h6>
+            <ul class="small">
+                ${info.features.map(feature => `<li>${feature}</li>`).join('')}
+            </ul>
+        `;
+    } else {
+        infoDiv.innerHTML = '<p class="text-muted">Select a report type to see details</p>';
+    }
+});
+
+// Date range functions
+function setDateRange(days) {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - days);
+    
+    document.getElementById('{{ form.date_from.id_for_label }}').value = formatDate(startDate);
+    document.getElementById('{{ form.date_to.id_for_label }}').value = formatDate(endDate);
+}
+
+function setCurrentMonth() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    document.getElementById('{{ form.date_from.id_for_label }}').value = formatDate(startOfMonth);
+    document.getElementById('{{ form.date_to.id_for_label }}').value = formatDate(endOfMonth);
+}
+
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
+
+// Form validation
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    const startDate = new Date(document.getElementById('{{ form.date_from.id_for_label }}').value);
+    const endDate = new Date(document.getElementById('{{ form.date_to.id_for_label }}').value);
+    
+    if (startDate > endDate) {
+        e.preventDefault();
+        alert('Start date must be before end date');
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating Report...';
+});
+</script>
+{% endblock %}

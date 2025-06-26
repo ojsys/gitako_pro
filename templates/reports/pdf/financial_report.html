@@ -1,0 +1,195 @@
+{% extends 'reports/pdf/report_base.html' %}
+
+{% block content %}
+
+{% if data.summary %}
+<div class="section">
+    <h3>Summary</h3>
+    <div class="summary-grid">
+        {% for key, value in data.summary.items %}
+        <div class="summary-row">
+            <div class="summary-cell">{{ key|title|replace:"_":" " }}</div>
+            <div class="summary-cell value">
+                {% if 'amount' in key or 'revenue' in key or 'expense' in key or 'profit' in key or 'cost' in key or 'variance' in key %}
+                    ${{ value|floatformat:2 }}
+                {% elif 'percentage' in key or 'margin' in key %}
+                    {{ value|floatformat:1 }}%
+                {% else %}
+                    {{ value }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if data.budget_details %}
+<div class="section">
+    <h3>Budget Analysis</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Budget</th>
+                <th>Budgeted Income</th>
+                <th>Actual Income</th>
+                <th>Budgeted Expenses</th>
+                <th>Actual Expenses</th>
+                <th>Variance</th>
+                <th>Variance %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in data.budget_details %}
+            <tr>
+                <td>{{ detail.budget_name }}</td>
+                <td class="number">${{ detail.budgeted_income|floatformat:2 }}</td>
+                <td class="number">${{ detail.actual_income|floatformat:2 }}</td>
+                <td class="number">${{ detail.budgeted_expenses|floatformat:2 }}</td>
+                <td class="number">${{ detail.actual_expenses|floatformat:2 }}</td>
+                <td class="number {% if detail.variance >= 0 %}positive{% else %}negative{% endif %}">
+                    ${{ detail.variance|floatformat:2 }}
+                </td>
+                <td class="number {% if detail.variance_percentage >= 0 %}positive{% else %}negative{% endif %}">
+                    {{ detail.variance_percentage|floatformat:1 }}%
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.revenue.revenue_breakdown %}
+<div class="section">
+    <h3>Revenue Breakdown</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data.revenue.revenue_breakdown %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td class="number">${{ item.amount|floatformat:2 }}</td>
+                <td class="number">{{ item.percentage|floatformat:1 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.expenses.expense_breakdown %}
+<div class="section">
+    <h3>Expense Breakdown</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data.expenses.expense_breakdown %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td class="number">${{ item.amount|floatformat:2 }}</td>
+                <td class="number">{{ item.percentage|floatformat:1 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.cost_breakdown %}
+<div class="section">
+    <h3>Cost Analysis</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data.cost_breakdown %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td class="number">${{ item.amount|floatformat:2 }}</td>
+                <td class="number">{{ item.percentage|floatformat:1 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.cash_flow_breakdown %}
+<div class="section">
+    <h3>Cash Flow Analysis</h3>
+    
+    {% if data.cash_flow_breakdown.inflows %}
+    <h4>Cash Inflows</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data.cash_flow_breakdown.inflows %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td class="number positive">${{ item.amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+    {% if data.cash_flow_breakdown.outflows %}
+    <h4>Cash Outflows</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data.cash_flow_breakdown.outflows %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td class="number negative">${{ item.amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if data.recommendations %}
+<div class="section">
+    <h3>Recommendations</h3>
+    {% for rec in data.recommendations %}
+    <div style="margin-bottom: 15px; padding: 10px; border-left: 4px solid 
+         {% if rec.priority == 'high' %}#dc3545{% elif rec.priority == 'medium' %}#ffc107{% else %}#28a745{% endif %}; 
+         background-color: #f8f9fa;">
+        <strong>{{ rec.type|title }} ({{ rec.priority|title }} Priority):</strong><br>
+        {{ rec.message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

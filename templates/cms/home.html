@@ -260,31 +260,39 @@
                 Real stories from farmers transforming their operations with Gitako
             </p>
         </div>
-        
+
         <div class="row g-4">
+            {% for testimonial in testimonials %}
             <div class="col-lg-4">
                 <div class="testimonial-card shadow-lg h-100">
                     <div class="card-body p-5">
                         <div class="testimonial-content">
                             <div class="mb-4">
                                 <div class="text-warning d-flex">
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
+                                    {% for _ in "12345"|slice:":testimonial.rating" %}
+                                        <i class="material-icons">star</i>
+                                    {% endfor %}
                                 </div>
                             </div>
-                            <p class="mb-4 fst-italic">"Gitako's crop calendar transformed my farming. I increased my maize yield by 30% in just one season. The AI recommendations are spot-on!"</p>
+                            <p class="mb-4 fst-italic">"{{ testimonial.testimonial_text }}"</p>
                         </div>
                         <div class="testimonial-author d-flex align-items-center">
                             <div class="me-3">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
-                                     alt="Adamu Ibrahim" class="rounded-circle border border-3 border-primary" width="60" height="60">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #0d6efd;">
+                                    {% if testimonial.customer_image %}
+                                    <img src="{{ testimonial.customer_image.url }}" 
+                                        alt="{{ testimonial.customer_name }}" 
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                    <img src="https://via.placeholder.com/60" 
+                                        alt="Default avatar" 
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% endif %}
+                                </div>
                             </div>
                             <div>
-                                <div class="fw-bold">Adamu Ibrahim</div>
-                                <small class="text-muted">Maize Farmer, Kaduna State</small>
+                                <div class="fw-bold">{{ testimonial.customer_name }}</div>
+                                <small class="text-muted">{{ testimonial.customer_title }}, {{ testimonial.customer_location }}</small>
                                 <div class="small text-success mt-1">
                                     <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
                                     Verified Customer
@@ -294,75 +302,11 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-4">
-                <div class="testimonial-card shadow-lg h-100">
-                    <div class="card-body p-5">
-                        <div class="testimonial-content">
-                            <div class="mb-4">
-                                <div class="text-warning d-flex">
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                </div>
-                            </div>
-                            <p class="mb-4 fst-italic">"The budget management feature is a game-changer. I now know exactly where every naira goes and can plan confidently for the next season."</p>
-                        </div>
-                        <div class="testimonial-author d-flex align-items-center">
-                            <div class="me-3">
-                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
-                                     alt="Funmi Adebayo" class="rounded-circle border border-3 border-primary" width="60" height="60">
-                            </div>
-                            <div>
-                                <div class="fw-bold">Funmi Adebayo</div>
-                                <small class="text-muted">Cassava Farmer, Ogun State</small>
-                                <div class="small text-success mt-1">
-                                    <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
-                                    Verified Customer
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="testimonial-card shadow-lg h-100">
-                    <div class="card-body p-5">
-                        <div class="testimonial-content">
-                            <div class="mb-4">
-                                <div class="text-warning d-flex">
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                    <i class="material-icons">star</i>
-                                </div>
-                            </div>
-                            <p class="mb-4 fst-italic">"The marketplace connected me directly with premium buyers. I'm selling at 40% higher prices without any middlemen taking cuts!"</p>
-                        </div>
-                        <div class="testimonial-author d-flex align-items-center">
-                            <div class="me-3">
-                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&q=80" 
-                                     alt="Chukwu Emeka" class="rounded-circle border border-3 border-primary" width="60" height="60">
-                            </div>
-                            <div>
-                                <div class="fw-bold">Chukwu Emeka</div>
-                                <small class="text-muted">Rice Farmer, Enugu State</small>
-                                <div class="small text-success mt-1">
-                                    <i class="material-icons me-1" style="font-size: 0.9rem;">verified</i>
-                                    Verified Customer
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
+
 
 <!-- CTA Section -->
 <section class="cta-section section-cta text-white">
@@ -382,7 +326,7 @@
                 <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-4">
                     <a href="{% url 'accounts:register' %}" class="btn btn-warning btn-lg px-5 py-3 fw-semibold">
                         <i class="material-icons me-2">rocket_launch</i>
-                        Start Free Trial
+                        Start Free
                     </a>
                     <a href="{% url 'cms:contact' %}" class="btn btn-outline-light btn-lg px-5 py-3">
                         <i class="material-icons me-2">support_agent</i>

@@ -1,0 +1,274 @@
+{% extends 'reports/base_reports.html' %}
+{% load static %}
+
+{% block title %}Reports Dashboard - Gitako{% endblock %}
+
+{% block reports_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Reports Dashboard</h2>
+    <div>
+        <a href="{% url 'reports:create_report' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Report
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Total Reports</h6>
+                    <div class="metric-value">{{ stats.total_reports }}</div>
+                </div>
+                <div class="text-primary">
+                    <i class="fas fa-chart-bar fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Completed</h6>
+                    <div class="metric-value text-success">{{ stats.completed_reports }}</div>
+                </div>
+                <div class="text-success">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Scheduled</h6>
+                    <div class="metric-value text-info">{{ stats.scheduled_reports }}</div>
+                </div>
+                <div class="text-info">
+                    <i class="fas fa-clock fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-1">Exports This Month</h6>
+                    <div class="metric-value text-warning">{{ stats.exports_this_month }}</div>
+                </div>
+                <div class="text-warning">
+                    <i class="fas fa-download fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Reports -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Reports</h5>
+                <a href="{% url 'reports:report_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if user_reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in user_reports %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'reports:report_detail' report.id %}" class="text-decoration-none">
+                                            {{ report.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ report.get_report_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="report-status status-{{ report.status }}">
+                                            {{ report.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ report.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'reports:report_detail' report.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if report.status == 'completed' %}
+                                            <button class="btn btn-outline-success btn-sm" onclick="exportReport('{{ report.id }}', 'pdf')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No reports yet</h5>
+                        <p class="text-muted">Create your first report to get started with data analysis.</p>
+                        <a href="{% url 'reports:create_report' %}" class="btn btn-primary">Create Report</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions & Categories -->
+    <div class="col-md-4">
+        <!-- Quick Report Generation -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="generateQuickReport('financial_summary')">
+                        <i class="fas fa-dollar-sign me-2"></i>Financial Summary
+                    </button>
+                    <button class="btn btn-outline-success" onclick="generateQuickReport('yield_analysis')">
+                        <i class="fas fa-seedling me-2"></i>Yield Analysis
+                    </button>
+                    <button class="btn btn-outline-info" onclick="generateQuickReport('budget_vs_actual')">
+                        <i class="fas fa-chart-line me-2"></i>Budget vs Actual
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="generateQuickReport('cash_flow')">
+                        <i class="fas fa-coins me-2"></i>Cash Flow
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Report Categories -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Report Categories</h5>
+            </div>
+            <div class="card-body">
+                {% for category in categories %}
+                <div class="mb-3">
+                    <h6 class="mb-2">{{ category.get_category_type_display }}</h6>
+                    <p class="text-muted small mb-2">{{ category.description|truncatewords:15 }}</p>
+                    <a href="{% url 'reports:create_report' %}?category={{ category.id }}" class="btn btn-sm btn-outline-primary">
+                        Create Report
+                    </a>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Exports -->
+{% if recent_exports %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Exports</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Report</th>
+                                <th>Format</th>
+                                <th>Status</th>
+                                <th>Size</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for export in recent_exports %}
+                            <tr>
+                                <td>{{ export.report.name|truncatechars:30 }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ export.get_export_format_display }}</span>
+                                </td>
+                                <td>
+                                    <span class="report-status status-{{ export.status }}">
+                                        {{ export.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if export.file_size %}
+                                        {{ export.file_size|filesizeformat }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ export.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    {% if export.status == 'completed' %}
+                                    <a href="{% url 'reports:download_export' export.id %}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function generateQuickReport(reportType) {
+    // Implement quick report generation
+    window.location.href = "{% url 'reports:create_report' %}?type=" + reportType + "&quick=1";
+}
+
+function exportReport(reportId, format) {
+    // Implement export functionality
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/reports/${reportId}/export/`;
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    
+    const formatInput = document.createElement('input');
+    formatInput.type = 'hidden';
+    formatInput.name = 'format';
+    formatInput.value = format;
+    
+    form.appendChild(csrfInput);
+    form.appendChild(formatInput);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+</script>
+{% endblock %}

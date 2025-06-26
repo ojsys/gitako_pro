@@ -108,12 +108,12 @@
                     <!-- Amount Information -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_planned_amount" class="form-label">Planned Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.planned_amount }}
                                 </div>
-                                <label for="id_planned_amount" class="mt-2">Planned Amount</label>
                                 {% if form.planned_amount.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.planned_amount.errors %}
@@ -124,12 +124,12 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_actual_amount" class="form-label">Actual Amount (Spent)</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.actual_amount }}
                                 </div>
-                                <label for="id_actual_amount">Actual Amount (Spent)</label>
                                 {% if form.actual_amount.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.actual_amount.errors %}

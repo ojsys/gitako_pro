@@ -44,6 +44,7 @@ LOCAL_APPS = [
     'apps.inventory',
     'apps.marketplace',  # Re-enabled after fixing encoding issue
     'apps.notifications',
+    'apps.reports',
     'apps.cms',
     'apps.api',
 ]

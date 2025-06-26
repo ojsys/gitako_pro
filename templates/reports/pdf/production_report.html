@@ -1,0 +1,165 @@
+{% extends 'reports/pdf/report_base.html' %}
+
+{% block content %}
+
+{% if data.summary %}
+<div class="section">
+    <h3>Production Summary</h3>
+    <div class="summary-grid">
+        {% for key, value in data.summary.items %}
+        <div class="summary-row">
+            <div class="summary-cell">{{ key|title|replace:"_":" " }}</div>
+            <div class="summary-cell value">
+                {% if 'yield' in key or 'production' in key %}
+                    {{ value|floatformat:2 }} kg
+                {% elif 'variance' in key %}
+                    {{ value|floatformat:1 }}%
+                {% else %}
+                    {{ value }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if data.yield_by_crop %}
+<div class="section">
+    <h3>Yield by Crop</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Crop</th>
+                <th>Average Yield (kg)</th>
+                <th>Total Yield (kg)</th>
+                <th>Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crop in data.yield_by_crop %}
+            <tr>
+                <td>{{ crop.crop_name }}</td>
+                <td class="number">{{ crop.average_yield|floatformat:2 }}</td>
+                <td class="number">{{ crop.total_yield|floatformat:2 }}</td>
+                <td class="number">{{ crop.record_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.yield_by_block %}
+<div class="section">
+    <h3>Block Performance</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Block</th>
+                <th>Size (ha)</th>
+                <th>Average Yield (kg)</th>
+                <th>Total Yield (kg)</th>
+                <th>Yield per Hectare</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for block in data.yield_by_block %}
+            <tr>
+                <td>{{ block.block_name }}</td>
+                <td class="number">{{ block.block_size|floatformat:2 }}</td>
+                <td class="number">{{ block.average_yield|floatformat:2 }}</td>
+                <td class="number">{{ block.total_yield|floatformat:2 }}</td>
+                <td class="number">{{ block.yield_per_hectare|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.crop_metrics %}
+<div class="section">
+    <h3>Crop Performance Metrics</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Crop</th>
+                <th>Average Yield</th>
+                <th>Expected Yield</th>
+                <th>Performance Ratio</th>
+                <th>Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for metric in data.crop_metrics %}
+            <tr>
+                <td>{{ metric.crop_name }}</td>
+                <td class="number">{{ metric.average_yield|floatformat:2 }} kg</td>
+                <td class="number">{{ metric.expected_yield|floatformat:2 }} kg</td>
+                <td class="number {% if metric.performance_ratio >= 1 %}positive{% else %}negative{% endif %}">
+                    {{ metric.performance_ratio|floatformat:2 }}
+                </td>
+                <td class="number">{{ metric.record_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.monthly_trends %}
+<div class="section">
+    <h3>Monthly Trends</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Average Yield (kg)</th>
+                <th>Total Yield (kg)</th>
+                <th>Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trend in data.monthly_trends %}
+            <tr>
+                <td>{{ trend.month }}</td>
+                <td class="number">{{ trend.average_yield|floatformat:2 }}</td>
+                <td class="number">{{ trend.total_yield|floatformat:2 }}</td>
+                <td class="number">{{ trend.record_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if data.farmer_rankings %}
+<div class="section">
+    <h3>Farmer Performance Rankings</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Farmer</th>
+                <th>Average Yield (kg)</th>
+                <th>Total Yield (kg)</th>
+                <th>Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for farmer in data.farmer_rankings %}
+            <tr>
+                <td class="number">{{ forloop.counter }}</td>
+                <td>{{ farmer.farmer_name }}</td>
+                <td class="number">{{ farmer.average_yield|floatformat:2 }}</td>
+                <td class="number">{{ farmer.total_yield|floatformat:2 }}</td>
+                <td class="number">{{ farmer.record_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

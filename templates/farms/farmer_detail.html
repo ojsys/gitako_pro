@@ -1,0 +1,263 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ farmer.farmer_name }} - Farmer Details - Gitako{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ farmer.farmer_name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            {% if farmer.farmer_phone %}
+            <a href="tel:{{ farmer.farmer_phone }}" class="btn btn-sm btn-outline-primary">
+                <i class="material-icons me-1">phone</i>
+                Call
+            </a>
+            {% endif %}
+            {% if farmer.farmer_email %}
+            <a href="mailto:{{ farmer.farmer_email }}" class="btn btn-sm btn-outline-secondary">
+                <i class="material-icons me-1">email</i>
+                Email
+            </a>
+            {% endif %}
+        </div>
+        {% if can_edit_farmer %}
+        <div class="btn-group me-2">
+            <a href="{% url 'farms:farmer_update' farmer.pk %}" class="btn btn-sm btn-info">
+                <i class="material-icons me-1">edit</i>
+                Edit Farmer
+            </a>
+        </div>
+        {% endif %}
+        <a href="{% url 'farms:farmers' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="material-icons me-1">arrow_back</i>
+            Back to Farmers
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Basic Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">person</i>Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Full Name</label>
+                            <p class="h6">{{ farmer.farmer_name }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <p class="h6">{{ farmer.farmer_email|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <p class="h6">{{ farmer.farmer_phone|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Location</label>
+                            <p class="h6">{{ farmer.location|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Assignment -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">landscape</i>Farm Assignment</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Farm</label>
+                            <p class="h6">{{ farmer.farm.name }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Block</label>
+                            <p class="h6">{{ farmer.block.name|default:"Not assigned" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Allocated Area</label>
+                            <p class="h6">{{ farmer.allocated_hectares|floatformat:1 }} hectares</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Season Year</label>
+                            <p class="h6">{{ farmer.season_year }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agricultural Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">eco</i>Agricultural Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Crops Grown</label>
+                            {% if farmer.crops_grown.all %}
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for crop in farmer.crops_grown.all %}
+                                        <span class="badge bg-success">{{ crop.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No crops specified</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Expected Yield</label>
+                            <p class="h6">{{ farmer.expected_yield|default:"Not set"|floatformat:1 }}{% if farmer.expected_yield %} tons{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Actual Yield</label>
+                            <p class="h6">{{ farmer.actual_yield|default:"Not recorded"|floatformat:1 }}{% if farmer.actual_yield %} tons{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Yield Efficiency</label>
+                            {% if farmer.yield_efficiency %}
+                                {% if farmer.yield_efficiency >= 90 %}
+                                    <span class="badge bg-success fs-6">{{ farmer.yield_efficiency|floatformat:1 }}%</span>
+                                {% elif farmer.yield_efficiency >= 70 %}
+                                    <span class="badge bg-warning fs-6">{{ farmer.yield_efficiency|floatformat:1 }}%</span>
+                                {% else %}
+                                    <span class="badge bg-danger fs-6">{{ farmer.yield_efficiency|floatformat:1 }}%</span>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">N/A</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farming Experience -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">trending_up</i>Farming Experience</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Years of Experience</label>
+                            <p class="h6">{{ farmer.farming_experience|default:"Not specified" }}{% if farmer.farming_experience %} years{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Irrigation Method</label>
+                            <p class="h6">{{ farmer.irrigation_method|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Soil Type</label>
+                            <p class="h6">{{ farmer.soil_type|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Registration Date</label>
+                            <p class="h6">{{ farmer.registration_date|date:"F j, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Farmer Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">analytics</i>Farmer Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Farm</span>
+                    <strong>{{ farmer.farm.name }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Allocated Area</span>
+                    <strong>{{ farmer.allocated_hectares|floatformat:1 }} ha</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Crops Count</span>
+                    <strong>{{ farmer.crops_grown.count }}</strong>
+                </div>
+                {% if farmer.farming_experience %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Experience</span>
+                    <strong>{{ farmer.farming_experience }} years</strong>
+                </div>
+                {% endif %}
+                {% if farmer.yield_efficiency %}
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Efficiency</span>
+                    <strong>{{ farmer.yield_efficiency|floatformat:1 }}%</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="material-icons me-2">flash_on</i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if farmer.farmer_phone %}
+                    <a href="tel:{{ farmer.farmer_phone }}" class="btn btn-outline-primary">
+                        <i class="material-icons me-2">phone</i>
+                        Call Farmer
+                    </a>
+                    {% endif %}
+                    {% if farmer.farmer_email %}
+                    <a href="mailto:{{ farmer.farmer_email }}" class="btn btn-outline-secondary">
+                        <i class="material-icons me-2">email</i>
+                        Send Email
+                    </a>
+                    {% endif %}
+                    {% if can_edit_farmer %}
+                    <a href="{% url 'farms:farmer_update' farmer.pk %}" class="btn btn-info">
+                        <i class="material-icons me-2">edit</i>
+                        Edit Details
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

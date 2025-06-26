@@ -95,12 +95,12 @@
                     <!-- Amount and Yield Information -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_planned_amount" class="form-label">Planned Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.planned_amount }}
                                 </div>
-                                <label for="id_planned_amount">Planned Amount</label>
                                 {% if form.planned_amount.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.planned_amount.errors %}
@@ -111,12 +111,12 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_actual_amount" class="form-label">Actual Amount (Received)</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.actual_amount }}
                                 </div>
-                                <label for="id_actual_amount">Actual Amount (Received)</label>
                                 {% if form.actual_amount.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.actual_amount.errors %}
@@ -161,12 +161,12 @@
                     <!-- Price Information -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_planned_price" class="form-label">Planned Price per Unit</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.planned_price }}
                                 </div>
-                                <label for="id_planned_price">Planned Price per Unit</label>
                                 {% if form.planned_price.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.planned_price.errors %}
@@ -177,12 +177,12 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-floating">
+                            <div class="mb-3">
+                                <label for="id_actual_price" class="form-label">Actual Price per Unit</label>
                                 <div class="input-group">
                                     <span class="input-group-text">₦</span>
                                     {{ form.actual_price }}
                                 </div>
-                                <label for="id_actual_price">Actual Price per Unit</label>
                                 {% if form.actual_price.errors %}
                                     <div class="text-danger small mt-1">
                                         {% for error in form.actual_price.errors %}

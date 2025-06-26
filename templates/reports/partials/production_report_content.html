@@ -1,0 +1,499 @@
+{% load static %}
+
+<!-- Production Report Content -->
+<div class="production-report-content">
+    {% if report.report_type == 'yield_analysis' %}
+        <!-- Yield Analysis Report -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Yield Analysis Report</h4>
+                <p class="text-muted">Comprehensive analysis of crop yields and performance</p>
+            </div>
+        </div>
+        
+        <!-- Yield Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Total Records</h6>
+                    <div class="metric-value">{{ report_data.summary.total_records }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Average Yield</h6>
+                    <div class="metric-value">{{ report_data.summary.average_yield|floatformat:2 }} kg</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Total Production</h6>
+                    <div class="metric-value">{{ report_data.summary.total_production|floatformat:2 }} kg</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Yield Variance</h6>
+                    <div class="metric-value {% if report_data.summary.yield_variance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ report_data.summary.yield_variance|floatformat:1 }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yield by Crop -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Yield Performance by Crop</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Crop Name</th>
+                                <th>Average Yield (kg)</th>
+                                <th>Total Yield (kg)</th>
+                                <th>Records</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crop in report_data.yield_by_crop %}
+                            <tr>
+                                <td>{{ crop.crop_name }}</td>
+                                <td>{{ crop.average_yield|floatformat:2 }}</td>
+                                <td>{{ crop.total_yield|floatformat:2 }}</td>
+                                <td>{{ crop.record_count }}</td>
+                                <td>
+                                    {% if crop.average_yield > report_data.summary.average_yield %}
+                                        <span class="badge bg-success">Above Average</span>
+                                    {% elif crop.average_yield == report_data.summary.average_yield %}
+                                        <span class="badge bg-info">Average</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Below Average</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No yield data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yield Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Yield Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="yieldChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    
+    {% elif report.report_type == 'crop_performance' %}
+        <!-- Crop Performance Report -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Crop Performance Report</h4>
+                <p class="text-muted">Detailed performance analysis across different crops</p>
+            </div>
+        </div>
+        
+        <!-- Performance Summary -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Total Crops</h6>
+                    <div class="metric-value">{{ report_data.summary.total_crops }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Average Performance</h6>
+                    <div class="metric-value">{{ report_data.summary.average_performance|floatformat:1 }}%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Best Performing</h6>
+                    <div class="metric-value">{{ report_data.summary.best_performing_crop|default:"-" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Crop Performance Metrics -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Performance Metrics by Crop</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Crop Name</th>
+                                <th>Average Yield</th>
+                                <th>Expected Yield</th>
+                                <th>Performance Ratio</th>
+                                <th>Records</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crop in report_data.crop_metrics %}
+                            <tr>
+                                <td>{{ crop.crop_name }}</td>
+                                <td>{{ crop.average_yield|floatformat:2 }} kg</td>
+                                <td>{{ crop.expected_yield|floatformat:2 }} kg</td>
+                                <td>{{ crop.performance_ratio|floatformat:2 }}</td>
+                                <td>{{ crop.record_count }}</td>
+                                <td>
+                                    {% if crop.performance_ratio >= 1.1 %}
+                                        <span class="badge bg-success">Exceeding</span>
+                                    {% elif crop.performance_ratio >= 0.9 %}
+                                        <span class="badge bg-info">Meeting</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Below</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No performance data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    {% elif report.report_type == 'seasonal_comparison' %}
+        <!-- Seasonal Comparison Report -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Seasonal Comparison Report</h4>
+                <p class="text-muted">Analysis of yield patterns across different seasons</p>
+            </div>
+        </div>
+        
+        <!-- Seasonal Summary -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Seasons Compared</h6>
+                    <div class="metric-value">{{ report_data.summary.seasons_compared }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Yield Variance</h6>
+                    <div class="metric-value">{{ report_data.summary.yield_variance|floatformat:1 }}%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Best Season</h6>
+                    <div class="metric-value">{{ report_data.summary.best_season|default:"-" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monthly Trends -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Monthly Yield Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="seasonalChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Monthly Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Average Yield (kg)</th>
+                                <th>Total Yield (kg)</th>
+                                <th>Records</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for month in report_data.monthly_trends %}
+                            <tr>
+                                <td>{{ month.month }}</td>
+                                <td>{{ month.average_yield|floatformat:2 }}</td>
+                                <td>{{ month.total_yield|floatformat:2 }}</td>
+                                <td>{{ month.record_count }}</td>
+                                <td>
+                                    {% if forloop.counter0 > 0 %}
+                                        {% with prev_month=report_data.monthly_trends|slice:forloop.counter0|slice:":1"|first %}
+                                            {% if month.average_yield > prev_month.average_yield %}
+                                                <span class="text-success">↗️ Up</span>
+                                            {% elif month.average_yield < prev_month.average_yield %}
+                                                <span class="text-danger">↘️ Down</span>
+                                            {% else %}
+                                                <span class="text-muted">→ Stable</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No seasonal data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    {% elif report.report_type == 'block_efficiency' %}
+        <!-- Block Efficiency Report -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Block Efficiency Report</h4>
+                <p class="text-muted">Analysis of production efficiency across different blocks</p>
+            </div>
+        </div>
+        
+        <!-- Efficiency Summary -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Total Blocks</h6>
+                    <div class="metric-value">{{ report_data.summary.total_blocks }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Average Efficiency</h6>
+                    <div class="metric-value">{{ report_data.summary.average_efficiency|floatformat:1 }}%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Most Efficient</h6>
+                    <div class="metric-value">{{ report_data.summary.most_efficient_block|default:"-" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Block Performance -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Block Performance Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Block Name</th>
+                                <th>Size (ha)</th>
+                                <th>Average Yield (kg)</th>
+                                <th>Total Yield (kg)</th>
+                                <th>Yield per Hectare</th>
+                                <th>Records</th>
+                                <th>Efficiency</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for block in report_data.block_performance %}
+                            <tr>
+                                <td>{{ block.block_name }}</td>
+                                <td>{{ block.block_size|floatformat:2 }}</td>
+                                <td>{{ block.average_yield|floatformat:2 }}</td>
+                                <td>{{ block.total_yield|floatformat:2 }}</td>
+                                <td>{{ block.yield_per_hectare|floatformat:2 }}</td>
+                                <td>{{ block.record_count }}</td>
+                                <td>
+                                    {% if block.yield_per_hectare > 1000 %}
+                                        <span class="badge bg-success">High</span>
+                                    {% elif block.yield_per_hectare > 500 %}
+                                        <span class="badge bg-info">Medium</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Low</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No block data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+    {% elif report.report_type == 'farmer_performance' %}
+        <!-- Farmer Performance Report -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Farmer Performance Report</h4>
+                <p class="text-muted">Performance analysis and rankings of individual farmers</p>
+            </div>
+        </div>
+        
+        <!-- Farmer Summary -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Total Farmers</h6>
+                    <div class="metric-value">{{ report_data.summary.total_farmers }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Average Yield</h6>
+                    <div class="metric-value">{{ report_data.summary.average_yield|floatformat:2 }} kg</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <h6 class="text-muted mb-1">Top Performer</h6>
+                    <div class="metric-value">{{ report_data.summary.top_performer|default:"-" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Farmer Rankings -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Farmer Performance Rankings</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Farmer Name</th>
+                                <th>Average Yield (kg)</th>
+                                <th>Total Yield (kg)</th>
+                                <th>Records</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for farmer in report_data.farmer_rankings %}
+                            <tr>
+                                <td>
+                                    {% if forloop.counter == 1 %}
+                                        🥇
+                                    {% elif forloop.counter == 2 %}
+                                        🥈
+                                    {% elif forloop.counter == 3 %}
+                                        🥉
+                                    {% else %}
+                                        {{ forloop.counter }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ farmer.farmer_name }}</td>
+                                <td>{{ farmer.average_yield|floatformat:2 }}</td>
+                                <td>{{ farmer.total_yield|floatformat:2 }}</td>
+                                <td>{{ farmer.record_count }}</td>
+                                <td>
+                                    {% if farmer.average_yield > report_data.summary.average_yield %}
+                                        <span class="badge bg-success">Above Average</span>
+                                    {% elif farmer.average_yield == report_data.summary.average_yield %}
+                                        <span class="badge bg-info">Average</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Below Average</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No farmer data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function loadProductionCharts(reportData) {
+    console.log('Loading production charts with data:', reportData);
+    
+    {% if report.report_type == 'yield_analysis' %}
+    if (document.getElementById('yieldChart')) {
+        const yieldCtx = document.getElementById('yieldChart').getContext('2d');
+        new Chart(yieldCtx, {
+            type: 'bar',
+            data: {
+                labels: [{% for crop in report_data.yield_by_crop %}'{{ crop.crop_name }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Average Yield (kg)',
+                    data: [{% for crop in report_data.yield_by_crop %}{{ crop.average_yield }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    backgroundColor: '#28a745',
+                    borderColor: '#1e7e34',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    {% endif %}
+    
+    {% if report.report_type == 'seasonal_comparison' %}
+    if (document.getElementById('seasonalChart')) {
+        const seasonalCtx = document.getElementById('seasonalChart').getContext('2d');
+        new Chart(seasonalCtx, {
+            type: 'line',
+            data: {
+                labels: [{% for month in report_data.monthly_trends %}'{{ month.month }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Average Yield (kg)',
+                    data: [{% for month in report_data.monthly_trends %}{{ month.average_yield }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    {% endif %}
+}
+</script>

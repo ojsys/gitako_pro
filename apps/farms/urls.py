@@ -18,5 +18,8 @@ urlpatterns = [
     path('staff/<int:pk>/edit/', views.StaffUpdateView.as_view(), name='staff_update'),
     path('farmers/', views.FarmerListView.as_view(), name='farmers'),
     path('farmers/create/', views.FarmerCreateView.as_view(), name='farmer_create'),
+    path('farmers/<int:pk>/', views.FarmerDetailView.as_view(), name='farmer_detail'),
+    path('farmers/<int:pk>/edit/', views.FarmerUpdateView.as_view(), name='farmer_update'),
     path('farmers/bulk-upload/', views.FarmerBulkUploadView.as_view(), name='farmer_bulk_upload'),
+    path('farmers/upload-template/', views.FarmerUploadTemplateView.as_view(), name='farmer_upload_template'),
 ]

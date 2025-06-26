@@ -1,5 +1,6 @@
 {% extends 'base_dashboard.html' %}
 {% load static %}
+{% load currency_filters %}
 
 {% block title %}Dashboard - Gitako{% endblock %}
 
@@ -51,7 +52,7 @@
 
 <!-- Primary Stats Cards -->
 <div class="row mb-4">
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card success text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -68,16 +69,16 @@
         </div>
     </div>
     
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card info text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50 mb-1">Active Blocks</h6>
                         <h3 class="mb-0">{{ total_blocks|default:0 }}</h3>
-                        <small class="text-white-50">{{ total_allocated_area|floatformat:1 }} ha allocated</small>
+                        <small class="text-white-50 d-none d-sm-inline">{{ total_allocated_area|floatformat:1 }} ha allocated</small>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">grid_view</i>
                     </div>
                 </div>
@@ -85,16 +86,16 @@
         </div>
     </div>
     
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card warning text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50 mb-1">Staff Members</h6>
                         <h3 class="mb-0">{{ total_staff|default:0 }}</h3>
-                        <small class="text-white-50">Active workers</small>
+                        <small class="text-white-50 d-none d-sm-inline">Active workers</small>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">people</i>
                     </div>
                 </div>
@@ -102,16 +103,16 @@
         </div>
     </div>
     
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card primary text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50 mb-1">Farmers</h6>
                         <h3 class="mb-0">{{ total_farmers|default:0 }}</h3>
-                        <small class="text-white-50">{{ total_farmer_area|floatformat:1 }} ha managed</small>
+                        <small class="text-white-50 d-none d-sm-inline">{{ total_farmer_area|floatformat:1 }} ha managed</small>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">agriculture</i>
                     </div>
                 </div>
@@ -119,16 +120,16 @@
         </div>
     </div>
     
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card danger text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50 mb-1">Season Budget</h6>
-                        <h3 class="mb-0">₦{{ budget_summary.total_budget|floatformat:0|default:"0" }}</h3>
-                        <small class="text-white-50">{{ budget_summary.utilization_percentage|default:0 }}% used</small>
+                        <h3 class="mb-0">{{ budget_summary.total_budget|currency_short }}</h3>
+                        <small class="text-white-50 d-none d-sm-inline">{{ budget_summary.utilization_percentage|percentage_short }} used</small>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">account_balance</i>
                     </div>
                 </div>
@@ -136,16 +137,16 @@
         </div>
     </div>
     
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+    <div class="col-lg-2 col-md-4 col-sm-6 col-12 mb-3">
         <div class="card stats-card dark text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-white-50 mb-1">Activities</h6>
                         <h3 class="mb-0">{{ activity_stats.pending|default:0 }}</h3>
-                        <small class="text-white-50">Pending tasks</small>
+                        <small class="text-white-50 d-none d-sm-inline">Pending tasks</small>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2.5rem; opacity: 0.8;">task</i>
                     </div>
                 </div>
@@ -156,19 +157,19 @@
 
 <!-- Performance Metrics -->
 <div class="row mb-4">
-    <div class="col-md-4">
+    <div class="col-lg-4 col-md-6 col-12 mb-3">
         <div class="metric-item">
             <h4 class="text-primary mb-1">{{ performance_metrics.farm_utilization }}%</h4>
             <small class="text-muted">Farm Utilization</small>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-4 col-md-6 col-12 mb-3">
         <div class="metric-item">
             <h4 class="text-success mb-1">{{ performance_metrics.avg_block_size }} ha</h4>
             <small class="text-muted">Average Block Size</small>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-4 col-md-12 col-12 mb-3">
         <div class="metric-item">
             <h4 class="text-info mb-1">{{ performance_metrics.farmers_per_hectare }}</h4>
             <small class="text-muted">Farmers per Hectare</small>
@@ -179,11 +180,11 @@
 <!-- Analytics Charts Row -->
 <div class="row mb-4">
     <!-- Crop Distribution Chart -->
-    <div class="col-md-6">
+    <div class="col-lg-6 col-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">donut_small</i>Crop Distribution by Area
+                    <i class="material-icons me-2 d-none d-sm-inline">donut_small</i>Crop Distribution by Area
                 </h5>
             </div>
             <div class="card-body">
@@ -195,11 +196,11 @@
     </div>
     
     <!-- Block Status Chart -->
-    <div class="col-md-6">
+    <div class="col-lg-6 col-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">bar_chart</i>Block Status Overview
+                    <i class="material-icons me-2 d-none d-sm-inline">bar_chart</i>Block Status Overview
                 </h5>
             </div>
             <div class="card-body">
@@ -214,11 +215,11 @@
 <!-- Activity Status and Budget Overview -->
 <div class="row mb-4">
     <!-- Activity Status -->
-    <div class="col-md-6">
+    <div class="col-lg-6 col-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">assignment</i>Activity Status
+                    <i class="material-icons me-2 d-none d-sm-inline">assignment</i>Activity Status
                 </h5>
             </div>
             <div class="card-body">
@@ -230,25 +231,25 @@
     </div>
     
     <!-- Budget Utilization -->
-    <div class="col-md-6">
+    <div class="col-lg-6 col-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">account_balance_wallet</i>Budget Utilization
+                    <i class="material-icons me-2 d-none d-sm-inline">account_balance_wallet</i>Budget Utilization
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row text-center">
-                    <div class="col-4">
-                        <h4 class="text-primary mb-1">₦{{ budget_summary.total_budget|floatformat:0 }}</h4>
+                    <div class="col-12 col-sm-4 mb-3">
+                        <h4 class="text-primary mb-1">{{ budget_summary.total_budget|currency_short }}</h4>
                         <small class="text-muted">Total Budget</small>
                     </div>
-                    <div class="col-4">
-                        <h4 class="text-warning mb-1">₦{{ budget_summary.total_spent|floatformat:0 }}</h4>
+                    <div class="col-12 col-sm-4 mb-3">
+                        <h4 class="text-warning mb-1">{{ budget_summary.total_spent|currency_short }}</h4>
                         <small class="text-muted">Spent</small>
                     </div>
-                    <div class="col-4">
-                        <h4 class="text-success mb-1">₦{{ budget_summary.remaining|floatformat:0 }}</h4>
+                    <div class="col-12 col-sm-4 mb-3">
+                        <h4 class="text-success mb-1">{{ budget_summary.remaining|currency_short }}</h4>
                         <small class="text-muted">Remaining</small>
                     </div>
                 </div>
@@ -256,7 +257,7 @@
                     <div class="progress-bar" role="progressbar" style="width: {{ budget_summary.utilization_percentage }}%" aria-valuenow="{{ budget_summary.utilization_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <div class="text-center mt-2">
-                    <small class="text-muted">{{ budget_summary.utilization_percentage }}% Utilized</small>
+                    <small class="text-muted">{{ budget_summary.utilization_percentage|percentage_short }} Utilized</small>
                 </div>
             </div>
         </div>
@@ -274,40 +275,40 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'farms:create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'farms:create' %}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">add_business</i>
                             <small>Add Farm</small>
                         </a>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'farms:block_create' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'farms:block_create' %}" class="btn btn-outline-success w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">grid_on</i>
                             <small>Add Block</small>
                         </a>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'calendar:activities' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'calendar:activities' %}" class="btn btn-outline-info w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">event</i>
-                            <small>View Activities</small>
+                            <small>Activities</small>
                         </a>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'farms:staff_create' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'farms:staff_create' %}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">person_add</i>
                             <small>Add Staff</small>
                         </a>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'budget:list' %}" class="btn btn-outline-danger w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'budget:list' %}" class="btn btn-outline-danger w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">account_balance</i>
-                            <small>Manage Budget</small>
+                            <small>Budget</small>
                         </a>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-6 mb-3">
-                        <a href="{% url 'inventory:supplies' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column justify-content-center">
+                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                        <a href="{% url 'inventory:supplies' %}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column justify-content-center" style="min-height: 80px;">
                             <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">inventory</i>
-                            <small>Check Inventory</small>
+                            <small>Inventory</small>
                         </a>
                     </div>
                 </div>
@@ -319,13 +320,13 @@
 <!-- Recent Activities and Alerts -->
 <div class="row">
     <!-- Recent Activities -->
-    <div class="col-md-8">
+    <div class="col-lg-8 col-12 mb-4">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">history</i>Recent Activities
+                    <i class="material-icons me-2 d-none d-sm-inline">history</i>Recent Activities
                 </h5>
-                <a href="{% url 'calendar:activities' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                <a href="{% url 'calendar:activities' %}" class="btn btn-sm btn-outline-primary mt-2 mt-sm-0">View All</a>
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
@@ -383,12 +384,12 @@
     </div>
     
     <!-- Alerts and Upcoming Tasks -->
-    <div class="col-md-4">
+    <div class="col-lg-4 col-12">
         <!-- System Alerts -->
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">notification_important</i>System Alerts
+                    <i class="material-icons me-2 d-none d-sm-inline">notification_important</i>System Alerts
                 </h5>
             </div>
             <div class="card-body">
@@ -426,7 +427,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="material-icons me-2">schedule</i>Upcoming This Week
+                    <i class="material-icons me-2 d-none d-sm-inline">schedule</i>Upcoming This Week
                 </h5>
             </div>
             <div class="card-body">

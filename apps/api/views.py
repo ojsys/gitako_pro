@@ -147,37 +147,46 @@ class DashboardView(LoginRequiredMixin, RolePermissionMixin, TemplateView):
         
         # Budget Analytics (if budget app exists)
         try:
-            from apps.budget.models import Budget, BudgetItem, Expense
+            from apps.budget.models import Budget
             
             user_budgets = Budget.objects.filter(farm__in=user_farms)
             
-            # Current season budget summary
+            # Current season budget summary - include all active budgets and recent ones
             current_season_budgets = user_budgets.filter(
-                status='active',
-                start_date__lte=timezone.now().date(),
-                end_date__gte=timezone.now().date()
+                Q(status='active') | Q(status='draft'),  # Include draft budgets
+                start_date__lte=timezone.now().date() + timedelta(days=365),  # More flexible date range
+                end_date__gte=timezone.now().date() - timedelta(days=30)   # Include recent past budgets
             )
             
-            budget_summary = current_season_budgets.aggregate(
-                total_budget=Sum('total_amount'),
-                total_spent=Sum('spent_amount')
+            # Calculate totals from planned income and expenses
+            budget_totals = current_season_budgets.aggregate(
+                total_planned_income=Sum('total_planned_income'),
+                total_planned_expenses=Sum('total_planned_expenses'),
+                total_actual_income=Sum('total_actual_income'),
+                total_actual_expenses=Sum('total_actual_expenses')
             )
+            
+            # Calculate meaningful budget summary
+            # Use planned income as the total budget (what we expect to make)
+            # Use actual expenses as what we've spent
+            total_budget_amount = budget_totals['total_planned_income'] or 0
+            total_spent_amount = budget_totals['total_actual_expenses'] or 0
+            
+            # If no planned income, use planned expenses as budget
+            if total_budget_amount == 0:
+                total_budget_amount = budget_totals['total_planned_expenses'] or 0
             
             context['budget_summary'] = {
-                'total_budget': budget_summary['total_budget'] or 0,
-                'total_spent': budget_summary['total_spent'] or 0,
-                'remaining': (budget_summary['total_budget'] or 0) - (budget_summary['total_spent'] or 0),
+                'total_budget': total_budget_amount,
+                'total_spent': total_spent_amount, 
+                'remaining': total_budget_amount - total_spent_amount,
                 'utilization_percentage': round(
-                    ((budget_summary['total_spent'] or 0) / (budget_summary['total_budget'] or 1)) * 100, 1
-                ) if budget_summary['total_budget'] else 0
+                    (total_spent_amount / total_budget_amount * 100) if total_budget_amount > 0 else 0, 1
+                )
             }
             
-            # Recent expenses
-            recent_expenses = Expense.objects.filter(
-                budget__farm__in=user_farms,
-                date__gte=timezone.now() - timedelta(days=30)
-            ).select_related('budget', 'category').order_by('-date')[:5]
-            context['recent_expenses'] = recent_expenses
+            # Recent expenses - placeholder for future implementation
+            context['recent_expenses'] = []
             
         except ImportError:
             context['budget_summary'] = {

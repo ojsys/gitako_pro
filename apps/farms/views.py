@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Q, Avg, F
 from django.utils import timezone
 from django.shortcuts import redirect
+from django.http import HttpResponse
+import csv
 from .models import Farm, Block, FarmStaff, FarmerRecord, Crop, CropVariety
 from .forms import FarmForm, BlockForm, BlockUpdateForm, FarmStaffForm, FarmerRecordForm, StaffCreationForm
 from .permissions import (
@@ -702,6 +704,46 @@ class FarmerCreateView(FarmManagerRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class FarmerDetailView(StaffRequiredMixin, DetailView):
+    model = FarmerRecord
+    template_name = 'farms/farmer_detail.html'
+    context_object_name = 'farmer'
+
+    def get_queryset(self):
+        return self.filter_by_user_farm(
+            FarmerRecord.objects.filter(is_active=True).select_related('farm', 'block').prefetch_related('crops_grown'),
+            farm_field='farm'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_edit_farmer'] = self.user_can_manage_farm()
+        return context
+
+
+class FarmerUpdateView(FarmManagerRequiredMixin, UpdateView):
+    model = FarmerRecord
+    form_class = FarmerRecordForm
+    template_name = 'farms/farmer_update.html'
+    context_object_name = 'farmer'
+    success_url = reverse_lazy('farms:farmers')
+
+    def get_queryset(self):
+        return self.filter_by_user_farm(
+            FarmerRecord.objects.filter(is_active=True),
+            farm_field='farm'
+        )
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Farmer record updated successfully!')
+        return super().form_valid(form)
+
+
 class FarmerBulkUploadView(FarmManagerRequiredMixin, TemplateView):
     template_name = 'farms/farmer_bulk_upload.html'
     
@@ -888,3 +930,76 @@ class FarmerBulkUploadView(FarmManagerRequiredMixin, TemplateView):
             messages.error(request, f'Error processing file: {str(e)}. Please ensure it is a valid CSV file.')
         
         return self.get(request, *args, **kwargs)
+
+
+class FarmerUploadTemplateView(StaffRequiredMixin, TemplateView):
+    """
+    Download CSV template for farmer bulk upload
+    """
+    
+    def get(self, request, *args, **kwargs):
+        # Create CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="farmers_upload_template.csv"'
+        
+        # Create CSV writer
+        writer = csv.writer(response)
+        
+        # Write header row with all available fields
+        headers = [
+            'farmer_name',          # Required
+            'farmer_email',         # Optional
+            'farmer_phone',         # Optional
+            'location',             # Optional
+            'allocated_hectares',   # Required (decimal, e.g., 2.5)
+            'season_year',          # Required (integer, e.g., 2024)
+            'crops_grown',          # Optional (comma-separated, e.g., "Maize, Rice, Cassava")
+            'expected_yield',       # Optional (decimal in tons)
+            'actual_yield',         # Optional (decimal in tons)
+            'farming_experience',   # Optional (years as integer)
+            'irrigation_method',    # Optional (text)
+            'soil_type',           # Optional (text)
+            'registration_date',    # Optional (YYYY-MM-DD format)
+            'notes'                # Optional (text)
+        ]
+        writer.writerow(headers)
+        
+        # Write sample data row for reference
+        sample_data = [
+            'John Doe',                              # farmer_name
+            'john.doe@example.com',                  # farmer_email
+            '+234 123 456 789',                      # farmer_phone
+            'Lagos State, Nigeria',                  # location
+            '2.5',                                   # allocated_hectares
+            '2024',                                  # season_year
+            'Maize, Rice, Cassava',                  # crops_grown
+            '5.0',                                   # expected_yield
+            '4.8',                                   # actual_yield
+            '8',                                     # farming_experience
+            'Drip irrigation',                       # irrigation_method
+            'Loamy',                                 # soil_type
+            '2024-01-15',                           # registration_date
+            'Experienced farmer with good track record'  # notes
+        ]
+        writer.writerow(sample_data)
+        
+        # Write additional sample rows for better understanding
+        sample_data_2 = [
+            'Jane Smith',
+            'jane.smith@example.com',
+            '+234 987 654 321',
+            'Ogun State, Nigeria',
+            '1.8',
+            '2024',
+            'Yam, Plantain',
+            '3.2',
+            '3.0',
+            '5',
+            'Rain-fed',
+            'Clay',
+            '2024-02-01',
+            'New farmer with great potential'
+        ]
+        writer.writerow(sample_data_2)
+        
+        return response

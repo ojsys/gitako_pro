@@ -64,7 +64,7 @@
                 <div class="alert alert-info">
                     <i class="material-icons me-2">download</i>
                     <strong>Download Template:</strong> 
-                    <a href="#" class="btn btn-sm btn-outline-info ms-2" onclick="downloadTemplate()">
+                    <a href="{% url 'farms:farmer_upload_template' %}" class="btn btn-sm btn-outline-info ms-2">
                         <i class="material-icons me-1">download</i>
                         CSV Template
                     </a>
@@ -216,54 +216,5 @@ function loadBlocks() {
         });
 }
 
-function downloadTemplate() {
-    // Create a comprehensive CSV template
-    const headers = [
-        'farmer_name',
-        'farmer_email', 
-        'farmer_phone',
-        'location',
-        'allocated_hectares',
-        'season_year',
-        'crops_grown',
-        'expected_yield',
-        'actual_yield',
-        'farming_experience',
-        'irrigation_method',
-        'soil_type',
-        'registration_date',
-        'notes'
-    ];
-    
-    const sampleData = [
-        'John Doe',
-        'john@example.com',
-        '+234 123 456 789',
-        'Lagos State, Nigeria',
-        '2.5',
-        '2024',
-        'Maize, Rice, Cassava',
-        '5.0',
-        '4.8',
-        '8',
-        'Drip irrigation',
-        'Loamy',
-        '2024-01-15',
-        'Experienced farmer with good track record'
-    ];
-    
-    // Create CSV content (Excel will open CSV files)
-    let csvContent = headers.join(',') + '\n';
-    csvContent += sampleData.join(',') + '\n';
-    
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'farmers_upload_template.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
 </script>
 {% endblock %}

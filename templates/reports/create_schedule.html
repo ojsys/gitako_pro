@@ -1,0 +1,277 @@
+{% extends 'reports/base_reports.html' %}
+{% load static %}
+
+{% block title %}Create Schedule - Gitako{% endblock %}
+
+{% block reports_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Create Report Schedule</h2>
+        <p class="text-muted mb-0">Set up automated report generation and delivery</p>
+    </div>
+    <a href="{% url 'reports:schedule_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Schedules
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Schedule Configuration</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="scheduleForm">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Schedule Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.report_type.id_for_label }}" class="form-label">Report Type</label>
+                            {{ form.report_type }}
+                            {% if form.report_type.errors %}
+                                <div class="text-danger small">{{ form.report_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.frequency.id_for_label }}" class="form-label">Frequency</label>
+                            {{ form.frequency }}
+                            {% if form.frequency.errors %}
+                                <div class="text-danger small">{{ form.frequency.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Farm Selection -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.farm.id_for_label }}" class="form-label">Farm (Optional)</label>
+                            {{ form.farm }}
+                            <small class="form-text text-muted">Leave blank to include all farms</small>
+                            {% if form.farm.errors %}
+                                <div class="text-danger small">{{ form.farm.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Scheduling -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.next_run.id_for_label }}" class="form-label">Next Run Time</label>
+                            {{ form.next_run }}
+                            {% if form.next_run.errors %}
+                                <div class="text-danger small">{{ form.next_run.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active Schedule
+                                </label>
+                                <small class="form-text text-muted d-block">Uncheck to create an inactive schedule</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipients -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="{{ form.recipients.id_for_label }}" class="form-label">Recipients</label>
+                            {{ form.recipients }}
+                            <small class="form-text text-muted">Select users who will receive the scheduled reports</small>
+                            {% if form.recipients.errors %}
+                                <div class="text-danger small">{{ form.recipients.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    Advanced Filters <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </h6>
+                        </div>
+                        <div class="collapse" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="{{ form.filters_json.id_for_label }}" class="form-label">Custom Filters (JSON)</label>
+                                        {{ form.filters_json }}
+                                        <small class="form-text text-muted">{{ form.filters_json.help_text }}</small>
+                                        {% if form.filters_json.errors %}
+                                            <div class="text-danger small">{{ form.filters_json.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Common Filter Examples -->
+                                <div class="mt-3">
+                                    <h6>Common Filter Examples:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card bg-light">
+                                                <div class="card-body p-2">
+                                                    <small class="text-muted">Crop Filter:</small>
+                                                    <code class="d-block">{"crop_id": "uuid-here"}</code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card bg-light">
+                                                <div class="card-body p-2">
+                                                    <small class="text-muted">Budget Category:</small>
+                                                    <code class="d-block">{"budget_category": "Seeds"}</code>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'reports:schedule_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-clock me-2"></i>Create Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Schedule Information -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Scheduling Guide</h5>
+            </div>
+            <div class="card-body">
+                <h6>Frequency Options:</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <strong>Daily:</strong> Report generated every day at the specified time
+                    </li>
+                    <li class="mb-2">
+                        <strong>Weekly:</strong> Report generated weekly on the same day and time
+                    </li>
+                    <li class="mb-2">
+                        <strong>Monthly:</strong> Report generated monthly on the same date
+                    </li>
+                    <li class="mb-2">
+                        <strong>Quarterly:</strong> Report generated every 3 months
+                    </li>
+                    <li class="mb-2">
+                        <strong>Yearly:</strong> Report generated annually
+                    </li>
+                </ul>
+                
+                <hr>
+                
+                <h6>Best Practices:</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Schedule reports during off-peak hours
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Include relevant stakeholders as recipients
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Use descriptive names for easy identification
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Test with manual generation first
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Quick Time Presets -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Time Presets</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setNextRun('tomorrow_9am')">
+                        Tomorrow 9:00 AM
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setNextRun('next_monday_9am')">
+                        Next Monday 9:00 AM
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setNextRun('first_of_next_month')">
+                        1st of Next Month
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Time preset functions
+function setNextRun(preset) {
+    const nextRunField = document.getElementById('{{ form.next_run.id_for_label }}');
+    const now = new Date();
+    let nextRun;
+    
+    switch(preset) {
+        case 'tomorrow_9am':
+            nextRun = new Date(now);
+            nextRun.setDate(now.getDate() + 1);
+            nextRun.setHours(9, 0, 0, 0);
+            break;
+        case 'next_monday_9am':
+            nextRun = new Date(now);
+            const daysUntilMonday = (1 + 7 - now.getDay()) % 7 || 7;
+            nextRun.setDate(now.getDate() + daysUntilMonday);
+            nextRun.setHours(9, 0, 0, 0);
+            break;
+        case 'first_of_next_month':
+            nextRun = new Date(now.getFullYear(), now.getMonth() + 1, 1, 9, 0, 0, 0);
+            break;
+    }
+    
+    if (nextRun) {
+        nextRunField.value = nextRun.toISOString().slice(0, 16);
+    }
+}
+
+// Form validation
+document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+    const nextRun = new Date(document.getElementById('{{ form.next_run.id_for_label }}').value);
+    const now = new Date();
+    
+    if (nextRun <= now) {
+        e.preventDefault();
+        alert('Next run time must be in the future');
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Schedule...';
+});
+</script>
+{% endblock %}

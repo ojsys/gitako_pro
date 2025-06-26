@@ -18,18 +18,22 @@
         {% endif %}
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
+        <div class="btn-group me-2 d-none d-md-block">
             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
         </div>
         {% if can_create_farmers %}
-        <div class="btn-group me-2">
-            <a href="{% url 'farms:farmer_bulk_upload' %}" class="btn btn-sm btn-outline-success">
-                <i class="material-icons me-1">upload_file</i>
+        <div class="btn-group me-2 flex-wrap">
+            <a href="{% url 'farms:farmer_upload_template' %}" class="btn btn-sm btn-outline-info mb-1">
+                <i class="material-icons me-1 d-none d-sm-inline">download</i>
+                Template
+            </a>
+            <a href="{% url 'farms:farmer_bulk_upload' %}" class="btn btn-sm btn-outline-success mb-1">
+                <i class="material-icons me-1 d-none d-sm-inline">upload_file</i>
                 Bulk Upload
             </a>
         </div>
-        <a href="{% url 'farms:farmer_create' %}" class="btn btn-sm btn-primary">
-            <i class="material-icons me-1">person_add</i>
+        <a href="{% url 'farms:farmer_create' %}" class="btn btn-sm btn-primary mb-1">
+            <i class="material-icons me-1 d-none d-sm-inline">person_add</i>
             Add Farmer
         </a>
         {% endif %}
@@ -38,7 +42,7 @@
 
 <!-- Farmers Overview Cards -->
 <div class="row mb-4">
-    <div class="col-md-3">
+    <div class="col-lg-3 col-md-6 col-12 mb-3">
         <div class="card stats-card success">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
@@ -46,7 +50,7 @@
                         <h6 class="card-title text-white-50">Total Farmers</h6>
                         <h3 class="mb-0">{{ total_farmers|default:0 }}</h3>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2rem;">groups</i>
                     </div>
                 </div>
@@ -54,7 +58,7 @@
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-lg-3 col-md-6 col-12 mb-3">
         <div class="card stats-card info">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
@@ -62,7 +66,7 @@
                         <h6 class="card-title text-white-50">Total Allocated Area</h6>
                         <h3 class="mb-0">{{ total_allocated_hectares|default:0|floatformat:1 }} ha</h3>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2rem;">landscape</i>
                     </div>
                 </div>
@@ -70,7 +74,7 @@
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-lg-3 col-md-6 col-12 mb-3">
         <div class="card stats-card warning">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
@@ -78,7 +82,7 @@
                         <h6 class="card-title text-white-50">Avg Yield Efficiency</h6>
                         <h3 class="mb-0">{{ average_yield_efficiency|default:0|floatformat:1 }}%</h3>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2rem;">trending_up</i>
                     </div>
                 </div>
@@ -86,7 +90,7 @@
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-lg-3 col-md-6 col-12 mb-3">
         <div class="card stats-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
@@ -94,7 +98,7 @@
                         <h6 class="card-title text-white-50">Season Years</h6>
                         <h3 class="mb-0">{{ season_years|length|default:0 }}</h3>
                     </div>
-                    <div class="align-self-center">
+                    <div class="align-self-center d-none d-sm-block">
                         <i class="material-icons" style="font-size: 2rem;">calendar_today</i>
                     </div>
                 </div>
@@ -109,7 +113,7 @@
         <div class="card">
             <div class="card-body">
                 <form method="get" class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-lg-3 col-md-6 col-12">
                         <label for="farm" class="form-label">Farm</label>
                         <select name="farm" id="farm" class="form-select form-select-sm">
                             <option value="">All Farms</option>
@@ -121,7 +125,7 @@
                         </select>
                     </div>
                     
-                    <div class="col-md-3">
+                    <div class="col-lg-3 col-md-6 col-12">
                         <label for="block" class="form-label">Block</label>
                         <select name="block" id="block" class="form-select form-select-sm">
                             <option value="">All Blocks</option>
@@ -133,7 +137,7 @@
                         </select>
                     </div>
                     
-                    <div class="col-md-2">
+                    <div class="col-lg-2 col-md-4 col-12">
                         <label for="season_year" class="form-label">Season Year</label>
                         <select name="season_year" id="season_year" class="form-select form-select-sm">
                             <option value="">All Seasons</option>
@@ -145,15 +149,16 @@
                         </select>
                     </div>
                     
-                    <div class="col-md-3">
+                    <div class="col-lg-3 col-md-6 col-12">
                         <label for="search" class="form-label">Search</label>
                         <input type="text" name="search" id="search" class="form-control form-control-sm" 
                                placeholder="Search farmers..." value="{{ request.GET.search }}">
                     </div>
                     
-                    <div class="col-md-1 d-flex align-items-end">
+                    <div class="col-lg-1 col-md-2 col-12 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary btn-sm w-100">
-                            <i class="material-icons" style="font-size: 1rem;">search</i>
+                            <i class="material-icons d-none d-sm-inline" style="font-size: 1rem;">search</i>
+                            <span class="d-sm-none">Filter</span>
                         </button>
                     </div>
                 </form>
@@ -247,16 +252,18 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" title="Contact Farmer">
+                                        {% if farmer.farmer_phone %}
+                                        <a href="tel:{{ farmer.farmer_phone }}" class="btn btn-outline-primary" title="Contact Farmer">
                                             <i class="material-icons" style="font-size: 1rem;">phone</i>
-                                        </button>
-                                        <button class="btn btn-outline-secondary" title="View Details">
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'farms:farmer_detail' farmer.pk %}" class="btn btn-outline-secondary" title="View Details">
                                             <i class="material-icons" style="font-size: 1rem;">visibility</i>
-                                        </button>
+                                        </a>
                                         {% if can_create_farmers %}
-                                        <button class="btn btn-outline-info" title="Edit">
+                                        <a href="{% url 'farms:farmer_update' farmer.pk %}" class="btn btn-outline-info" title="Edit">
                                             <i class="material-icons" style="font-size: 1rem;">edit</i>
-                                        </button>
+                                        </a>
                                         {% endif %}
                                     </div>
                                 </td>

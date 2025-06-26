@@ -18,6 +18,7 @@ class HomeView(TemplateView):
         context['hero'] = HeroSection.objects.filter(page='home', is_active=True).first()
         context['features'] = Feature.objects.filter(is_active=True, feature_type='core')[:4]
         context['testimonials'] = Testimonial.objects.filter(is_active=True, is_featured=True)[:3]
+        context['faqs'] = FAQ.objects.filter(is_active=True, category='Home')
         return context
 
 
@@ -111,3 +112,6 @@ class OfflineView(TemplateView):
         context['site_settings'] = SiteSettings.get_settings()
         context['hero'] = HeroSection.objects.filter(page='offline', is_active=True).first()
         return context
+
+
+

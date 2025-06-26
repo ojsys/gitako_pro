@@ -1,4 +1,5 @@
 {% extends 'base_dashboard.html' %}
+{% load currency_filters %}
 
 {% block title %}{{ budget.name }} - Budget Detail - Gitako{% endblock %}
 
@@ -49,8 +50,8 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title text-white-50">Total Income</h6>
-                        <h3 class="mb-0">₦{{ budget.total_actual_income|default:budget.total_planned_income|floatformat:0 }}</h3>
-                        <small class="text-white-75">Planned: ₦{{ budget.total_planned_income|floatformat:0 }}</small>
+                        <h3 class="mb-0">{{ budget.total_actual_income|default:budget.total_planned_income|currency_format }}</h3>
+                        <small class="text-white-75">Planned: {{ budget.total_planned_income|currency_format }}</small>
                     </div>
                     <div class="align-self-center">
                         <i class="material-icons" style="font-size: 2rem;">trending_up</i>
@@ -66,8 +67,8 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title text-white-50">Total Expenses</h6>
-                        <h3 class="mb-0">₦{{ budget.total_actual_expenses|default:budget.total_planned_expenses|floatformat:0 }}</h3>
-                        <small class="text-white-75">Planned: ₦{{ budget.total_planned_expenses|floatformat:0 }}</small>
+                        <h3 class="mb-0">{{ budget.total_actual_expenses|default:budget.total_planned_expenses|currency_format }}</h3>
+                        <small class="text-white-75">Planned: {{ budget.total_planned_expenses|currency_format }}</small>
                     </div>
                     <div class="align-self-center">
                         <i class="material-icons" style="font-size: 2rem;">trending_down</i>
@@ -83,9 +84,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title text-white-50">Net Profit</h6>
-                        {% with profit=budget.total_actual_income|default:budget.total_planned_income|add:budget.total_actual_expenses|default:budget.total_planned_expenses|add:"-" %}
-                        <h3 class="mb-0">₦{% widthratio budget.total_actual_income|default:budget.total_planned_income 1 1 %}{% widthratio budget.total_actual_expenses|default:budget.total_planned_expenses 1 -1 %}</h3>
-                        {% endwith %}
+                        <h3 class="mb-0">{{ budget.total_actual_income|default:budget.total_planned_income|subtract:budget.total_actual_expenses|default:budget.total_planned_expenses|currency_format }}</h3>
                         <small class="text-white-75">This Period</small>
                     </div>
                     <div class="align-self-center">
@@ -154,7 +153,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted">Expected Price/Unit</label>
-                            <p class="mb-0">₦{{ budget.expected_price_per_unit|default:"Not specified" }}</p>
+                            <p class="mb-0">{{ budget.expected_price_per_unit|currency_format|default:"Not specified" }}</p>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-muted">Created By</label>
@@ -192,7 +191,7 @@
                         </div>
                     </div>
                     <small class="text-muted">
-                        ₦{{ budget.total_actual_income|default:0|floatformat:0 }} of ₦{{ budget.total_planned_income|floatformat:0 }}
+                        {{ budget.total_actual_income|default:0|currency_format }} of {{ budget.total_planned_income|currency_format }}
                     </small>
                 </div>
                 
@@ -210,7 +209,7 @@
                         </div>
                     </div>
                     <small class="text-muted">
-                        ₦{{ budget.total_actual_expenses|default:0|floatformat:0 }} of ₦{{ budget.total_planned_expenses|floatformat:0 }}
+                        {{ budget.total_actual_expenses|default:0|currency_format }} of {{ budget.total_planned_expenses|currency_format }}
                     </small>
                 </div>
                 
@@ -267,10 +266,10 @@
                                         {% endif %}
                                     </div>
                                 </td>
-                                <td>₦{{ item.planned_amount|floatformat:0 }}</td>
+                                <td>{{ item.planned_amount|currency_format }}</td>
                                 <td>
                                     {% if item.actual_amount %}
-                                    ₦{{ item.actual_amount|floatformat:0 }}
+                                    {{ item.actual_amount|currency_format }}
                                     {% else %}
                                     <span class="text-muted">-</span>
                                     {% endif %}
@@ -346,10 +345,10 @@
                                 <td>
                                     <span class="badge bg-light text-dark">{{ item.category.name }}</span>
                                 </td>
-                                <td>₦{{ item.planned_amount|floatformat:0 }}</td>
+                                <td>{{ item.planned_amount|currency_format }}</td>
                                 <td>
                                     {% if item.actual_amount %}
-                                    ₦{{ item.actual_amount|floatformat:0 }}
+                                    {{ item.actual_amount|currency_format }}
                                     {% else %}
                                     <span class="text-muted">-</span>
                                     {% endif %}
@@ -408,12 +407,12 @@
                                     {% for category in expense_by_category %}
                                     <tr>
                                         <td>{{ category.category__name }}</td>
-                                        <td>₦{{ category.total_planned|floatformat:0 }}</td>
-                                        <td>₦{{ category.total_actual|default:0|floatformat:0 }}</td>
+                                        <td>{{ category.total_planned|currency_format }}</td>
+                                        <td>{{ category.total_actual|default:0|currency_format }}</td>
                                         <td>
-                                            {% with variance=category.total_actual|default:0|add:category.total_planned|add:"-" %}
+                                            {% with variance=category.total_actual|default:0|subtract:category.total_planned %}
                                             <span class="{% if variance < 0 %}text-success{% else %}text-danger{% endif %}">
-                                                ₦{{ variance|floatformat:0 }}
+                                                {{ variance|currency_format }}
                                             </span>
                                             {% endwith %}
                                         </td>
