@@ -1,4 +1,8 @@
 from .base import *
+import pymysql
+
+# Configure PyMySQL to work as MySQL client
+pymysql.install_as_MySQLdb()
 
 # Production settings for cPanel hosting
 DEBUG = False

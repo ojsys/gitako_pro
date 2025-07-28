@@ -18,8 +18,8 @@ Copy the generated key for use in Step 2.
 
 ### 1.2 Test Local Setup
 ```bash
-# Install MySQL client
-pip install mysqlclient
+# Install PyMySQL
+pip install PyMySQL
 
 # Test with production settings
 export DJANGO_SETTINGS_MODULE=gitako.settings.cpanel
