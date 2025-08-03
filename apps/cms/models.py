@@ -14,7 +14,7 @@ class SiteSettings(models.Model):
     
     # Contact Information
     email = models.EmailField(default="hello@gitako.com")
-    phone = models.CharField(max_length=20, default="+234 (0) 901 234 5678")
+    phone = models.CharField(max_length=30, default="+234 (0) 901 234 5678")
     address = models.TextField(default="Plot 123, Victoria Island, Lagos, Nigeria")
     
     # Social Media
@@ -201,7 +201,7 @@ class Office(models.Model):
     """Office locations"""
     name = models.CharField(max_length=100)
     address = models.TextField()
-    phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
     email = models.EmailField(blank=True)
     
     # Business hours
@@ -277,7 +277,7 @@ class ContactSubmission(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
     company = models.CharField(max_length=100, blank=True)
     
     inquiry_type = models.CharField(max_length=20, choices=INQUIRY_TYPE_CHOICES)
