@@ -7,6 +7,9 @@ urlpatterns = [
     path('', views.BudgetListView.as_view(), name='list'),
     path('create/', views.BudgetCreateView.as_view(), name='create'),
     path('<int:pk>/', views.BudgetDetailView.as_view(), name='detail'),
+    path('<int:pk>/enhanced-summary/', views.EnhancedBudgetSummaryView.as_view(), name='enhanced_summary'),
+    path('<int:budget_id>/add-item/', views.BudgetItemCreateView.as_view(), name='add_item'),
+    path('<int:budget_id>/add-income/', views.BudgetIncomeItemCreateView.as_view(), name='add_income'),
     path('<int:pk>/edit/', views.BudgetUpdateView.as_view(), name='edit'),
     
     # AJAX endpoints for dynamic field population

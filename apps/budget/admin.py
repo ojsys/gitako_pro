@@ -73,17 +73,29 @@ class BudgetAdmin(admin.ModelAdmin):
 
 @admin.register(BudgetItem)
 class BudgetItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'budget', 'item_type', 'category', 'planned_amount', 'actual_amount', 'variance', 'is_over_budget')
-    list_filter = ('item_type', 'category', 'is_recurring', 'is_essential', 'budget__status')
-    search_fields = ('name', 'description', 'budget__name', 'supplier_vendor')
-    readonly_fields = ('variance', 'variance_percentage', 'created_at', 'updated_at')
+    list_display = ('sequence_number', 'particulars', 'name', 'company', 'product_brand_name', 'units', 'quantity', 'rate_per_unit', 'total_cost_per_ha', 'budget')
+    list_filter = ('item_type', 'main_category', 'sub_category', 'category', 'particulars', 'units', 'is_recurring', 'is_essential', 'budget__status')
+    search_fields = ('name', 'description', 'particulars', 'company', 'product_brand_name', 'budget__name', 'supplier_vendor')
+    readonly_fields = ('variance', 'variance_percentage', 'cost_per_hectare', 'total_amount_calculated', 'created_at', 'updated_at')
 
     fieldsets = (
         ('Basic Information', {
             'fields': ('budget', 'category', 'item_type', 'name', 'description')
         }),
+        ('Excel-Style Fields', {
+            'fields': ('sequence_number', 'particulars', 'company', 'product_brand_name', 'units', 'quantity', 'rate_per_unit', 'total_cost_per_ha'),
+            'description': 'Fields matching Excel budget table structure'
+        }),
+        ('Enhanced Categorization', {
+            'fields': ('main_category', 'sub_category'),
+            'classes': ('collapse',)
+        }),
+        ('Legacy Fields (Backward Compatibility)', {
+            'fields': ('company_brand', 'product_name', 'planned_quantity', 'actual_quantity', 'unit', 'unit_price'),
+            'classes': ('collapse',)
+        }),
         ('Financial', {
-            'fields': ('planned_amount', 'actual_amount', 'planned_quantity', 'actual_quantity', 'unit', 'unit_price')
+            'fields': ('planned_amount', 'actual_amount')
         }),
         ('Dates', {
             'fields': ('planned_date', 'actual_date')
@@ -95,7 +107,7 @@ class BudgetItemAdmin(admin.ModelAdmin):
             'fields': ('is_recurring', 'is_essential', 'notes')
         }),
         ('Calculations', {
-            'fields': ('variance', 'variance_percentage'),
+            'fields': ('variance', 'variance_percentage', 'cost_per_hectare', 'total_amount_calculated'),
             'classes': ('collapse',)
         }),
         ('Tracking', {

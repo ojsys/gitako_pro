@@ -92,3 +92,29 @@ def subtract(value, arg):
         return float(value) - float(arg)
     except (ValueError, TypeError):
         return 0
+
+
+@register.filter
+def mul(value, arg):
+    """
+    Multiply value by arg
+    Usage: {{ value|mul:arg }}
+    """
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return 0
+
+
+@register.filter
+def div(value, arg):
+    """
+    Divide value by arg
+    Usage: {{ value|div:arg }}
+    """
+    try:
+        if float(arg) == 0:
+            return 0
+        return float(value) / float(arg)
+    except (ValueError, TypeError):
+        return 0

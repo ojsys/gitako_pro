@@ -18,6 +18,10 @@
                 <i class="material-icons me-1">edit</i>
                 Edit
             </a>
+            <a href="{% url 'budget:enhanced_summary' budget.pk %}" class="btn btn-sm btn-outline-info">
+                <i class="material-icons me-1">table_view</i>
+                Enhanced Summary
+            </a>
             <button type="button" class="btn btn-sm btn-outline-secondary">
                 <i class="material-icons me-1">download</i>
                 Export
@@ -28,11 +32,11 @@
                     Add Item
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'budget:income_add' budget.pk %}">
+                    <li><a class="dropdown-item" href="{% url 'budget:add_income' budget.pk %}">
                         <i class="material-icons me-1">trending_up</i>
                         Income Item
                     </a></li>
-                    <li><a class="dropdown-item" href="{% url 'budget:expense_add' budget.pk %}">
+                    <li><a class="dropdown-item" href="{% url 'budget:add_item' budget.pk %}">
                         <i class="material-icons me-1">trending_down</i>
                         Expense Item
                     </a></li>
@@ -232,63 +236,150 @@
 
 <!-- Income and Expense Details -->
 <div class="row">
-    <!-- Income Items -->
-    <div class="col-md-6 mb-4">
+    <!-- All Income Items -->
+    <div class="col-md-12 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Income Items</h5>
-                <a href="{% url 'budget:income_add' budget.pk %}" class="btn btn-sm btn-outline-success">
+                <h5 class="mb-0">All Income Items</h5>
+                <a href="{% url 'budget:add_income' budget.pk %}" class="btn btn-sm btn-success">
                     <i class="material-icons me-1">add</i>
-                    Add Income
+                    Add Income Item
                 </a>
             </div>
             <div class="card-body">
-                {% if income_items %}
+                {% if all_income_items %}
                 <div class="table-responsive">
                     <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Planned</th>
-                                <th>Actual</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th width="5%">S.No.</th>
+                                <th width="15%">Product/Service</th>
+                                <th width="10%">Buyer/Customer</th>
+                                <th width="10%">Variety</th>
+                                <th width="8%">Expected</th>
+                                <th width="8%">Actual</th>
+                                <th width="10%">Price/Unit</th>
+                                <th width="12%">Planned Revenue</th>
+                                <th width="10%">Received</th>
+                                <th width="8%">Status</th>
+                                <th width="10%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in income_items %}
+                            {% for item in all_income_items %}
                             <tr>
+                                <td>
+                                    {% if item.sequence_number %}
+                                        <span class="badge bg-success">{{ item.sequence_number }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">-</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div>
                                         <h6 class="mb-0 small">{{ item.name }}</h6>
-                                        {% if item.description %}
-                                        <small class="text-muted">{{ item.description|truncatechars:30 }}</small>
+                                        {% if item.particulars %}
+                                            <small class="text-success">{{ item.particulars }}</small>
+                                        {% elif item.description %}
+                                            <small class="text-muted">{{ item.description|truncatechars:20 }}</small>
                                         {% endif %}
                                     </div>
                                 </td>
-                                <td>{{ item.planned_amount|currency_format }}</td>
                                 <td>
-                                    {% if item.actual_amount %}
-                                    {{ item.actual_amount|currency_format }}
+                                    {% if item.buyer_name %}
+                                        <span class="badge bg-info text-white">{{ item.buyer_name }}</span>
+                                    {% elif item.buyer %}
+                                        <span class="badge bg-light text-dark">{{ item.buyer }}</span>
                                     {% else %}
-                                    <span class="text-muted">-</span>
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.product_brand_name %}
+                                        <small class="text-info">{{ item.product_brand_name }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.expected_yield %}
+                                        <span class="text-success">{{ item.expected_yield }}</span>
+                                        {% if item.units %}<small class="text-muted">{{ item.units }}</small>{% endif %}
+                                    {% elif item.planned_yield %}
+                                        <span class="text-success">{{ item.planned_yield }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.actual_yield %}
+                                        <span class="text-primary fw-bold">{{ item.actual_yield }}</span>
+                                        {% if item.units %}<small class="text-muted">{{ item.units }}</small>{% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.market_price %}
+                                        {{ item.market_price|currency_format }}
+                                    {% elif item.planned_price %}
+                                        {{ item.planned_price|currency_format }}
+                                    {% elif item.rate_per_unit %}
+                                        {{ item.rate_per_unit|currency_format }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">
+                                    {% if item.total_cost_per_ha %}
+                                        {{ item.total_cost_per_ha|currency_format }}
+                                    {% else %}
+                                        {{ item.planned_amount|currency_format }}
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if item.actual_amount %}
-                                    <span class="badge bg-success">Received</span>
+                                        <span class="text-success fw-bold">{{ item.actual_amount|currency_format }}</span>
                                     {% else %}
-                                    <span class="badge bg-warning">Pending</span>
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.payment_status %}
+                                        {% if item.payment_status == 'paid' %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% elif item.payment_status == 'partial' %}
+                                            <span class="badge bg-warning">Partial</span>
+                                        {% elif item.payment_status == 'overdue' %}
+                                            <span class="badge bg-danger">Overdue</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Pending</span>
+                                        {% endif %}
+                                    {% elif item.actual_amount %}
+                                        <span class="badge bg-success">Received</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{% url 'budget:income_edit' item.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="material-icons">edit</i>
-                                        </a>
-                                        <a href="{% url 'budget:income_delete' item.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="material-icons">delete</i>
-                                        </a>
+                                        {% if item.total_cost_per_ha %}
+                                            <!-- Item actions -->
+                                            <button class="btn btn-outline-primary btn-sm" title="Edit Excel Item">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" title="Delete">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                        {% else %}
+                                            <!-- Legacy income item actions -->
+                                            <a href="{% url 'budget:income_edit' item.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                                <i class="material-icons">edit</i>
+                                            </a>
+                                            <a href="{% url 'budget:income_delete' item.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -296,71 +387,162 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Income Summary Stats -->
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Income Items</h6>
+                                <h4 class="text-success">{{ all_income_items|length }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Legacy Items</h6>
+                                <h4 class="text-secondary">{{ income_items|length }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Planned Income</h6>
+                                <h4 class="text-success">{{ budget.total_planned_income|currency_format }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 {% else %}
                 <div class="text-center py-4">
                     <i class="material-icons text-muted" style="font-size: 3rem;">add_circle</i>
                     <h6 class="text-muted mt-2">No income items</h6>
                     <p class="text-muted small">Add income sources to track revenue</p>
-                    <a href="{% url 'budget:income_add' budget.pk %}" class="btn btn-sm btn-success">Add First Income Item</a>
+                    <div class="btn-group">
+                        <a href="{% url 'budget:add_income' budget.pk %}" class="btn btn-sm btn-success">Add Income Item</a>
+                    </div>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
     
-    <!-- Expense Items -->
-    <div class="col-md-6 mb-4">
+    <!-- All Expense Items -->
+    <div class="col-md-12 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Expense Items</h5>
-                <a href="{% url 'budget:expense_add' budget.pk %}" class="btn btn-sm btn-outline-danger">
+                <h5 class="mb-0">All Expense Items</h5>
+                <a href="{% url 'budget:add_item' budget.pk %}" class="btn btn-sm btn-danger">
                     <i class="material-icons me-1">add</i>
-                    Add Expense
+                    Add Expense Item
                 </a>
             </div>
             <div class="card-body">
-                {% if expense_items %}
+                {% if all_expense_items %}
                 <div class="table-responsive">
                     <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Category</th>
-                                <th>Planned</th>
-                                <th>Actual</th>
-                                <th>Actions</th>
+                                <th width="5%">S.No.</th>
+                                <th width="15%">Item/Particulars</th>
+                                <th width="15%">Company/Brand</th>
+                                <th width="10%">Units</th>
+                                <th width="8%">Qty</th>
+                                <th width="10%">Rate</th>
+                                <th width="12%">Planned</th>
+                                <th width="12%">Actual</th>
+                                <th width="10%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in expense_items %}
+                            {% for item in all_expense_items %}
                             <tr>
+                                <td>
+                                    {% if item.sequence_number %}
+                                        <span class="badge bg-primary">{{ item.sequence_number }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">-</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div>
                                         <h6 class="mb-0 small">{{ item.name }}</h6>
-                                        {% if item.description %}
-                                        <small class="text-muted">{{ item.description|truncatechars:30 }}</small>
+                                        {% if item.particulars %}
+                                            <small class="text-success">{{ item.particulars }}</small>
+                                        {% elif item.description %}
+                                            <small class="text-muted">{{ item.description|truncatechars:30 }}</small>
+                                        {% endif %}
+                                        {% if item.product_brand_name %}
+                                            <br><small class="text-info">{{ item.product_brand_name }}</small>
                                         {% endif %}
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ item.category.name }}</span>
+                                    {% if item.company %}
+                                        <span class="badge bg-info">{{ item.company }}</span>
+                                    {% elif item.supplier %}
+                                        <span class="badge bg-light text-dark">{{ item.supplier }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
-                                <td>{{ item.planned_amount|currency_format }}</td>
+                                <td>
+                                    {% if item.units %}
+                                        <span class="badge bg-warning text-dark">{{ item.units }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.quantity %}
+                                        {{ item.quantity }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.rate_per_unit %}
+                                        {{ item.rate_per_unit|currency_format }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">
+                                    {% if item.total_cost_per_ha %}
+                                        {{ item.total_cost_per_ha|currency_format }}
+                                    {% else %}
+                                        {{ item.planned_amount|currency_format }}
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if item.actual_amount %}
-                                    {{ item.actual_amount|currency_format }}
+                                        {{ item.actual_amount|currency_format }}
                                     {% else %}
-                                    <span class="text-muted">-</span>
+                                        <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{% url 'budget:expense_edit' item.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
-                                            <i class="material-icons">edit</i>
-                                        </a>
-                                        <a href="{% url 'budget:expense_delete' item.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
-                                            <i class="material-icons">delete</i>
-                                        </a>
+                                        {% if item.total_cost_per_ha %}
+                                            <!-- Item actions -->
+                                            <button class="btn btn-outline-primary btn-sm" title="Edit Excel Item">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" title="Delete">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                        {% else %}
+                                            <!-- Legacy expense item actions -->
+                                            <a href="{% url 'budget:expense_edit' item.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                                <i class="material-icons">edit</i>
+                                            </a>
+                                            <a href="{% url 'budget:expense_delete' item.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                <i class="material-icons">delete</i>
+                                            </a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -368,12 +550,51 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Summary Stats -->
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Items</h6>
+                                <h4 class="text-primary">{{ all_expense_items|length }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Enhanced Items</h6>
+                                <h4 class="text-success">{{ budget_expense_items|length }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Legacy</h6>
+                                <h4 class="text-secondary">{{ expense_items|length }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total Planned</h6>
+                                <h4 class="text-dark">{{ budget.total_planned_expenses|currency_format }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 {% else %}
                 <div class="text-center py-4">
                     <i class="material-icons text-muted" style="font-size: 3rem;">add_circle</i>
                     <h6 class="text-muted mt-2">No expense items</h6>
                     <p class="text-muted small">Add expenses to track costs</p>
-                    <a href="{% url 'budget:expense_add' budget.pk %}" class="btn btn-sm btn-danger">Add First Expense Item</a>
+                    <div class="btn-group">
+                        <a href="{% url 'budget:add_item' budget.pk %}" class="btn btn-sm btn-danger">Add Expense Item</a>
+                    </div>
                 </div>
                 {% endif %}
             </div>
@@ -436,6 +657,149 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Enhanced Analytics Dashboard -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="material-icons me-2">analytics</i>
+                    Budget Analytics & Performance Dashboard
+                </h5>
+            </div>
+            <div class="card-body">
+                
+                <!-- Key Performance Indicators -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-success h-100">
+                            <div class="card-body text-center">
+                                <i class="material-icons text-success mb-2" style="font-size: 2.5rem;">trending_up</i>
+                                <h6 class="card-title">Planned Profit</h6>
+                                <h4 class="{% if planned_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ planned_profit|currency_format }}
+                                </h4>
+                                <small class="text-muted">Margin: {{ profit_margin|floatformat:1 }}%</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-info h-100">
+                            <div class="card-body text-center">
+                                <i class="material-icons text-info mb-2" style="font-size: 2.5rem;">agriculture</i>
+                                <h6 class="card-title">Yield Efficiency</h6>
+                                <h4 class="{% if yield_efficiency >= 90 %}text-success{% elif yield_efficiency >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ yield_efficiency|floatformat:1 }}%
+                                </h4>
+                                <small class="text-muted">{{ total_actual_yield|floatformat:1 }}/{{ total_expected_yield|floatformat:1 }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-warning h-100">
+                            <div class="card-body text-center">
+                                <i class="material-icons text-warning mb-2" style="font-size: 2.5rem;">account_balance</i>
+                                <h6 class="card-title">Budget Utilization</h6>
+                                <h4 class="{% if budget_utilization <= 100 %}text-success{% elif budget_utilization <= 110 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ budget_utilization|floatformat:1 }}%
+                                </h4>
+                                <small class="text-muted">of planned expenses</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-primary h-100">
+                            <div class="card-body text-center">
+                                <i class="material-icons text-primary mb-2" style="font-size: 2.5rem;">payments</i>
+                                <h6 class="card-title">Income Achievement</h6>
+                                <h4 class="{% if income_achievement >= 90 %}text-success{% elif income_achievement >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ income_achievement|floatformat:1 }}%
+                                </h4>
+                                <small class="text-muted">of planned income</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Per Hectare Analysis -->
+                {% if budget.block %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">Per Hectare Analysis ({{ budget.block.size }} ha)</h6>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-danger">Cost per Hectare</h6>
+                                <h4 class="text-danger">{{ cost_per_hectare|currency_format }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-success">Revenue per Hectare</h6>
+                                <h4 class="text-success">{{ revenue_per_hectare|currency_format }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-primary">Profit per Hectare</h6>
+                                <h4 class="{% if profit_per_hectare >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ profit_per_hectare|currency_format }}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Variance Analysis -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">Budget vs Actual Performance</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Expense Performance</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar {% if budget_utilization <= 100 %}bg-success{% elif budget_utilization <= 110 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         style="width: {% if budget_utilization > 100 %}100{% else %}{{ budget_utilization|default:0 }}{% endif %}%">
+                                        {{ budget_utilization|floatformat:1 }}%
+                                    </div>
+                                </div>
+                                <small class="{% if expense_variance <= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {% if expense_variance >= 0 %}+{% endif %}{{ expense_variance|currency_format }} variance
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Income Performance</h6>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar {% if income_achievement >= 90 %}bg-success{% elif income_achievement >= 70 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         style="width: {% if income_achievement > 100 %}100{% else %}{{ income_achievement|default:0 }}{% endif %}%">
+                                        {{ income_achievement|floatformat:1 }}%
+                                    </div>
+                                </div>
+                                <small class="{% if income_variance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {% if income_variance >= 0 %}+{% endif %}{{ income_variance|currency_format }} variance
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

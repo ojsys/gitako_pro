@@ -1,0 +1,365 @@
+{% extends 'base_dashboard.html' %}
+{% load currency_filters %}
+
+{% block title %}Add Income Item - Gitako{% endblock %}
+
+{% block extra_css %}
+<style>
+.excel-table {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.excel-table th,
+.excel-table td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.excel-table th {
+    background-color: #28a745;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.excel-table input,
+.excel-table select,
+.excel-table textarea {
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: center;
+    padding: 4px;
+}
+
+.excel-table input:focus,
+.excel-table select:focus,
+.excel-table textarea:focus {
+    outline: 2px solid #28a745;
+    background-color: #f8fff8;
+}
+
+.excel-table .form-control {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.excel-section {
+    background-color: #d4edda;
+    font-weight: 600;
+    text-align: left !important;
+}
+
+.auto-calc {
+    background-color: #d4edda !important;
+    font-weight: 600;
+    color: #155724;
+}
+
+.readonly-field {
+    background-color: #f8f9fa !important;
+    color: #6c757d;
+}
+
+.excel-form-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.section-number {
+    width: 40px;
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+.form-actions {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+}
+
+.income-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Add Income Item</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'budget:detail' budget.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="material-icons me-1">arrow_back</i>
+                Back to Budget
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="excel-form-container">
+    <div class="income-header">
+        <h4 class="mb-1">Income/Revenue Planning - {{ budget.farm.name }}</h4>
+        <small>Expected revenue from agricultural products and services</small>
+    </div>
+    
+    <form method="post" id="excel-income-form">
+        {% csrf_token %}
+        
+        <!-- Hidden fields -->
+        {{ form.budget.as_hidden }}
+        {{ form.item_type.as_hidden }}
+        {{ form.category.as_hidden }}
+        
+        <div class="table-responsive">
+            <table class="table excel-table">
+                <thead>
+                    <tr>
+                        <th width="5%">S.No.</th>
+                        <th width="15%">Product/Service</th>
+                        <th width="15%">Description</th>
+                        <th width="12%">Buyer/Customer</th>
+                        <th width="12%">Crop Variety/Brand</th>
+                        <th width="8%">Units</th>
+                        <th width="8%">Expected Yield</th>
+                        <th width="12%">Price per Unit</th>
+                        <th width="13%">Total Revenue/ha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Section Headers -->
+                    <tr class="excel-section">
+                        <td class="section-number">1</td>
+                        <td colspan="8"><strong>EXPECTED INCOME</strong></td>
+                    </tr>
+                    
+                    <!-- Main Form Row -->
+                    <tr>
+                        <td>
+                            {{ form.sequence_number }}
+                        </td>
+                        <td>
+                            {{ form.particulars }}
+                            <div class="d-none">{{ form.main_category }}</div>
+                            <div class="d-none">{{ form.sub_category }}</div>
+                        </td>
+                        <td>
+                            {{ form.name }}
+                        </td>
+                        <td>
+                            {{ form.buyer_name }}
+                        </td>
+                        <td>
+                            {{ form.product_brand_name }}
+                        </td>
+                        <td>
+                            {{ form.units }}
+                        </td>
+                        <td>
+                            {{ form.expected_yield }}
+                        </td>
+                        <td>
+                            {{ form.market_price }}
+                        </td>
+                        <td class="auto-calc">
+                            {{ form.total_cost_per_ha }}
+                        </td>
+                    </tr>
+                    
+                    <!-- Additional rows can be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Additional Fields Section -->
+        <div class="p-3 border-top">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="mb-3 text-success">Income Details</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Status</label>
+                        {{ form.payment_status }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expected Sale Date</label>
+                        {{ form.sale_date }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Market Price</label>
+                        <div class="input-group">
+                            {{ form.rate_per_unit }}
+                            <span class="input-group-text">per {{ form.units.value|default:"unit" }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Description</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="mb-3 text-success">Financial Summary</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Planned Income (Auto-calculated)</label>
+                        <div class="readonly-field">{{ form.planned_amount }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Actual Income Received</label>
+                        {{ form.actual_amount }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Actual Yield Achieved</label>
+                        <div class="input-group">
+                            {{ form.actual_yield }}
+                            <span class="input-group-text">{{ form.units.value|default:"units" }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company/Organization</label>
+                        {{ form.company }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Indicators -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6 class="text-success">Performance Tracking</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Yield Efficiency</h6>
+                                    <p class="card-text" id="yield-efficiency">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Price Variance</h6>
+                                    <p class="card-text" id="price-variance">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Revenue per Hectare</h6>
+                                    <p class="card-text" id="revenue-per-ha">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notes -->
+            <div class="mt-3">
+                <label class="form-label">Additional Notes</label>
+                {{ form.notes }}
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success me-2">
+                <i class="material-icons me-1">save</i>
+                Save Income Item
+            </button>
+            <a href="{% url 'budget:detail' budget.pk %}" class="btn btn-outline-secondary">
+                <i class="material-icons me-1">cancel</i>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const expectedYieldField = document.querySelector('input[name="expected_yield"]');
+    const marketPriceField = document.querySelector('input[name="market_price"]');
+    const totalRevenueField = document.querySelector('input[name="total_cost_per_ha"]');
+    const plannedAmountField = document.querySelector('input[name="planned_amount"]');
+    const actualYieldField = document.querySelector('input[name="actual_yield"]');
+    const ratePerUnitField = document.querySelector('input[name="rate_per_unit"]');
+    
+    function calculateRevenue() {
+        const expectedYield = parseFloat(expectedYieldField.value) || 0;
+        const marketPrice = parseFloat(marketPriceField.value) || 0;
+        const totalRevenue = expectedYield * marketPrice;
+        
+        totalRevenueField.value = totalRevenue.toFixed(2);
+        plannedAmountField.value = totalRevenue.toFixed(2);
+        
+        // Update rate per unit field for consistency
+        if (ratePerUnitField) {
+            ratePerUnitField.value = marketPrice.toFixed(2);
+        }
+        
+        // Visual feedback
+        if (totalRevenue > 0) {
+            totalRevenueField.style.backgroundColor = '#d4edda';
+            totalRevenueField.style.color = '#155724';
+        } else {
+            totalRevenueField.style.backgroundColor = '#f8f9fa';
+            totalRevenueField.style.color = '#6c757d';
+        }
+        
+        updatePerformanceIndicators();
+    }
+    
+    function updatePerformanceIndicators() {
+        const expectedYield = parseFloat(expectedYieldField.value) || 0;
+        const actualYield = parseFloat(actualYieldField.value) || 0;
+        const marketPrice = parseFloat(marketPriceField.value) || 0;
+        const totalRevenue = parseFloat(totalRevenueField.value) || 0;
+        
+        // Yield Efficiency
+        if (expectedYield > 0 && actualYield > 0) {
+            const yieldEfficiency = (actualYield / expectedYield * 100).toFixed(1);
+            document.getElementById('yield-efficiency').textContent = yieldEfficiency + '%';
+            document.getElementById('yield-efficiency').className = 
+                yieldEfficiency >= 100 ? 'text-success' : yieldEfficiency >= 80 ? 'text-warning' : 'text-danger';
+        } else {
+            document.getElementById('yield-efficiency').textContent = '-';
+        }
+        
+        // Revenue per Hectare
+        if (totalRevenue > 0) {
+            document.getElementById('revenue-per-ha').textContent = '₦' + totalRevenue.toLocaleString();
+            document.getElementById('revenue-per-ha').className = 'text-success fw-bold';
+        }
+    }
+    
+    // Auto-calculate on input
+    expectedYieldField.addEventListener('input', calculateRevenue);
+    marketPriceField.addEventListener('input', calculateRevenue);
+    actualYieldField.addEventListener('input', updatePerformanceIndicators);
+    
+    // Initialize calculation
+    calculateRevenue();
+    
+    // Auto-populate particulars based on main category selection
+    const mainCategoryField = document.querySelector('select[name="main_category"]');
+    const particularsField = document.querySelector('input[name="particulars"]');
+    
+    if (mainCategoryField && particularsField) {
+        mainCategoryField.addEventListener('change', function() {
+            const categoryText = this.options[this.selectedIndex].text;
+            if (categoryText && categoryText !== '---------') {
+                particularsField.value = categoryText;
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

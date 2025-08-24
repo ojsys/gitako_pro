@@ -295,223 +295,73 @@
             </p>
         </div>
         
+        {% if team_members %}
         <div class="row g-4">
-            <!-- Team Member 1 -->
+            {% for member in team_members %}
+            <!-- {{ member.name }} -->
             <div class="col-lg-6 col-md-6">
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="row g-0 h-100">
                         <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Dr. Adebayo Ogundimu" 
-                                 class="img-fluid h-100 object-cover">
+                            {% if member.image %}
+                                <img src="{{ member.image.url }}" 
+                                     alt="{{ member.name }}" 
+                                     class="img-fluid h-100 object-cover">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <div class="text-center">
+                                        <i class="material-icons text-muted" style="font-size: 3rem;">person</i>
+                                        <div class="text-muted small mt-2">{{ member.name|first }}{{ member.name|last }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="col-7">
                             <div class="card-body p-4 h-100 d-flex flex-column">
                                 <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Dr. Adebayo Ogundimu</h5>
-                                    <p class="text-primary fw-semibold mb-3">CEO & Co-Founder</p>
+                                    <h5 class="fw-bold mb-2">{{ member.name }}</h5>
+                                    <p class="text-primary fw-semibold mb-3">{{ member.title }}</p>
                                     <p class="text-muted mb-4 small">
-                                        Agricultural economist with 15+ years experience in sustainable farming practices. 
-                                        PhD in Agricultural Economics from University of Ibadan.
+                                        {{ member.bio|truncatewords:25 }}
                                     </p>
                                 </div>
                                 <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    {% if member.email %}
+                                    <a href="mailto:{{ member.email }}" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Email {{ member.name }}">
                                         <i class="material-icons" style="font-size: 1.1rem;">email</i>
                                     </a>
-                                    <a href="#" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    {% endif %}
+                                    {% if member.linkedin_url %}
+                                    <a href="{{ member.linkedin_url }}" target="_blank" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="{{ member.name }} on LinkedIn">
                                         <i class="material-icons" style="font-size: 1.1rem;">link</i>
                                     </a>
-                                    <a href="#" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
+                                    {% endif %}
+                                    {% if member.twitter_url %}
+                                    <a href="{{ member.twitter_url }}" target="_blank" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="{{ member.name }} on Twitter">
+                                        <i class="material-icons" style="font-size: 1.1rem;">alternate_email</i>
                                     </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Team Member 2 -->
-            <div class="col-lg-6 col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="row g-0 h-100">
-                        <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Fatima Aliyu" 
-                                 class="img-fluid h-100 object-cover">
-                        </div>
-                        <div class="col-7">
-                            <div class="card-body p-4 h-100 d-flex flex-column">
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Fatima Aliyu</h5>
-                                    <p class="text-success fw-semibold mb-3">CTO & Co-Founder</p>
-                                    <p class="text-muted mb-4 small">
-                                        Full-stack developer and AI specialist. Former software engineer at Google with expertise 
-                                        in machine learning applications for agriculture.
-                                    </p>
-                                </div>
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">email</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">link</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Member 3 -->
-            <div class="col-lg-6 col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="row g-0 h-100">
-                        <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Chukwu Emeka" 
-                                 class="img-fluid h-100 object-cover">
-                        </div>
-                        <div class="col-7">
-                            <div class="card-body p-4 h-100 d-flex flex-column">
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Chukwu Emeka</h5>
-                                    <p class="text-warning fw-semibold mb-3">Head of Product</p>
-                                    <p class="text-muted mb-4 small">
-                                        Product manager with background in agtech startups. Specializes in user experience design 
-                                        and product strategy for agricultural technology solutions.
-                                    </p>
-                                </div>
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-warning btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">email</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-warning btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">link</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-warning btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Member 4 -->
-            <div class="col-lg-6 col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="row g-0 h-100">
-                        <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Aisha Muhammad" 
-                                 class="img-fluid h-100 object-cover">
-                        </div>
-                        <div class="col-7">
-                            <div class="card-body p-4 h-100 d-flex flex-column">
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Aisha Muhammad</h5>
-                                    <p class="text-info fw-semibold mb-3">Head of Sales & Marketing</p>
-                                    <p class="text-muted mb-4 small">
-                                        Marketing strategist with deep understanding of African agricultural markets. 
-                                        Former business development manager at leading agribusiness companies.
-                                    </p>
-                                </div>
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">email</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">link</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Member 5 -->
-            <div class="col-lg-6 col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="row g-0 h-100">
-                        <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Ibrahim Suleiman" 
-                                 class="img-fluid h-100 object-cover">
-                        </div>
-                        <div class="col-7">
-                            <div class="card-body p-4 h-100 d-flex flex-column">
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Ibrahim Suleiman</h5>
-                                    <p class="text-secondary fw-semibold mb-3">Lead Data Scientist</p>
-                                    <p class="text-muted mb-4 small">
-                                        Data scientist specializing in agricultural analytics and predictive modeling. 
-                                        MSc in Data Science with focus on climate-smart agriculture applications.
-                                    </p>
-                                </div>
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">email</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">link</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Team Member 6 -->
-            <div class="col-lg-6 col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                    <div class="row g-0 h-100">
-                        <div class="col-5">
-                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
-                                 alt="Grace Okoro" 
-                                 class="img-fluid h-100 object-cover">
-                        </div>
-                        <div class="col-7">
-                            <div class="card-body p-4 h-100 d-flex flex-column">
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-2">Grace Okoro</h5>
-                                    <p class="text-danger fw-semibold mb-3">Head of Customer Success</p>
-                                    <p class="text-muted mb-4 small">
-                                        Customer success specialist with passion for farmer education and support. 
-                                        Background in agricultural extension services and farmer training programs.
-                                    </p>
-                                </div>
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="#" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">email</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">link</i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                        <i class="material-icons" style="font-size: 1.1rem;">work</i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <!-- Fallback message if no team members in database -->
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="material-icons text-muted" style="font-size: 4rem;">group</i>
+            </div>
+            <h4 class="text-muted mb-3">Our Team is Growing</h4>
+            <p class="lead text-muted col-lg-6 mx-auto">
+                We're building an amazing team of passionate individuals dedicated to transforming African agriculture. 
+                Check back soon to meet our team members!
+            </p>
+        </div>
+        {% endif %}
 
         <!-- Join Team CTA -->
         <div class="row justify-content-center mt-5">

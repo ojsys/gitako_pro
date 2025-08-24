@@ -1,0 +1,305 @@
+{% extends 'base_dashboard.html' %}
+{% load currency_filters %}
+
+{% block title %}Add Budget Item - Gitako{% endblock %}
+
+{% block extra_css %}
+<style>
+.excel-table {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.excel-table th,
+.excel-table td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.excel-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.excel-table input,
+.excel-table select,
+.excel-table textarea {
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: center;
+    padding: 4px;
+}
+
+.excel-table input:focus,
+.excel-table select:focus,
+.excel-table textarea:focus {
+    outline: 2px solid #007bff;
+    background-color: #f8f9fc;
+}
+
+.excel-table .form-control {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.excel-section {
+    background-color: #e9ecef;
+    font-weight: 600;
+    text-align: left !important;
+}
+
+.auto-calc {
+    background-color: #f0f8f0 !important;
+    font-weight: 600;
+    color: #28a745;
+}
+
+.readonly-field {
+    background-color: #f8f9fa !important;
+    color: #6c757d;
+}
+
+.excel-form-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.section-number {
+    width: 40px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.form-actions {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Add Budget Item</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'budget:detail' budget.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="material-icons me-1">arrow_back</i>
+                Back to Budget
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="excel-form-container">
+    <form method="post" id="excel-budget-form">
+        {% csrf_token %}
+        
+        <!-- Hidden fields -->
+        {{ form.budget.as_hidden }}
+        {{ form.item_type.as_hidden }}
+        {{ form.category.as_hidden }}
+        
+        <div class="table-responsive">
+            <table class="table excel-table">
+                <thead>
+                    <tr>
+                        <th width="5%">S.No.</th>
+                        <th width="15%">Particulars</th>
+                        <th width="20%">Description</th>
+                        <th width="12%">Company</th>
+                        <th width="15%">Product Brand Name</th>
+                        <th width="8%">Units</th>
+                        <th width="8%">Quantity</th>
+                        <th width="12%">Rate per (Bag/Kg/Ltr)</th>
+                        <th width="12%">Total Cost/ha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Section Headers -->
+                    <tr class="excel-section">
+                        <td class="section-number">1</td>
+                        <td colspan="8"><strong>INPUT COST</strong></td>
+                    </tr>
+                    
+                    <!-- Main Form Row -->
+                    <tr>
+                        <td>
+                            {{ form.sequence_number }}
+                        </td>
+                        <td>
+                            {{ form.particulars }}
+                            <div class="d-none">{{ form.main_category }}</div>
+                            <div class="d-none">{{ form.sub_category }}</div>
+                        </td>
+                        <td>
+                            {{ form.name }}
+                        </td>
+                        <td>
+                            {{ form.company }}
+                        </td>
+                        <td>
+                            {{ form.product_brand_name }}
+                        </td>
+                        <td>
+                            {{ form.units }}
+                        </td>
+                        <td>
+                            {{ form.quantity }}
+                        </td>
+                        <td>
+                            {{ form.rate_per_unit }}
+                        </td>
+                        <td class="auto-calc">
+                            {{ form.total_cost_per_ha }}
+                        </td>
+                    </tr>
+                    
+                    <!-- Additional rows can be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Additional Fields Section -->
+        <div class="p-3 border-top">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="mb-3">Additional Details</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Main Category</label>
+                        {{ form.main_category }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sub Category</label>
+                        {{ form.sub_category }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Planned Date</label>
+                        {{ form.planned_date }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Supplier/Vendor</label>
+                        {{ form.supplier_vendor }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="mb-3">Financial Details</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Planned Amount (Auto-filled)</label>
+                        <div class="readonly-field">{{ form.planned_amount }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Actual Amount</label>
+                        {{ form.actual_amount }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        {{ form.payment_method }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Receipt Number</label>
+                        {{ form.receipt_number }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checkboxes -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.is_recurring }}
+                        <label class="form-check-label" for="{{ form.is_recurring.id_for_label }}">
+                            Is Recurring
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.is_essential }}
+                        <label class="form-check-label" for="{{ form.is_essential.id_for_label }}">
+                            Is Essential
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notes -->
+            <div class="mt-3">
+                <label class="form-label">Notes</label>
+                {{ form.notes }}
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success me-2">
+                <i class="material-icons me-1">save</i>
+                Save Budget Item
+            </button>
+            <a href="{% url 'budget:detail' budget.pk %}" class="btn btn-outline-secondary">
+                <i class="material-icons me-1">cancel</i>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityField = document.querySelector('input[name="quantity"]');
+    const rateField = document.querySelector('input[name="rate_per_unit"]');
+    const totalField = document.querySelector('input[name="total_cost_per_ha"]');
+    const plannedAmountField = document.querySelector('input[name="planned_amount"]');
+    
+    function calculateTotal() {
+        const quantity = parseFloat(quantityField.value) || 0;
+        const rate = parseFloat(rateField.value) || 0;
+        const total = quantity * rate;
+        
+        totalField.value = total.toFixed(2);
+        plannedAmountField.value = total.toFixed(2);
+        
+        // Add visual feedback
+        if (total > 0) {
+            totalField.style.backgroundColor = '#d4edda';
+            totalField.style.color = '#155724';
+        } else {
+            totalField.style.backgroundColor = '#f8f9fa';
+            totalField.style.color = '#6c757d';
+        }
+    }
+    
+    // Auto-calculate on input
+    quantityField.addEventListener('input', calculateTotal);
+    rateField.addEventListener('input', calculateTotal);
+    
+    // Initialize calculation
+    calculateTotal();
+    
+    // Auto-populate particulars based on main category selection
+    const mainCategoryField = document.querySelector('select[name="main_category"]');
+    const particularsField = document.querySelector('input[name="particulars"]');
+    
+    if (mainCategoryField && particularsField) {
+        mainCategoryField.addEventListener('change', function() {
+            const categoryText = this.options[this.selectedIndex].text;
+            if (categoryText && categoryText !== '---------') {
+                particularsField.value = categoryText;
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

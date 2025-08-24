@@ -125,19 +125,45 @@ class BudgetItemForm(forms.ModelForm):
 
     class Meta:
         model = BudgetItem
-        fields = ['budget', 'category', 'item_type', 'name', 'description', 'planned_amount', 'actual_amount', 'planned_quantity', 'actual_quantity', 'unit', 'unit_price', 'planned_date', 'actual_date', 'supplier_vendor', 'payment_method', 'receipt_number', 'is_recurring', 'is_essential', 'notes']
+        fields = ['budget', 'category', 'item_type', 'main_category', 'sub_category', 
+                 # Excel-matching fields
+                 'sequence_number', 'particulars', 'name', 'description', 'company', 'product_brand_name', 
+                 'units', 'quantity', 'rate_per_unit', 'total_cost_per_ha',
+                 # Income-specific fields
+                 'expected_yield', 'actual_yield', 'market_price', 'buyer_name', 'sale_date', 'payment_status',
+                 # Additional fields
+                 'planned_amount', 'actual_amount', 'planned_date', 'actual_date', 
+                 'supplier_vendor', 'payment_method', 'receipt_number', 'is_recurring', 'is_essential', 'notes']
         widgets = {
             'budget': forms.Select(attrs={'class': 'form-select'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'item_type': forms.Select(attrs={'class': 'form-select'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Item name'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Item description'}),
+            'main_category': forms.Select(attrs={'class': 'form-select'}),
+            'sub_category': forms.Select(attrs={'class': 'form-select'}),
+            
+            # Excel-matching fields
+            'sequence_number': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'S.No.'}),
+            'particulars': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category/type (e.g., Seed, Herbicide, NPK)'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description/Item name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Additional description'}),
+            'company': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company name (e.g., Haike, Mongul)'}),
+            'product_brand_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Brand Name (e.g., FARO 44, NPK 27:10:10)'}),
+            'units': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Units (kg, bags, ltr, ha)'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Quantity'}),
+            'rate_per_unit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Rate per (Bag/Kg/Ltr)'}),
+            'total_cost_per_ha': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Auto-calculated', 'readonly': True}),
+            
+            # Income-specific fields
+            'expected_yield': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Expected yield'}),
+            'actual_yield': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Actual yield achieved'}),
+            'market_price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Current market price'}),
+            'buyer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buyer/customer name'}),
+            'sale_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'payment_status': forms.Select(attrs={'class': 'form-select'}),
+            
+            # Additional fields
             'planned_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
             'actual_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
-            'planned_quantity': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
-            'actual_quantity': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
-            'unit': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., kg, bags, liters'}),
-            'unit_price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': '0.00'}),
             'planned_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'actual_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'supplier_vendor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Supplier/vendor name'}),

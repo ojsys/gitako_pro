@@ -120,21 +120,41 @@ class Budget(models.Model):
         return 0
 
     def recalculate_totals(self):
-        # Recalculate income totals
+        # Recalculate income totals (from both old IncomeItem and new BudgetItem)
         income_data = self.income_items.aggregate(
             planned_total=models.Sum('planned_amount'),
             actual_total=models.Sum('actual_amount')
         )
-        self.total_planned_income = income_data['planned_total'] or Decimal('0.00')
-        self.total_actual_income = income_data['actual_total'] or Decimal('0.00')
         
-        # Recalculate expense totals
+        # Add BudgetItem income items
+        budget_income_data = self.items.filter(item_type='income').aggregate(
+            planned_total=models.Sum('planned_amount'),
+            actual_total=models.Sum('actual_amount')
+        )
+        
+        total_planned_income = (income_data['planned_total'] or Decimal('0.00')) + (budget_income_data['planned_total'] or Decimal('0.00'))
+        total_actual_income = (income_data['actual_total'] or Decimal('0.00')) + (budget_income_data['actual_total'] or Decimal('0.00'))
+        
+        self.total_planned_income = total_planned_income
+        self.total_actual_income = total_actual_income
+        
+        # Recalculate expense totals (from both old ExpenseItem and new BudgetItem)
         expense_data = self.expense_items.aggregate(
             planned_total=models.Sum('planned_amount'),
             actual_total=models.Sum('actual_amount')
         )
-        self.total_planned_expenses = expense_data['planned_total'] or Decimal('0.00')
-        self.total_actual_expenses = expense_data['actual_total'] or Decimal('0.00')
+        
+        # Add BudgetItem expense items
+        budget_expense_data = self.items.filter(item_type='expense').aggregate(
+            planned_total=models.Sum('planned_amount'),
+            actual_total=models.Sum('actual_amount')
+        )
+        
+        total_planned_expenses = (expense_data['planned_total'] or Decimal('0.00')) + (budget_expense_data['planned_total'] or Decimal('0.00'))
+        total_actual_expenses = (expense_data['actual_total'] or Decimal('0.00')) + (budget_expense_data['actual_total'] or Decimal('0.00'))
+        
+        self.total_planned_expenses = total_planned_expenses
+        self.total_actual_expenses = total_actual_expenses
         
         self.save()
 
@@ -144,6 +164,41 @@ class BudgetItem(models.Model):
         INCOME = 'income', 'Income'
         EXPENSE = 'expense', 'Expense'
 
+    class MainCategory(models.TextChoices):
+        LAND_DEVELOPMENT = 'land_development', 'Farm Land Development'
+        INPUT_COST = 'input_cost', 'Input Cost'
+        TRANSPORT = 'transport', 'Transport of Input'
+        MECHANIZATION = 'mechanization', 'Farm Mechanization'
+        LABOUR = 'labour', 'Labour Cost'
+        INSURANCE = 'insurance', 'Insurance'
+        OTHER = 'other', 'Other'
+
+    class SubCategory(models.TextChoices):
+        # Land Development
+        VIRGIN_LAND = 'virgin_land', 'Virgin Land Development'
+        LAND_CLEARING = 'land_clearing', 'Land Clearing'
+        
+        # Input Cost
+        SEEDS = 'seeds', 'Seeds'
+        FERTILIZERS = 'fertilizers', 'Fertilizers'
+        HERBICIDES = 'herbicides', 'Herbicides'
+        PESTICIDES = 'pesticides', 'Pesticides'
+        
+        # Mechanization
+        PLOUGHING = 'ploughing', 'Ploughing'
+        HARROWING = 'harrowing', 'Harrowing'
+        PLANTING = 'planting', 'Planting'
+        
+        # Labour
+        WEEDING = 'weeding', 'Weeding'
+        FERTILIZER_APPLICATION = 'fertilizer_application', 'Fertilizer Application'
+        HARVESTING = 'harvesting', 'Harvesting'
+        BAGGING = 'bagging', 'Bagging and Packaging'
+        HAULAGE = 'haulage', 'Haulage'
+        
+        # Other
+        OTHER = 'other', 'Other'
+
     budget = models.ForeignKey(Budget, on_delete=models.CASCADE, related_name='items')
     category = models.ForeignKey(BudgetCategory, on_delete=models.CASCADE)
     item_type = models.CharField(max_length=10, choices=ItemType.choices)
@@ -151,14 +206,44 @@ class BudgetItem(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     
+    # Enhanced categorization
+    main_category = models.CharField(max_length=20, choices=MainCategory.choices, default=MainCategory.OTHER)
+    sub_category = models.CharField(max_length=30, choices=SubCategory.choices, default=SubCategory.OTHER)
+    
+    # Excel-matching fields (works for both income and expense)
+    sequence_number = models.PositiveIntegerField(default=1, help_text="S.No. from Excel table")
+    particulars = models.CharField(max_length=200, blank=True, help_text="Category/type (Particulars column)")
+    company = models.CharField(max_length=200, blank=True, help_text="Company name or Buyer name")
+    product_brand_name = models.CharField(max_length=200, blank=True, help_text="Product Brand Name or Crop Variety")
+    units = models.CharField(max_length=50, blank=True, help_text="Units (kg, bags, liters, ha, tons)")
+    quantity = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Quantity or Expected Yield")
+    rate_per_unit = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Rate per unit or Price per unit")
+    total_cost_per_ha = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Total Cost/ha or Revenue per ha")
+    
+    # Income-specific fields
+    expected_yield = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Expected yield in tons/kg")
+    actual_yield = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Actual yield achieved")
+    market_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Current market price per unit")
+    buyer_name = models.CharField(max_length=200, blank=True, help_text="Name of buyer/customer")
+    sale_date = models.DateField(null=True, blank=True, help_text="Date of sale")
+    payment_status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('partial', 'Partial Payment'),
+        ('paid', 'Fully Paid'),
+        ('overdue', 'Overdue'),
+    ], default='pending', blank=True)
+    
+    # Keep existing fields for backward compatibility
     planned_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     actual_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), validators=[MinValueValidator(0)])
-    
     planned_quantity = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     actual_quantity = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     unit = models.CharField(max_length=50, blank=True, help_text="e.g., kg, bags, liters, hours")
-    
     unit_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    
+    # Legacy fields (keep for compatibility)
+    company_brand = models.CharField(max_length=200, blank=True, help_text="Company or brand name")
+    product_name = models.CharField(max_length=200, blank=True, help_text="Specific product name/variety")
     
     planned_date = models.DateField(null=True, blank=True)
     actual_date = models.DateField(null=True, blank=True)
@@ -198,10 +283,43 @@ class BudgetItem(models.Model):
     def is_over_budget(self):
         return self.actual_amount > self.planned_amount
 
+    @property
+    def cost_per_hectare(self):
+        """Calculate cost per hectare based on farm size"""
+        if hasattr(self.budget, 'block') and self.budget.block and self.budget.block.size:
+            return self.actual_amount / self.budget.block.size if self.actual_amount else self.planned_amount / self.budget.block.size
+        # If no specific block, assume 1 hectare
+        return self.actual_amount if self.actual_amount else self.planned_amount
+
+    @property
+    def total_amount_calculated(self):
+        """Calculate total amount from quantity × rate_per_unit if available"""
+        if self.planned_quantity and self.rate_per_unit:
+            return self.planned_quantity * self.rate_per_unit
+        return self.planned_amount
+
     def save(self, *args, **kwargs):
+        # Auto-calculate total_cost_per_ha from quantity × rate_per_unit
+        if self.quantity and self.rate_per_unit:
+            self.total_cost_per_ha = self.quantity * self.rate_per_unit
+            # Also update planned_amount for backward compatibility
+            if not self.planned_amount:
+                self.planned_amount = self.total_cost_per_ha
+        
+        # Backward compatibility: calculate planned_amount from old fields if needed
+        elif self.planned_quantity and self.rate_per_unit and not self.planned_amount:
+            self.planned_amount = self.planned_quantity * self.rate_per_unit
+        
         super().save(*args, **kwargs)
         # Update budget totals when item is saved
         self.budget.recalculate_totals()
+    
+    def delete(self, *args, **kwargs):
+        # Store budget reference before deletion
+        budget = self.budget
+        super().delete(*args, **kwargs)
+        # Recalculate budget totals after deletion
+        budget.recalculate_totals()
 
 
 class IncomeItem(models.Model):
