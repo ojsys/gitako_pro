@@ -23,9 +23,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'public_html' / 'media'
 
-# Ensure media directory exists
+# Ensure media directory exists with proper structure
 import os
 os.makedirs(MEDIA_ROOT, exist_ok=True)
+os.makedirs(MEDIA_ROOT / 'cms' / 'team', exist_ok=True)
+
+# Log media configuration for debugging
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f"Media configuration: MEDIA_URL={MEDIA_URL}, MEDIA_ROOT={MEDIA_ROOT}")
 
 # Database configuration for MySQL
 DATABASES = {

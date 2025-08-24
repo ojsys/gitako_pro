@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -38,9 +38,14 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# Serve media files in production for cPanel hosting
-# This is necessary because cPanel shared hosting doesn't have a web server 
-# configuration to serve media files directly
+# Always serve media files for cPanel hosting (since Django needs to handle them)
+# Static files are handled by WhiteNoise middleware
+if not settings.DEBUG:
+    # Add custom media serving view for better reliability on cPanel
+    from apps.cms.media_views import serve_media_file
+    urlpatterns += [
+        re_path(r'^media/(?P<file_path>.*)$', serve_media_file, name='serve_media'),
+    ]
 else:
-    # Only serve media files in production, static files are handled by WhiteNoise
+    # Fallback to standard static serving (shouldn't be needed but for safety)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
