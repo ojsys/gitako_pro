@@ -20,8 +20,9 @@ STATIC_ROOT = BASE_DIR / 'public_html' / 'static'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files configuration for cPanel
+# Files are stored in public_html/media/ and served via Django
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'public_html' / 'media'
+MEDIA_ROOT = BASE_DIR / 'public_html' / 'media'  # Points to actual file location
 
 # Ensure media directory exists with proper structure
 import os
@@ -32,6 +33,8 @@ os.makedirs(MEDIA_ROOT / 'cms' / 'team', exist_ok=True)
 import logging
 logger = logging.getLogger(__name__)
 logger.info(f"Media configuration: MEDIA_URL={MEDIA_URL}, MEDIA_ROOT={MEDIA_ROOT}")
+
+# Note: On cPanel, files are in public_html/media/ and Django serves them via custom view
 
 # Database configuration for MySQL
 DATABASES = {
