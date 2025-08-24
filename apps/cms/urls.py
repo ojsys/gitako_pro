@@ -10,4 +10,5 @@ urlpatterns = [
     path('pricing/', views.PricingView.as_view(), name='pricing'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('offline/', views.OfflineView.as_view(), name='offline'),
+    path('debug/media/', views.MediaDebugView.as_view(), name='media_debug'),
 ]

@@ -29,7 +29,19 @@ class AboutView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['site_settings'] = SiteSettings.get_settings()
         context['hero'] = HeroSection.objects.filter(page='about', is_active=True).first()
-        context['team_members'] = TeamMember.objects.filter(is_active=True)
+        team_members = TeamMember.objects.filter(is_active=True)
+        
+        # Debug: Log media file information in production
+        if not settings.DEBUG:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Media URL: {settings.MEDIA_URL}")
+            logger.info(f"Media Root: {settings.MEDIA_ROOT}")
+            for member in team_members:
+                if member.image:
+                    logger.info(f"Team member {member.name}: {member.image.url}")
+                    
+        context['team_members'] = team_members
         return context
 
 
@@ -111,6 +123,20 @@ class OfflineView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['site_settings'] = SiteSettings.get_settings()
         context['hero'] = HeroSection.objects.filter(page='offline', is_active=True).first()
+        return context
+
+
+class MediaDebugView(TemplateView):
+    """Debug view for testing media files serving - only available in DEBUG mode"""
+    template_name = 'cms/media_debug.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['site_settings'] = SiteSettings.get_settings()
+        context['team_members'] = TeamMember.objects.filter(is_active=True)
+        context['debug_mode'] = settings.DEBUG
+        context['media_url'] = settings.MEDIA_URL
+        context['media_root'] = settings.MEDIA_ROOT
         return context
 
 

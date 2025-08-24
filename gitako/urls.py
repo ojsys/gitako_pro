@@ -37,3 +37,10 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Serve media files in production for cPanel hosting
+# This is necessary because cPanel shared hosting doesn't have a web server 
+# configuration to serve media files directly
+else:
+    # Only serve media files in production, static files are handled by WhiteNoise
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

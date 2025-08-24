@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Media Debug - Gitako{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Media Files Debug</h1>
+    
+    <div class="alert alert-info">
+        <h4>Settings Information</h4>
+        <p><strong>DEBUG:</strong> {{ debug_mode }}</p>
+        <p><strong>MEDIA_URL:</strong> {{ media_url }}</p>
+        <p><strong>MEDIA_ROOT:</strong> {{ media_root }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Team Member Images Test</h3>
+            {% for member in team_members %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>{{ member.name }} - {{ member.title }}</h5>
+                    {% if member.image %}
+                        <p><strong>Image Field:</strong> {{ member.image.name }}</p>
+                        <p><strong>Image URL:</strong> {{ member.image.url }}</p>
+                        <p><strong>Expected Path:</strong> {{ media_root }}/{{ member.image.name }}</p>
+                        
+                        <!-- Test image loading -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6>Image Preview:</h6>
+                                <img src="{{ member.image.url }}" 
+                                     alt="{{ member.name }}" 
+                                     class="img-thumbnail"
+                                     style="max-width: 150px;"
+                                     onerror="this.parentNode.innerHTML='<div class=alert alert-danger>Image failed to load</div>'">
+                            </div>
+                            <div class="col-md-8">
+                                <h6>Direct Link Test:</h6>
+                                <a href="{{ member.image.url }}" target="_blank" class="btn btn-primary btn-sm">
+                                    Open Image in New Tab
+                                </a>
+                                <small class="text-muted d-block mt-1">
+                                    If this link doesn't work, media serving is not configured properly
+                                </small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No image uploaded</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No team members found</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h3>Troubleshooting Steps</h3>
+        <div class="alert alert-warning">
+            <ol>
+                <li>Check if images appear above ✓</li>
+                <li>Try clicking "Open Image in New Tab" links</li>
+                <li>If images don't load, check the server file permissions</li>
+                <li>Ensure media directory exists at the MEDIA_ROOT path</li>
+                <li>Run the fix_media_files management command</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}
